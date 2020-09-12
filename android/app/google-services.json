@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "634522122997",
+    "firebase_url": "https://lifestyle-diet-23c32.firebaseio.com",
+    "project_id": "lifestyle-diet-23c32",
+    "storage_bucket": "lifestyle-diet-23c32.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634522122997:android:880adcdd7b57a175b863bc",
+        "android_client_info": {
+          "package_name": "mobile.lifestylediet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "634522122997-99c65cp4cf6fk1gvsm5qobfjfu1cl9jk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBosCaWmaakSMQYZLMcj_1AGj-99pAGg4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "634522122997-99c65cp4cf6fk1gvsm5qobfjfu1cl9jk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
