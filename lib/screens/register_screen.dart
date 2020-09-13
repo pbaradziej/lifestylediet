@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/registerBloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lifestylediet/blocs/registerBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/themeAccent/theme.dart';
 import 'loading_screen.dart';

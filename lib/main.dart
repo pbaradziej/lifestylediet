@@ -4,14 +4,14 @@ import 'package:lifestylediet/screens/loading_screen.dart';
 import 'package:lifestylediet/themeAccent/theme.dart';
 import 'BlocProviders/login.dart';
 
-void main() => runApp(MaterialApp(home: Home()));
+void main() => runApp(MaterialApp(home: FireBase()));
 
-class Home extends StatefulWidget {
+class FireBase extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _FireBaseState createState() => _FireBaseState();
 }
 
-class _HomeState extends State<Home> {
+class _FireBaseState extends State<FireBase> {
   bool _initialized = false;
   bool _error = false;
 

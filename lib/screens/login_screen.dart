@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lifestylediet/BlocProviders/register.dart';
+import 'package:lifestylediet/blocs/loginBloc/bloc.dart';
 import 'package:lifestylediet/themeAccent/theme.dart';
-import 'loading_screen.dart';
-import '../BlocProviders/register.dart';
-import '../loginBloc/bloc.dart';
-import 'home_screen.dart';
 import 'package:lifestylediet/models/models.dart';
+import 'home_screen.dart';
+import 'loading_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override

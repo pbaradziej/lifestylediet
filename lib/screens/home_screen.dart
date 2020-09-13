@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'login_screen.dart';
-import '../loginBloc/bloc.dart';
+import '../blocs/loginBloc/bloc.dart';
 import '../themeAccent/theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,21 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
             body: Column(
               children: [
                 calories(),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      SizedBox(width: 10),
-                      Column(
-                        children: [
-                          breakfast(),
-                          dinner(),
-                          supper(),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
+                mealList(),
               ],
             ),
           );
@@ -55,11 +41,29 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget mealList() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        children: [
+          SizedBox(width: 5),
+          SizedBox(
+            width: 350,
+            child: Column(
+              children: [
+                breakfast(),
+                dinner(),
+                supper(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget breakfast() {
-    return SizedBox(
-      height: 65,
-      width: 340,
-      child: Card(
+    return Card(
         child: ListTile(
           title: Text('Breakfast'),
           trailing: IconButton(
@@ -67,15 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: null,
           ),
         ),
-      ),
     );
   }
 
   Widget dinner() {
-    return SizedBox(
-      height: 65,
-      width: 340,
-      child: Card(
+    return Card(
         child: ListTile(
           title: Text('Dinner'),
           trailing: IconButton(
@@ -83,15 +83,11 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: null,
           ),
         ),
-      ),
     );
   }
 
   Widget supper() {
-    return SizedBox(
-      height: 65,
-      width: 340,
-      child: Card(
+    return Card(
         child: ListTile(
           title: Text('Supper'),
           trailing: IconButton(
@@ -99,7 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: null,
           ),
         ),
-      ),
     );
   }
 

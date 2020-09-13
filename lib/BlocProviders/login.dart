@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lifestylediet/loginBloc/bloc.dart';
+import 'package:lifestylediet/blocs/loginBloc/login_bloc.dart';
 import 'package:lifestylediet/screens/login_screen.dart';
 
 
