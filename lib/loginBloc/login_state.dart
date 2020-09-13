@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:meta/meta.dart';
 
 abstract class LoginState extends Equatable {
   @override
@@ -9,17 +8,10 @@ abstract class LoginState extends Equatable {
 
 class LoginLoading extends LoginState {}
 
-class LoginLoaded extends LoginState {
-  final bool token;
-
-  LoginLoaded({@required this.token});
-
-  @override
-  List<Object> get props => [token];
-}
+class LoginLoaded extends LoginState {}
 
 class LoginSuccess extends LoginState {
-  final User user;
+  final Users user;
 
   LoginSuccess(this.user);
 }

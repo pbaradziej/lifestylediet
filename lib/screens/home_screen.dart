@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'login_screen.dart';
-import 'loginBloc/bloc.dart';
+import '../loginBloc/bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.center,
                 margin: EdgeInsets.fromLTRB(0, 3, 0, 0),
                 child: Text(
-                  'Hello, ' + state.user.login,
+                  'Hello, ' + state.user.email,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,

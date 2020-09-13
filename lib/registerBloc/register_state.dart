@@ -1,29 +1,16 @@
 import 'package:equatable/equatable.dart';
-import 'package:lifestylediet/models/models.dart';
-import 'package:meta/meta.dart';
 
-class RegisterState extends Equatable{
-
+class RegisterState extends Equatable {
   @override
   List<Object> get props => [];
 }
 
-class RegisterLoaded extends RegisterState {
-  final bool token;
+class RegisterLoading extends RegisterState {}
 
-  RegisterLoaded({@required this.token});
+class RegisterLoaded extends RegisterState {}
 
-  @override
-  List<Object> get props => [token];
-}
+class ReturnLogin extends RegisterState {}
 
-class RegisterSuccess extends RegisterState {
-  final List<User> users;
-
-  RegisterSuccess(this.users);
-
-  @override
-  List<Object> get props => [users];
-}
+class RegisterSuccess extends RegisterState {}
 
 class RegisterFailure extends RegisterState {}

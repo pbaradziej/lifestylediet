@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'register.dart';
-import 'loginBloc/bloc.dart';
+import 'loading_screen.dart';
+import '../BlocProviders/register.dart';
+import '../loginBloc/bloc.dart';
 import 'home_screen.dart';
 import 'package:lifestylediet/models/models.dart';
 
@@ -42,17 +43,17 @@ class _LoginScreenState extends State<LoginScreen> {
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (content, state) {
           if (state is LoginLoading) {
-          return CircularProgressIndicator();
+            return loadingScreen();
           } else if (state is RegisterLoading) {
-          return RegisterProvider();
+            return RegisterProvider();
           } else if (state is LoginSuccess) {
-          return HomeScreen();
+            return HomeScreen();
           } else if (state is LoginLoaded) {
-          return loginScreen(state);
+            return loginScreen(state);
           } else if (state is LoginFailure) {
-          return loginScreen(state);
+            return loginScreen(state);
           } else {
-            return Container();
+            return loadingScreen();
           }
         },
       ),
@@ -64,15 +65,15 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 50),
+          SizedBox(height: 100),
           Text(
-            'Sign In',
+            'Lifestyle Diet',
             style: TextStyle(
               fontSize: 30,
               color: Colors.white,
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 30),
           loginTF(state),
           SizedBox(height: 20),
           passwordTF(state),
@@ -97,42 +98,42 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Login", style: TextStyle(color: Colors.white)),
+        Text("Email", style: TextStyle(color: Colors.white)),
         Container(
           alignment: Alignment.centerLeft,
           width: 260,
           child: TextField(
-              onChanged: (login) {
-                setState(() {
-                  _login = login;
-                });
-              },
-              style: TextStyle(
-                color: Colors.white,
-                height: 2,
+            onChanged: (login) {
+              setState(() {
+                _login = login;
+              });
+            },
+            style: TextStyle(
+              color: Colors.white,
+              height: 2,
+            ),
+            decoration: new InputDecoration(
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+              errorText: state is LoginFailure ? 'invalid email' : '',
+              errorStyle: TextStyle(fontSize: 12, height: 0.3),
+              prefixIcon: Icon(
+                Icons.mail,
+                color: Colors.white60,
               ),
-              decoration: new InputDecoration(
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                errorText: state is LoginFailure ? 'invalid username' : '',
-                errorStyle: TextStyle(fontSize: 12, height: 0.3),
-                prefixIcon: Icon(
-                  Icons.mail,
-                  color: Colors.white60,
-                ),
-                hintText: "Enter your Login",
-                hintStyle: TextStyle(color: Colors.white60),
-                border: new OutlineInputBorder(
-                  borderSide: state is LoginFailure
-                      ? BorderSide(color: Colors.red)
-                      : BorderSide.none,
-                  borderRadius: const BorderRadius.all(const Radius.circular(10)),
-                ),
-                filled: true,
-                fillColor: Colors.lightBlue,
+              hintText: "Enter your Email",
+              hintStyle: TextStyle(color: Colors.white60),
+              border: new OutlineInputBorder(
+                borderSide: state is LoginFailure
+                    ? BorderSide(color: Colors.red)
+                    : BorderSide.none,
+                borderRadius: const BorderRadius.all(const Radius.circular(10)),
               ),
+              filled: true,
+              fillColor: Colors.lightBlue,
             ),
           ),
+        ),
       ],
     );
   }
@@ -263,7 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           _bloc.add(
             Login(
-              user: User(_login, _password, true),
+              user: Users(_login, _password),
             ),
           );
         },

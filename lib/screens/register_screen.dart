@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lifestylediet/registerBloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/models/models.dart';
+import 'loading_screen.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -11,6 +12,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _rememberMe = false;
+  bool _acceptTerms = false;
   String _login;
   String _password;
   RegisterBloc _bloc;
@@ -19,24 +21,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   initState() {
     super.initState();
     _bloc = BlocProvider.of<RegisterBloc>(context);
+    load();
+  }
+
+  load() {
+    _bloc.add(RegisterLoad());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RegisterBloc, RegisterState>(
-        builder: (content, state) {
-          if (state is RegisterSuccess) {
-            return LoginScreen();
-          } else if (state is RegisterFailure) {
-            return registerBuilder(state);
-          } else{
-            return registerBuilder(state);
-          }
-        }
-      );
-  }
-
-  Widget registerBuilder(state) {
     return Container(
       height: double.infinity,
       width: double.infinity,
@@ -47,28 +40,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
           colors: [Colors.lightBlue, Colors.blue, Colors.blueAccent],
         ),
       ),
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 50),
-            Text(
-              'Sign Up',
-              style: TextStyle(
-                fontSize: 30,
-                color: Colors.white,
-              ),
+      child: BlocBuilder<RegisterBloc, RegisterState>(
+        builder: (content, state) {
+          if (state is RegisterLoading) {
+            return loadingScreen();
+          } else if (state is RegisterLoaded) {
+            return registerBuilder(state);
+          } else if (state is ReturnLogin) {
+            return LoginScreen();
+          } else if (state is RegisterSuccess) {
+            return LoginScreen();
+          } else if (state is RegisterFailure) {
+            return registerBuilder(state);
+          } else
+            return loadingScreen();
+        },
+      ),
+    );
+  }
+
+  Widget registerBuilder(state) {
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 100),
+          Text(
+            'Sign Up',
+            style: TextStyle(
+              fontSize: 30,
+              color: Colors.white,
             ),
-            SizedBox(height: 10),
-            loginTF(state),
-            SizedBox(height: 20),
-            passwordTF(state),
-            SizedBox(height: 10),
-            acceptConditions(),
-            SizedBox(height: 20),
-            signUp(state),
-          ],
-        ),
+          ),
+          SizedBox(height: 30),
+          loginTF(state),
+          SizedBox(height: 20),
+          passwordTF(state),
+          SizedBox(height: 10),
+          acceptConditions(),
+          SizedBox(height: 20),
+          signUp(state),
+          Text(
+            "- OR -",
+            style: TextStyle(
+              color: Colors.white70,
+            ),
+          ),
+          SizedBox(height: 20),
+          login(),
+        ],
       ),
     );
   }
@@ -77,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Login", style: TextStyle(color: Colors.white)),
+        Text("Email", style: TextStyle(color: Colors.white)),
         Container(
           alignment: Alignment.centerLeft,
           width: 260,
@@ -94,13 +114,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             decoration: new InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              errorText: state is RegisterFailure ? 'invalid username' : '',
+              errorText: state is RegisterFailure ? 'Enter an email' : '',
               errorStyle: TextStyle(fontSize: 12, height: 0.3),
               prefixIcon: Icon(
                 Icons.mail,
                 color: Colors.white60,
               ),
-              hintText: "Enter Login",
+              hintText: "Enter Email",
               hintStyle: TextStyle(color: Colors.white60),
               border: new OutlineInputBorder(
                 borderSide: state is RegisterFailure
@@ -139,7 +159,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             decoration: new InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              errorText: state is RegisterFailure ? 'invalid password' : '',
+              errorText: state is RegisterFailure
+                  ? 'Enter a password 6+ chars long'
+                  : '',
               errorStyle: TextStyle(fontSize: 12, height: 0.3),
               prefixIcon: Icon(
                 Icons.vpn_key,
@@ -171,7 +193,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Row(
           children: [
             Theme(
-              data: ThemeData(unselectedWidgetColor: Colors.white),
+              data: ThemeData(
+                unselectedWidgetColor: _acceptTerms ? Colors.red : Colors.white,
+              ),
               child: Checkbox(
                 value: _rememberMe,
                 checkColor: Colors.green,
@@ -202,14 +226,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       margin: EdgeInsets.symmetric(horizontal: 20),
       width: double.infinity,
       child: RaisedButton(
+        disabledColor: Colors.grey,
         padding: EdgeInsets.all(15),
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         color: Colors.white,
         onPressed: () {
-          User _user = User(_login, _password, false);
-          Register _register = Register(user: _user);
-          _bloc.add(_register);
+          setState(() {
+            _rememberMe ? registerUser() : _acceptTerms = true;
+          });
         },
         child: Text(
           "Sign Up",
@@ -217,5 +242,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  Widget login() {
+    return GestureDetector(
+      onTap: () {
+        _bloc.add(Return());
+      },
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+                text: "Return to", style: TextStyle(color: Colors.white70)),
+            TextSpan(text: " Login")
+          ],
+        ),
+      ),
+    );
+  }
+
+  registerUser() {
+    Users _user = Users(_login, _password);
+    Register _register = Register(user: _user);
+    _bloc.add(_register);
   }
 }

@@ -4,42 +4,41 @@ import 'package:lifestylediet/repositories/repositories.dart';
 import 'bloc.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
-  List<User> _users = [];
   UserRepository _repository = UserRepository();
 
   @override
-  RegisterState get initialState => RegisterState();
+  RegisterState get initialState => RegisterLoading();
 
   @override
   Stream<RegisterState> mapEventToState(RegisterEvent event) async* {
-    if (event is RegisterInit) {
-      yield* _mapRegisterLoadState();
+    if (event is RegisterLoad) {
+      yield* _mapRegisterLoadedState(event);
     } else if (event is Register) {
       yield* _mapRegisterState(event);
+    } else if (event is Return) {
+      yield* _mapLoginState(event);
     }
   }
 
-  Stream<RegisterState> _mapRegisterLoadState() async* {
-    if(await _repository.loadUser() != null) {
-      _users = await _repository.loadUser();
-    }
-    yield RegisterLoaded(token: false);
+  Stream<RegisterState> _mapRegisterLoadedState(RegisterLoad event) async* {
+    yield RegisterLoaded();
   }
 
   Stream<RegisterState> _mapRegisterState(Register event) async* {
-      _users = await _repository.loadUser()??[];
-    if (event.user.login != null && event.user.password != null) {
-      for (User user in _users) {
-        if(event.user.login == user.login) {
-          yield RegisterFailure();
-          return;
-        }
-      }
-      _users.add(event.user);
-      await _repository.saveUser(_users);
-      yield RegisterSuccess(_users);
+    yield RegisterLoading();
+    bool result = await _repository.register(getUser(event));
+    if (result) {
+      yield RegisterSuccess();
     } else {
       yield RegisterFailure();
     }
+  }
+
+  Stream<RegisterState> _mapLoginState(Return event) async* {
+    yield ReturnLogin();
+  }
+
+  getUser(event) {
+    return Users(event.user.email, event.user.password);
   }
 }

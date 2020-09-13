@@ -1,19 +1,34 @@
-import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/providers/providers.dart';
 
 class UserRepository {
-  UserProvider provider = UserProvider();
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
-  loadUser() async {
-    final jsonUsersList = await provider.getUser();
-    if (jsonUsersList == '') return null;
-    final userList = json.decode(jsonUsersList).cast<Map<String, dynamic>>();
-    return userList.map<User>((i) => User.fromJson(i)).toList();
+  register(Users user) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
+      );
+    } catch (LocalizedException) {
+      return false;
+    }
+    return true;
   }
 
-  saveUser(List<User> user) {
-    String jsonUserList = jsonEncode(user);
-    provider.setUser(jsonUserList);
+  login(Users user) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
+      );
+    } catch (LocalizedException) {
+      return false;
+    }
+    return true;
+  }
+
+  logout() async {
+    return await _auth.signOut();
   }
 }

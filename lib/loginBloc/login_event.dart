@@ -12,7 +12,7 @@ abstract class LoginEvent extends Equatable {
 class LoginLoad extends LoginEvent {}
 
 class Login extends LoginEvent {
-  final User user;
+  final Users user;
 
   Login({@required this.user});
 
