@@ -7,6 +7,7 @@ Widget loadingScreen() {
       width: 200,
       child: CircularProgressIndicator(
         backgroundColor: Colors.white,
+        valueColor: new AlwaysStoppedAnimation<Color>(Colors.orange),
         strokeWidth: 5,
       ),
     ),

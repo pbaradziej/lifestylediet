@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lifestylediet/registerBloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/themeAccent/theme.dart';
 import 'loading_screen.dart';
 import 'login_screen.dart';
 
@@ -33,13 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       height: double.infinity,
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.lightBlue, Colors.blue, Colors.blueAccent],
-        ),
-      ),
+      decoration: appTheme(),
       child: BlocBuilder<RegisterBloc, RegisterState>(
         builder: (content, state) {
           if (state is RegisterLoading) {
@@ -129,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 borderRadius: const BorderRadius.all(const Radius.circular(10)),
               ),
               filled: true,
-              fillColor: Colors.lightBlue,
+              fillColor: appTextFields(),
             ),
           ),
         ),
@@ -176,7 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 borderRadius: const BorderRadius.all(const Radius.circular(10)),
               ),
               filled: true,
-              fillColor: Colors.lightBlue,
+              fillColor: appTextFields(),
             ),
           ),
         ),

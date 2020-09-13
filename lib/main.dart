@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:lifestylediet/screens/loading_screen.dart';
+import 'package:lifestylediet/themeAccent/theme.dart';
 import 'BlocProviders/login.dart';
 
 void main() => runApp(MaterialApp(home: Home()));
@@ -45,13 +46,7 @@ class _HomeState extends State<Home> {
       return Container(
           height: double.infinity,
           width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.lightBlue, Colors.blue, Colors.blueAccent],
-            ),
-          ),
+          decoration: appTheme(),
           child: loadingScreen());
     }
 

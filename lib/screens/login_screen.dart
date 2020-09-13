@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lifestylediet/themeAccent/theme.dart';
 import 'loading_screen.dart';
 import '../BlocProviders/register.dart';
 import '../loginBloc/bloc.dart';
@@ -33,13 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       height: double.infinity,
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.lightBlue, Colors.blue, Colors.blueAccent],
-        ),
-      ),
+      decoration: appTheme(),
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (content, state) {
           if (state is LoginLoading) {
@@ -130,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: const BorderRadius.all(const Radius.circular(10)),
               ),
               filled: true,
-              fillColor: Colors.lightBlue,
+              fillColor: appTextFields(),
             ),
           ),
         ),
@@ -175,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: const BorderRadius.all(const Radius.circular(10)),
               ),
               filled: true,
-              fillColor: Colors.lightBlue,
+              fillColor: appTextFields(),
             ),
           ),
         ),
