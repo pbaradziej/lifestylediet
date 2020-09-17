@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lifestylediet/BlocProviders/home.dart';
 import 'login_screen.dart';
 import '../blocs/loginBloc/bloc.dart';
-import '../themeAccent/theme.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -24,96 +24,13 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (content, state) {
         if (state is Logout) {
           return LoginScreen();
-        } else if (state is LoginSuccess) {
+        } else {
           return Scaffold(
             appBar: appBar(),
-            body: Column(
-              children: [
-                calories(),
-                mealList(),
-              ],
-            ),
+            body: HomeProvider(),
           );
-        } else {
-          return Container();
         }
       },
-    );
-  }
-
-  Widget mealList() {
-    return Container(
-      alignment: Alignment.centerLeft,
-      child: Row(
-        children: [
-          SizedBox(width: 5),
-          SizedBox(
-            width: 350,
-            child: Column(
-              children: [
-                breakfast(),
-                dinner(),
-                supper(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget breakfast() {
-    return Card(
-        child: ListTile(
-          title: Text('Breakfast'),
-          trailing: IconButton(
-            icon: Icon(Icons.add),
-            onPressed: null,
-          ),
-        ),
-    );
-  }
-
-  Widget dinner() {
-    return Card(
-        child: ListTile(
-          title: Text('Dinner'),
-          trailing: IconButton(
-            icon: Icon(Icons.add),
-            onPressed: null,
-          ),
-        ),
-    );
-  }
-
-  Widget supper() {
-    return Card(
-        child: ListTile(
-          title: Text('Supper'),
-          trailing: IconButton(
-            icon: Icon(Icons.add),
-            onPressed: null,
-          ),
-        ),
-    );
-  }
-
-  Widget calories() {
-    return Container(
-      height: 250,
-      alignment: Alignment.topCenter,
-      decoration: menuTheme(),
-      child: Container(
-        width: 350,
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            kcalRow(),
-            SizedBox(height: 26),
-            nutritionRow(),
-          ],
-        ),
-      ),
     );
   }
 
@@ -149,120 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget kcalRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        SizedBox(width: 0),
-        kcalLeft(),
-        SizedBox(width: 20),
-        kcal(),
-        SizedBox(width: 20),
-        kcalTaken(),
-      ],
-    );
-  }
-
-  Widget nutritionRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        fats(),
-        protein(),
-        carbs(),
-      ],
-    );
-  }
-
-  Widget kcalLeft() {
-    return Column(
-      children: [
-        Text(
-          'kcal',
-          style: subTitleStyle(),
-        ),
-        Text(
-          'left',
-          style: subTitleStyle(),
-        ),
-        Text(
-          '0',
-          style: subTitleStyle(),
-        )
-      ],
-    );
-  }
-
-  Widget kcal() {
-    return Column(
-      children: [
-        Text(
-          'kcal',
-          style: titleStyle(),
-        ),
-        Text(
-          '0',
-          style: titleStyle(),
-        )
-      ],
-    );
-  }
-
-  Widget kcalTaken() {
-    return Column(
-      children: [
-        Text(
-          'kcal',
-          style: subTitleStyle(),
-        ),
-        Text(
-          'taken',
-          style: subTitleStyle(),
-        ),
-        Text(
-          '0',
-          style: subTitleStyle(),
-        )
-      ],
-    );
-  }
-
-  Widget fats() {
-    return Column(
-      children: [
-        Text('Fats', style: textStyle()),
-        SizedBox(
-          height: 5,
-        ),
-        Text('0', style: textStyle()),
-      ],
-    );
-  }
-
-  Widget protein() {
-    return Column(
-      children: [
-        Text('Protein', style: textStyle()),
-        SizedBox(
-          height: 5,
-        ),
-        Text('0', style: textStyle()),
-      ],
-    );
-  }
-
-  Widget carbs() {
-    return Column(
-      children: [
-        Text('Carbs', style: textStyle()),
-        SizedBox(
-          height: 5,
-        ),
-        Text('0', style: textStyle()),
-      ],
     );
   }
 }

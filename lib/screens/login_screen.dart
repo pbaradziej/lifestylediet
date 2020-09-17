@@ -31,26 +31,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: appTheme(),
-      child: BlocBuilder<LoginBloc, LoginState>(
-        builder: (content, state) {
-          if (state is LoginLoading) {
-            return loadingScreen();
-          } else if (state is RegisterLoading) {
-            return RegisterProvider();
-          } else if (state is LoginSuccess) {
-            return HomeScreen();
-          } else if (state is LoginLoaded) {
-            return loginScreen(state);
-          } else if (state is LoginFailure) {
-            return loginScreen(state);
-          } else {
-            return loadingScreen();
-          }
-        },
+    return Scaffold(
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: appTheme(),
+        child: BlocBuilder<LoginBloc, LoginState>(
+          builder: (content, state) {
+            if (state is LoginLoading) {
+              return loadingScreen();
+            } else if (state is RegisterLoading) {
+              return RegisterProvider();
+            } else if (state is LoginSuccess) {
+              return HomeScreen();
+            } else if (state is LoginLoaded) {
+              return loginScreen(state);
+            } else if (state is LoginFailure) {
+              return loginScreen(state);
+            } else {
+              return loadingScreen();
+            }
+          },
+        ),
       ),
     );
   }
@@ -60,7 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 100),
+          appBarLogin(),
+          SizedBox(height: 50),
           Text(
             'Lifestyle Diet',
             style: TextStyle(

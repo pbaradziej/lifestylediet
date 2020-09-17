@@ -59,7 +59,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 100),
+          appBarLogin(),
+          SizedBox(height: 50),
           Text(
             'Sign Up',
             style: TextStyle(

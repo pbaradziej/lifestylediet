@@ -42,3 +42,10 @@ titleStyle() {
   return TextStyle(fontSize: 40,
       color: Colors.white);
 }
+
+Widget appBarLogin() {
+  return AppBar(
+    elevation: 0,
+    backgroundColor: Color.fromRGBO(255, 165, 44, 1),
+  );
+}
