@@ -6,3 +6,7 @@ abstract class HomeEvent extends Equatable {
 }
 
 class HomeLoad extends HomeEvent {}
+
+class HomeAddFood extends HomeEvent {}
+
+class HomeLogout extends HomeEvent {}

@@ -8,11 +8,8 @@ abstract class HomeState extends Equatable {
 
 class HomeLoadingState extends HomeState {}
 
-class HomeLoadedState extends HomeState {
-  final Product product;
+class HomeLoadedState extends HomeState {}
 
-  HomeLoadedState(this.product);
+class HomeAddingState extends HomeState {}
 
-  @override
-  List<Object> get props => [product];
-}
+class HomeLogoutState extends HomeState {}

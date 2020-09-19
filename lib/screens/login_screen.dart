@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lifestylediet/BlocProviders/home.dart';
 import 'package:lifestylediet/BlocProviders/register.dart';
-import 'package:lifestylediet/blocs/loginBloc/bloc.dart';
+import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
 import 'package:lifestylediet/themeAccent/theme.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'home_screen.dart';
 import 'loading_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
             } else if (state is RegisterLoading) {
               return RegisterProvider();
             } else if (state is LoginSuccess) {
-              return HomeScreen();
+              return HomeProvider();
             } else if (state is LoginLoaded) {
               return loginScreen(state);
             } else if (state is LoginFailure) {
@@ -125,7 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderSide: state is LoginFailure
                     ? BorderSide(color: Colors.red)
                     : BorderSide.none,
-                borderRadius: const BorderRadius.all(const Radius.circular(10)),
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(10),
+                ),
               ),
               filled: true,
               fillColor: appTextFields(),
@@ -170,7 +172,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderSide: state is LoginFailure
                     ? BorderSide(color: Colors.red)
                     : BorderSide.none,
-                borderRadius: const BorderRadius.all(const Radius.circular(10)),
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(10),
+                ),
               ),
               filled: true,
               fillColor: appTextFields(),
@@ -257,7 +261,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: RaisedButton(
         padding: EdgeInsets.all(15),
         elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
         color: Colors.white,
         onPressed: () {
           _bloc.add(

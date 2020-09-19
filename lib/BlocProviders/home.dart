@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lifestylediet/blocs/homescreen/bloc.dart';
-import 'package:lifestylediet/screens/home_screen_data.dart';
+import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
+import 'package:lifestylediet/screens/home_screen.dart';
 
 class HomeProvider extends StatelessWidget {
   @override

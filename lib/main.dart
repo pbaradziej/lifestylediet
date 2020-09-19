@@ -38,7 +38,7 @@ class _FireBaseState extends State<FireBase> {
   Widget build(BuildContext context) {
     if (_error) {
       return Container(
-        child: Text("fucccc"),
+        child: Text("Failed to connect to database"),
       );
     }
 

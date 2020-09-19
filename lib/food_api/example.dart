@@ -1,14 +1,15 @@
 import 'dart:async';
 
+import 'package:lifestylediet/repositories/repositories.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 
 /// request a product from the OpenFoodFacts database
 Future<Product> getProduct() async {
   var barcode = "5449000275509";
 
-  ProductQueryConfiguration configuration = ProductQueryConfiguration(barcode, language: OpenFoodFactsLanguage.GERMAN, fields: [ProductField.ALL]);
-  ProductResult result =
-  await OpenFoodAPIClient.getProduct(configuration);
+  ProductQueryConfiguration configuration = ProductQueryConfiguration(barcode,
+      language: OpenFoodFactsLanguage.POLISH, fields: [ProductField.ALL]);
+  ProductResult result = await OpenFoodAPIClient.getProduct(configuration);
 
   if (result.status == 1) {
     return result.product;
@@ -27,7 +28,8 @@ void addNewProduct() async {
   );
 
   // a registered user login for https://world.openfoodfacts.org/ is required
-  User myUser = new User(userId: "pawel_baradziej@gazeta.pl", password: "awatar1");
+  User myUser =
+      new User(userId: "pawel_baradziej@gazeta.pl", password: "awatar1");
 
   // query the OpenFoodFacts API
   Status result = await OpenFoodAPIClient.saveProduct(myUser, myProduct);
@@ -50,7 +52,8 @@ void addProductImage() async {
   );
 
   // a registered user login for https://world.openfoodfacts.org/ is required
-  User myUser = new User(userId: "pawel_baradziej@gazeta.pl", password: "awatar1");
+  User myUser =
+      new User(userId: "pawel_baradziej@gazeta.pl", password: "awatar1");
 
   // query the OpenFoodFacts API
   Status result = await OpenFoodAPIClient.addProductImage(myUser, image);

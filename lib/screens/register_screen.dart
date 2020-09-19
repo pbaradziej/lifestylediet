@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lifestylediet/blocs/registerBloc/bloc.dart';
+import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/themeAccent/theme.dart';
 import 'loading_screen.dart';
@@ -122,7 +122,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 borderSide: state is RegisterFailure
                     ? BorderSide(color: Colors.red)
                     : BorderSide.none,
-                borderRadius: const BorderRadius.all(const Radius.circular(10)),
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(10),
+                ),
               ),
               filled: true,
               fillColor: appTextFields(),
@@ -169,7 +171,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 borderSide: state is RegisterFailure
                     ? BorderSide(color: Colors.red)
                     : BorderSide.none,
-                borderRadius: const BorderRadius.all(const Radius.circular(10)),
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(10),
+                ),
               ),
               filled: true,
               fillColor: appTextFields(),
@@ -225,7 +229,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         disabledColor: Colors.grey,
         padding: EdgeInsets.all(15),
         elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
         color: Colors.white,
         onPressed: () {
           setState(() {
@@ -249,7 +255,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         text: TextSpan(
           children: [
             TextSpan(
-                text: "Return to", style: TextStyle(color: Colors.white70)),
+              text: "Return to",
+              style: TextStyle(color: Colors.white70),
+            ),
             TextSpan(text: " Login")
           ],
         ),
