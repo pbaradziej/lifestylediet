@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/addBloc/bloc.dart';
+import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
+import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
 import 'package:lifestylediet/screens/details_screen.dart';
 import 'package:lifestylediet/screens/home_screen.dart';
 import 'package:lifestylediet/screens/loading_screen.dart';
@@ -12,17 +14,21 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> {
-  AddBloc _bloc;
+  AddBloc _addBloc;
   String _search;
+  HomeBloc _homeBloc;
+  LoginBloc _loginBloc;
 
   @override
   void initState() {
-    _bloc = BlocProvider.of<AddBloc>(context);
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _homeBloc = BlocProvider.of<HomeBloc>(context);
+    _addBloc = BlocProvider.of<AddBloc>(context);
     super.initState();
   }
 
   _getFoodList(String search) {
-    _bloc.add(SearchFood(search));
+    _addBloc.add(SearchFood(search));
   }
 
   @override
@@ -67,7 +73,7 @@ class _AddScreenState extends State<AddScreen> {
           Icons.arrow_back,
           color: Colors.white,
         ),
-        onPressed: () => _bloc.add(AddReturn()),
+        onPressed: () => _addBloc.add(AddReturn()),
       ),
     );
   }
@@ -83,6 +89,7 @@ class _AddScreenState extends State<AddScreen> {
             _search = search;
           });
         },
+        onSubmitted: (submit) => _getFoodList(_search),
         style: TextStyle(
           color: Colors.black,
           height: 2,
@@ -117,33 +124,55 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   Widget showFood(AddSearchState state, int index) {
+    final product = state.products[index];
+    final nutriments = product.nutriments;
+
     return Card(
       child: ListTile(
-        subtitle: Text("carbs: " +
-            state.products[index].nutriments.carbohydrates.toString() +
-            " protein: " +
-            state.products[index].nutriments.proteins.toString() +
-            " fats: " +
-            state.products[index].nutriments.fat.toString()),
+        subtitle: _subtitleListTile(product, nutriments),
         title: Text(
-          state.products[index].productNameEN ??
-              state.products[index].productName ??
-              "",
+          product.productNameEN ?? product.productName ?? "",
         ),
-        trailing: Text("kcal: " +
-            state.products[index].nutriments.energyServing.toString() +
-            "\nkcal 100g: " +
-            state.products[index].nutriments.energyKcal100g.toString()),
-        leading: Image.network(state.products[index].selectedImages[2].url),
+        trailing: _trailingListTile(product, nutriments),
+        leading: Image.network(product.selectedImages[2].url),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => DetailsScreen(
-              product: state.products[index],
+              product: product,
+              meal: _homeBloc.meal,
+              uid: _loginBloc.uid,
+              addBloc: _addBloc,
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _subtitleListTile(final product, final nutriments) {
+    return Row(
+      children: [
+        _showValue("carbs: ", nutriments.carbohydrates.toString()),
+        _showValue(" protein: ", nutriments.carbohydrates.toString()),
+        _showValue(" fats: ", nutriments.carbohydrates.toString()),
+      ],
+    );
+  }
+
+  Widget _trailingListTile(final product, final nutriments) {
+    return Column(
+      children: [
+        _showValue("kcal: ", nutriments.energyServing.toString()),
+        _showValue("kcal 100g: ", nutriments.energyKcal100g.toString()),
+      ],
+    );
+  }
+
+  Widget _showValue(String name, String value) {
+    if (value == 'null') {
+      return Text(name + '?', style: TextStyle(fontSize: 11));
+    }
+    return Text(name + value, style: TextStyle(fontSize: 11));
   }
 }

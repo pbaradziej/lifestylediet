@@ -20,6 +20,4 @@ class Login extends LoginEvent {
   List<Object> get props => [user];
 }
 
-class RegisterLoad extends LoginEvent {}
-
-class Logout extends LoginEvent {}
+class Register extends LoginEvent {}

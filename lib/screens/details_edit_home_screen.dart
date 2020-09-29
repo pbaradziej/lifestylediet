@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lifestylediet/bloc/addBloc/bloc.dart';
+import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
+import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/themeAccent/theme.dart';
-import 'package:openfoodfacts/model/Nutriments.dart';
-import 'package:openfoodfacts/openfoodfacts.dart';
 
-class DetailsScreen extends StatefulWidget {
-  final Product product;
+class DetailsEditHomeScreen extends StatefulWidget {
+  final DatabaseProduct product;
   final String meal;
   final String uid;
-  final AddBloc addBloc;
+  final HomeBloc homeBloc;
 
-  DetailsScreen({this.product, this.meal, this.uid, this.addBloc});
+  DetailsEditHomeScreen({this.product, this.meal, this.uid, this.homeBloc});
 
   @override
-  _DetailsScreenState createState() => _DetailsScreenState();
+  _DetailsEditHomeScreenState createState() => _DetailsEditHomeScreenState();
 }
 
-class _DetailsScreenState extends State<DetailsScreen> {
-  final _controller = TextEditingController(text: '1');
+class _DetailsEditHomeScreenState extends State<DetailsEditHomeScreen> {
+  var _controller;
   final _focusNode = FocusNode();
-  String _dropdownValue = 'serving';
+  String _dropdownValue;
   double amount = 1;
 
   initState() {
     super.initState();
+    _dropdownValue = widget.product.value;
+    _controller =
+        TextEditingController(text: widget.product.amount.round().toString());
     _controller.addListener(() {
       final newText = _controller.text.toLowerCase();
       _controller.value = _controller.value.copyWith(
@@ -65,22 +67,25 @@ class _DetailsScreenState extends State<DetailsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Expanded(
+            flex: 1,
+            child: Container(
+              alignment: Alignment.topCenter,
+              child: Image.network(widget.product.image),
+            ),
+          ),
           SizedBox(width: 30),
-          Image.network(widget.product.selectedImages[1].url),
-          SizedBox(width: 30),
-          kcalButtons(_nutriments),
+          Expanded(flex: 1, child: kcalButtons(_nutriments)),
         ],
       ),
     );
   }
 
   Widget nutritionCard(Nutriments _nutriments) {
-    return Expanded(
-      child: Card(
-        child: Container(
-          alignment: Alignment.centerLeft,
-          child: nutriments(_nutriments),
-        ),
+    return Card(
+      child: Container(
+        alignment: Alignment.centerLeft,
+        child: nutriments(_nutriments),
       ),
     );
   }
@@ -97,8 +102,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
               dropDownButton(),
             ],
           ),
-          calories('Calories per serving', _nutriments.energyServing),
-          calories('Calories per 100g', _nutriments.energyKcal100g),
+          calories('Calories per serving', _nutriments.caloriesPerServing),
+          calories('Calories per 100g', _nutriments.caloriesPer100g),
         ],
       ),
     );
@@ -205,8 +210,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return hideNull(
       "kcal ",
       nutrimentsAmount(
-        _nutriments.energyKcal100g,
-        _nutriments.energyServing,
+        _nutriments.caloriesPer100g,
+        _nutriments.caloriesPerServing,
       ),
       subTitleAddScreenStyle(),
     );
@@ -219,8 +224,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
         hideNull(
           "carbs ",
           nutrimentsAmount(
-            _nutriments.carbohydrates,
-            _nutriments.carbohydratesServing,
+            _nutriments.carbs,
+            _nutriments.carbsPerServing,
           ),
           subTitleAddScreenStyle(),
         ),
@@ -228,7 +233,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           "fiber ",
           nutrimentsAmount(
             _nutriments.fiber,
-            _nutriments.fiberServing,
+            _nutriments.fiberPerServing,
           ),
           null,
         ),
@@ -236,7 +241,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           "sugars ",
           nutrimentsAmount(
             _nutriments.sugars,
-            _nutriments.sugarsServing,
+            _nutriments.sugarsPerServing,
           ),
           null,
         ),
@@ -263,8 +268,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
         hideNull(
           "protein ",
           nutrimentsAmount(
-            _nutriments.proteins,
-            _nutriments.proteinsServing,
+            _nutriments.protein,
+            _nutriments.proteinPerServing,
           ),
           subTitleAddScreenStyle(),
         ),
@@ -279,16 +284,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
         hideNull(
           "fats ",
           nutrimentsAmount(
-            _nutriments.fat,
-            _nutriments.fatServing,
+            _nutriments.fats,
+            _nutriments.fatsPerServing,
           ),
           subTitleAddScreenStyle(),
         ),
         hideNull(
           "saturated fats ",
           nutrimentsAmount(
-            _nutriments.saturatedFat,
-            _nutriments.saturatedFatServing,
+            _nutriments.saturatedFats,
+            _nutriments.saturatedFatsPerServing,
           ),
           null,
         ),
@@ -297,7 +302,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           "salt ",
           nutrimentsAmount(
             _nutriments.salt,
-            _nutriments.saltServing,
+            _nutriments.saltPerServing,
           ),
           subTitleAddScreenStyle(),
         ),
@@ -338,7 +343,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 SizedBox(width: 10),
                 Flexible(
                   child: Text(
-                    widget.product.productName,
+                    widget.product.name,
                     style: titleAddScreenStyle(),
                   ),
                 ),
@@ -365,15 +370,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
       actions: [
         FlatButton(
           onPressed: () {
-            widget.addBloc.add(
-              AddProduct(
-                  uid: widget.uid,
-                  meal: widget.meal,
-                  product: widget.product,
-                  amount: amount,
-                  value: _dropdownValue),
+            widget.homeBloc.add(
+              UpdateProduct(
+                  id: widget.product.id, amount: amount, value: _dropdownValue),
             );
-            widget.addBloc.add(AddReturn());
+            widget.product.amount = amount;
+            widget.product.value = _dropdownValue;
+            setState(() {});
+            Navigator.pop(context);
             Navigator.pop(context);
           },
           child: Text(

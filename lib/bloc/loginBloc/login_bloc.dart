@@ -5,6 +5,9 @@ import 'bloc.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   UserRepository _repository = UserRepository();
+  String _uid;
+
+  String get uid => _uid;
 
   @override
   LoginState get initialState => LoginLoading();
@@ -15,9 +18,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield* _mapLoginLoadState();
     } else if (event is Login) {
       yield* _mapLoginState(event);
-    } else if (event is Logout) {
-      yield* _mapLogoutState(event);
-    } else if (event is RegisterLoad) {
+    } else if (event is Register) {
       yield* _mapRegisterLoadState();
     }
   }
@@ -29,17 +30,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginState(Login event) async* {
     yield LoginLoading();
     bool result = await _repository.login(getUser(event));
+    _uid = _repository.uid;
     if (result) {
       yield LoginSuccess(event.user);
     } else {
       yield LoginFailure();
     }
-  }
-
-  Stream<LoginState> _mapLogoutState(Logout event) async* {
-    yield LoginLoading();
-    await _repository.logout();
-    yield LoginLoaded();
   }
 
   Stream<LoginState> _mapRegisterLoadState() async* {

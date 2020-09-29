@@ -11,6 +11,4 @@ class RegisterLoaded extends RegisterState {}
 
 class ReturnLogin extends RegisterState {}
 
-class RegisterSuccess extends RegisterState {}
-
 class RegisterFailure extends RegisterState {}

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/BlocProviders/add.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
+import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
+import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/themeAccent/theme.dart';
 
+import 'details_home_screen.dart';
 import 'loading_screen.dart';
 import 'login_screen.dart';
 
@@ -14,16 +17,22 @@ class HomeScreenData extends StatefulWidget {
 
 class _HomeScreenDataState extends State<HomeScreenData> {
   HomeBloc _homeBloc;
+  LoginBloc _loginBloc;
+  List<DatabaseProduct> _breakfast;
+  List<DatabaseProduct> _dinner;
+  List<DatabaseProduct> _supper;
+  Nutrition _nutrition;
 
   @override
   initState() {
     super.initState();
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
     load();
   }
 
   load() {
-    _homeBloc.add(HomeLoad());
+    _homeBloc.add(HomeLoad(_loginBloc.uid));
   }
 
   @override
@@ -35,15 +44,29 @@ class _HomeScreenDataState extends State<HomeScreenData> {
         } else if (state is HomeLoadingState) {
           return loadingScreenMainScreen();
         } else if (state is HomeLoadedState) {
-          return Column(
-            children: [appBar(), calories(), mealList()],
-          );
+          return _homeScreen(state);
         } else if (state is HomeAddingState) {
           return AddProvider();
         } else {
           return Container();
         }
       }),
+    );
+  }
+
+  _homeScreen(HomeLoadedState state) {
+    _breakfast = state.breakfast;
+    _dinner = state.dinner;
+    _supper = state.supper;
+    _nutrition = state.nutrition;
+    return Container(
+      color: Colors.orangeAccent,
+      child: Column(
+        children: [
+          appBar(),
+          mealList(),
+        ],
+      ),
     );
   }
 
@@ -69,7 +92,7 @@ class _HomeScreenDataState extends State<HomeScreenData> {
       margin: EdgeInsets.fromLTRB(0, 3, 0, 0),
       child: FlatButton(
         onPressed: () {
-          _homeBloc.add(HomeLogout());
+          _homeBloc.add(Logout());
         },
         child: Text(
           'Logout',
@@ -82,92 +105,64 @@ class _HomeScreenDataState extends State<HomeScreenData> {
     );
   }
 
-  // Widget example(HomeLoadedState state) {
-  //   return Card(
-  //     child: ListTile(
-  //       subtitle: Text("carbs: " +
-  //           state.product.nutriments.carbohydrates.toString() +
-  //           " protein: " +
-  //           state.product.nutriments.proteins.toString() +
-  //           " fats: " +
-  //           state.product.nutriments.fat.toString()),
-  //       title: Text(state.product.productName),
-  //       trailing: Text("kcal: " +
-  //           state.product.nutriments.energyServing.toString() +
-  //           "\nkcal 100g: " +
-  //           state.product.nutriments.energyKcal100g.toString()),
-  //       leading: Image.network(state.product.selectedImages[2].url),
-  //     ),
-  //   );
-  // }
-
   Widget mealList() {
-    return Container(
-      alignment: Alignment.centerLeft,
-      child: Row(
-        children: [
-          SizedBox(width: 5),
-          SizedBox(
-            width: 350,
-            child: Column(
-              children: [
-                breakfast(),
-                dinner(),
-                supper(),
-              ],
-            ),
-          ),
+    return Expanded(
+      child: ListView(
+        children: <Widget>[
+          calories(),
+          meal('Breakfast', _breakfast),
+          meal('Dinner', _dinner),
+          meal('Supper', _supper),
         ],
       ),
     );
   }
 
-  Widget breakfast() {
+  Widget meal(String meal, List<DatabaseProduct> mealList) {
     return Card(
-      child: ListTile(
-        title: Text('Breakfast'),
-        trailing: IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () => _homeBloc.add(HomeAddFood()),
-        ),
+      child: Column(
+        children: [
+          mealNameTile(meal),
+          listBuilder(mealList),
+        ],
       ),
     );
   }
 
-  Widget dinner() {
+  Widget mealNameTile(String meal) {
     return Card(
       child: ListTile(
-        title: Text('Dinner'),
+        title: Text(meal),
         trailing: IconButton(
-          icon: Icon(Icons.add),
-          onPressed: null,
-        ),
+            icon: Icon(Icons.add),
+            onPressed: () {
+              _homeBloc.add(AddProduct(meal));
+              _homeBloc.dispose();
+            }),
       ),
     );
   }
 
-  Widget supper() {
-    return Card(
-      child: ListTile(
-        title: Text('Supper'),
-        trailing: IconButton(
-          icon: Icon(Icons.add),
-          onPressed: null,
-        ),
-      ),
+  Widget listBuilder(List<DatabaseProduct> mealList) {
+    return ListView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: mealList.length,
+      itemBuilder: (context, index) {
+        return showFood(mealList, index);
+      },
     );
   }
 
   Widget calories() {
     return Container(
-      height: 250,
+      height: 220,
       alignment: Alignment.topCenter,
       decoration: menuTheme(),
       child: Container(
         width: 350,
         child: Column(
           children: [
-            SizedBox(height: 20),
             kcalRow(),
             SizedBox(height: 26),
             nutritionRow(),
@@ -182,11 +177,22 @@ class _HomeScreenDataState extends State<HomeScreenData> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         SizedBox(width: 0),
-        kcalLeft(),
+        _kcalPanel('kcal', 'left', subTitleStyle(),
+            (_nutrition.kcalLeft - _nutrition.kcal).toString()),
         SizedBox(width: 20),
-        kcal(),
+        _kcalPanel('kcal', 'eaten', titleStyle(), _nutrition.kcal.toString()),
         SizedBox(width: 20),
-        kcalTaken(),
+        _kcalPanel('kcal', 'burned', subTitleStyle(), '0'),
+      ],
+    );
+  }
+
+  Widget _kcalPanel(String name, String action, TextStyle style, String value) {
+    return Column(
+      children: [
+        Text(name, style: subTitleStyle()),
+        Text(action, style: subTitleStyle()),
+        Text(value, style: style)
       ],
     );
   }
@@ -195,99 +201,88 @@ class _HomeScreenDataState extends State<HomeScreenData> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        fats(),
-        protein(),
-        carbs(),
+        _nutritionText('fats', _nutrition.fats.toString(), textStyle()),
+        _nutritionText('protein', _nutrition.protein.toString(), textStyle()),
+        _nutritionText('carbs', _nutrition.carbs.toString(), textStyle()),
       ],
     );
   }
 
-  Widget kcalLeft() {
+  Widget _nutritionText(String name, String value, TextStyle style) {
     return Column(
       children: [
-        Text(
-          'kcal',
-          style: subTitleStyle(),
-        ),
-        Text(
-          'left',
-          style: subTitleStyle(),
-        ),
-        Text(
-          '0',
-          style: subTitleStyle(),
-        )
+        Text(name, style: style),
+        SizedBox(height: 5),
+        Text(value, style: style),
       ],
     );
   }
 
-  Widget kcal() {
-    return Column(
-      children: [
-        Text(
-          'kcal',
-          style: titleStyle(),
+  Widget showFood(List<DatabaseProduct> mealList, int index) {
+    final product = mealList[index];
+    final nutriments = product.nutriments;
+
+    return ListTile(
+      subtitle: subtitleListTile(product, nutriments),
+      title: Text(product.name ?? ""),
+      trailing: trailingListTile(product, nutriments),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DetailsHomeScreen(
+            product: product,
+            meal: _homeBloc.meal,
+            uid: _loginBloc.uid,
+            homeBloc: _homeBloc,
+          ),
         ),
+      ).then(
+        (value) {
+          setState(() {});
+        },
+      ),
+    );
+  }
+
+  Widget subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
+    return Row(
+      children: [
+        Text("carbs: " +
+            isNullCheckAmount(
+                nutriments.carbs, nutriments.carbsPerServing, product)),
+        Text(" protein: " +
+            isNullCheckAmount(
+                nutriments.protein, nutriments.proteinPerServing, product)),
         Text(
-          '0',
-          style: titleStyle(),
-        )
+          " fats: " +
+              isNullCheckAmount(
+                  nutriments.fats, nutriments.fatsPerServing, product),
+        ),
       ],
     );
   }
 
-  Widget kcalTaken() {
-    return Column(
-      children: [
-        Text(
-          'kcal',
-          style: subTitleStyle(),
-        ),
-        Text(
-          'taken',
-          style: subTitleStyle(),
-        ),
-        Text(
-          '0',
-          style: subTitleStyle(),
-        )
-      ],
+  Widget trailingListTile(DatabaseProduct product, Nutriments nutriments) {
+    return Text(
+      "kcal: " +
+          isNullCheckAmount(nutriments.caloriesPer100g,
+              nutriments.caloriesPerServing, product),
     );
   }
 
-  Widget fats() {
-    return Column(
-      children: [
-        Text('Fats', style: textStyle()),
-        SizedBox(
-          height: 5,
-        ),
-        Text('0', style: textStyle()),
-      ],
-    );
-  }
-
-  Widget protein() {
-    return Column(
-      children: [
-        Text('Protein', style: textStyle()),
-        SizedBox(
-          height: 5,
-        ),
-        Text('0', style: textStyle()),
-      ],
-    );
-  }
-
-  Widget carbs() {
-    return Column(
-      children: [
-        Text('Carbs', style: textStyle()),
-        SizedBox(
-          height: 5,
-        ),
-        Text('0', style: textStyle()),
-      ],
-    );
+  isNullCheckAmount(
+      double value, double valuePerServing, DatabaseProduct product) {
+    double val;
+    switch (product.value) {
+      case 'serving':
+        if (valuePerServing == null) return '?';
+        val = valuePerServing * product.amount;
+        break;
+      case '100g':
+        if (value == null) return '?';
+        val = value * product.amount;
+        break;
+    }
+    return val.toString();
   }
 }

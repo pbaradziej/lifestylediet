@@ -43,12 +43,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             return registerBuilder(state);
           } else if (state is ReturnLogin) {
             return LoginScreen();
-          } else if (state is RegisterSuccess) {
-            return LoginScreen();
           } else if (state is RegisterFailure) {
             return registerBuilder(state);
-          } else
+          } else {
             return loadingScreen();
+          }
         },
       ),
     );

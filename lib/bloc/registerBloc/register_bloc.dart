@@ -28,7 +28,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     yield RegisterLoading();
     bool result = await _repository.register(getUser(event));
     if (result) {
-      yield RegisterSuccess();
+      yield ReturnLogin();
     } else {
       yield RegisterFailure();
     }

@@ -33,28 +33,23 @@ menuTheme() {
 }
 
 textStyle() {
-  return TextStyle(fontSize: 20,
-  color: Colors.white);
+  return TextStyle(fontSize: 20, color: Colors.white);
 }
 
 subTitleStyle() {
-  return TextStyle(fontSize: 25,
-      color: Colors.white);
+  return TextStyle(fontSize: 25, color: Colors.white);
 }
 
 titleAddScreenStyle() {
-  return TextStyle(fontSize: 30,
-      color: Colors.black54);
+  return TextStyle(fontSize: 30, color: Colors.black54);
 }
 
 subTitleAddScreenStyle() {
-  return TextStyle(fontSize: 20,
-      color: Colors.black);
+  return TextStyle(fontSize: 20, color: Colors.black);
 }
 
 titleStyle() {
-  return TextStyle(fontSize: 40,
-      color: Colors.white);
+  return TextStyle(fontSize: 40, color: Colors.white);
 }
 
 Widget appBarLogin() {

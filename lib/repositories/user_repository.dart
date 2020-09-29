@@ -3,12 +3,13 @@ import 'package:lifestylediet/models/models.dart';
 
 class UserRepository {
   FirebaseAuth _auth = FirebaseAuth.instance;
+  User _user;
 
-  register(Users user) async {
+  register(Users users) async {
     try {
       await _auth.createUserWithEmailAndPassword(
-        email: user.email,
-        password: user.password,
+        email: users.email,
+        password: users.password,
       );
     } catch (LocalizedException) {
       return false;
@@ -16,12 +17,13 @@ class UserRepository {
     return true;
   }
 
-  login(Users user) async {
+  login(Users users) async {
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: user.email,
-        password: user.password,
+      UserCredential result = await _auth.signInWithEmailAndPassword(
+        email: users.email,
+        password: users.password,
       );
+      _user = result.user;
     } catch (LocalizedException) {
       return false;
     }
@@ -31,4 +33,6 @@ class UserRepository {
   logout() async {
     return await _auth.signOut();
   }
+
+  String get uid => _user.uid;
 }

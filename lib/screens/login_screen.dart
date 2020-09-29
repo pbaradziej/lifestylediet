@@ -238,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget signUp() {
     return GestureDetector(
       onTap: () {
-        _bloc.add(RegisterLoad());
+        _bloc.add(Register());
       },
       child: RichText(
         text: TextSpan(

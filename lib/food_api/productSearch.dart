@@ -9,7 +9,8 @@ class ProductSearch {
   static const String URI_SCHEME = "https://";
   static const String URI_HOST = "world.openfoodfacts.org";
   static const String PREFIX = "/cgi/search.pl?search_terms=";
-  static const String POSTFIX = "&search_simple=1&action=process&json=1";
+  static const String POSTFIX =
+      "&search_simple=1&action=process&json=1&page_size=5";
 
   Food _food = Food();
 
@@ -17,7 +18,6 @@ class ProductSearch {
     var productUrl = URI_SCHEME + URI_HOST + PREFIX + search + POSTFIX;
     final response = await http.get(productUrl);
     Barcode barcode = Barcode.fromJson(jsonDecode(response.body));
-    print(barcode.codeList[0].code);
     return barcode.codeList;
   }
 
