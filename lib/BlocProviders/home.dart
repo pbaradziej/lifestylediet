@@ -8,7 +8,7 @@ class HomeProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<HomeBloc>(
       create: (content) => HomeBloc(),
-      child: HomeScreenData(),
+      child: HomeScreen(),
     );
   }
 }

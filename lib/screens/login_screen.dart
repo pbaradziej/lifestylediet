@@ -6,6 +6,7 @@ import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
 import 'package:lifestylediet/themeAccent/theme.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'loading_screen.dart';
+import 'package:flutter/services.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   LoginBloc _bloc;
-  String _login;
+  String _email;
   String _password;
 
   @override
@@ -23,6 +24,14 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     _bloc = BlocProvider.of<LoginBloc>(context);
     _loadLogin();
+    _portraitModeOnly();
+  }
+
+  void _portraitModeOnly() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   _loadLogin() {
@@ -103,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             onChanged: (login) {
               setState(() {
-                _login = login;
+                _email = login;
               });
             },
             style: TextStyle(
@@ -268,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           _bloc.add(
             Login(
-              user: Users(_login, _password),
+              user: Users(_email.trim(), _password),
             ),
           );
         },

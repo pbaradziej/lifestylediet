@@ -10,12 +10,12 @@ import 'details_home_screen.dart';
 import 'loading_screen.dart';
 import 'login_screen.dart';
 
-class HomeScreenData extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  _HomeScreenDataState createState() => _HomeScreenDataState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenDataState extends State<HomeScreenData> {
+class _HomeScreenState extends State<HomeScreen> {
   HomeBloc _homeBloc;
   LoginBloc _loginBloc;
   List<DatabaseProduct> _breakfast;
@@ -59,13 +59,17 @@ class _HomeScreenDataState extends State<HomeScreenData> {
     _dinner = state.dinner;
     _supper = state.supper;
     _nutrition = state.nutrition;
-    return Container(
-      color: Colors.orangeAccent,
-      child: Column(
-        children: [
-          appBar(),
-          mealList(),
-        ],
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: appBar(),
+        body: TabBarView(
+          children: [
+            mealList(),
+            Icon(Icons.accessibility),
+            Icon(Icons.account_circle),
+          ],
+        ),
       ),
     );
   }
@@ -73,14 +77,14 @@ class _HomeScreenDataState extends State<HomeScreenData> {
   Widget appBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.orangeAccent,
-      leading: IconButton(
-        icon: Icon(
-          Icons.account_circle,
-          color: Colors.white,
-        ),
-        onPressed: null,
+      bottom: TabBar(
+        tabs: [
+          Tab(icon: Icon(Icons.home)),
+          Tab(icon: Icon(Icons.accessibility)),
+          Tab(icon: Icon(Icons.account_circle)),
+        ],
       ),
+      backgroundColor: Colors.orangeAccent,
       actions: [
         logout(),
       ],
@@ -106,20 +110,20 @@ class _HomeScreenDataState extends State<HomeScreenData> {
   }
 
   Widget mealList() {
-    return Expanded(
-      child: ListView(
-        children: <Widget>[
-          calories(),
-          meal('Breakfast', _breakfast),
-          meal('Dinner', _dinner),
-          meal('Supper', _supper),
-        ],
-      ),
+    return ListView(
+      padding: EdgeInsets.only(top: 0),
+      children: <Widget>[
+        calories(),
+        meal('Breakfast', _breakfast),
+        meal('Dinner', _dinner),
+        meal('Supper', _supper),
+      ],
     );
   }
 
   Widget meal(String meal, List<DatabaseProduct> mealList) {
     return Card(
+      elevation: 1.5,
       child: Column(
         children: [
           mealNameTile(meal),
@@ -131,6 +135,7 @@ class _HomeScreenDataState extends State<HomeScreenData> {
 
   Widget mealNameTile(String meal) {
     return Card(
+      elevation: 1.5,
       child: ListTile(
         title: Text(meal),
         trailing: IconButton(
@@ -145,6 +150,7 @@ class _HomeScreenDataState extends State<HomeScreenData> {
 
   Widget listBuilder(List<DatabaseProduct> mealList) {
     return ListView.builder(
+      padding: EdgeInsets.only(top: 0),
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: mealList.length,
@@ -156,18 +162,16 @@ class _HomeScreenDataState extends State<HomeScreenData> {
 
   Widget calories() {
     return Container(
+      width: 350,
       height: 220,
       alignment: Alignment.topCenter,
       decoration: menuTheme(),
-      child: Container(
-        width: 350,
-        child: Column(
-          children: [
-            kcalRow(),
-            SizedBox(height: 26),
-            nutritionRow(),
-          ],
-        ),
+      child: Column(
+        children: [
+          kcalRow(),
+          SizedBox(height: 26),
+          nutritionRow(),
+        ],
       ),
     );
   }
@@ -201,9 +205,9 @@ class _HomeScreenDataState extends State<HomeScreenData> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _nutritionText('fats', _nutrition.fats.toString(), textStyle()),
         _nutritionText('protein', _nutrition.protein.toString(), textStyle()),
         _nutritionText('carbs', _nutrition.carbs.toString(), textStyle()),
+        _nutritionText('fats', _nutrition.fats.toString(), textStyle()),
       ],
     );
   }
@@ -247,12 +251,12 @@ class _HomeScreenDataState extends State<HomeScreenData> {
   Widget subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
     return Row(
       children: [
-        Text("carbs: " +
-            isNullCheckAmount(
-                nutriments.carbs, nutriments.carbsPerServing, product)),
-        Text(" protein: " +
+        Text("protein: " +
             isNullCheckAmount(
                 nutriments.protein, nutriments.proteinPerServing, product)),
+        Text(" carbs: " +
+            isNullCheckAmount(
+                nutriments.carbs, nutriments.carbsPerServing, product)),
         Text(
           " fats: " +
               isNullCheckAmount(
@@ -283,6 +287,6 @@ class _HomeScreenDataState extends State<HomeScreenData> {
         val = value * product.amount;
         break;
     }
-    return val.toString();
+    return val.roundToDouble().toString();
   }
 }

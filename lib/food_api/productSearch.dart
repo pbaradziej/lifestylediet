@@ -23,6 +23,7 @@ class ProductSearch {
 
   Future searchProducts(String search) async {
     List<Product> _products = new List();
+    search = search.replaceAll(' ', '-');
     List<Code> barcodeList = await searchResultBarcode(search);
     for (Code barcode in barcodeList) {
       Product product = await _food.getProduct(barcode.code);

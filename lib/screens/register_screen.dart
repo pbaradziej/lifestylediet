@@ -14,7 +14,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _rememberMe = false;
   bool _acceptTerms = false;
-  String _login;
+  String _email;
   String _password;
   RegisterBloc _bloc;
 
@@ -99,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: TextField(
             onChanged: (login) {
               setState(() {
-                _login = login;
+                _email = login;
               });
             },
             style: TextStyle(
@@ -265,7 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   registerUser() {
-    Users _user = Users(_login, _password);
+    Users _user = Users(_email.trim(), _password);
     Register _register = Register(user: _user);
     _bloc.add(_register);
   }

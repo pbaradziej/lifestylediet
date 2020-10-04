@@ -4,7 +4,7 @@ import 'dart:async';
 class Food {
   Future<Product> getProduct(String code) async {
     ProductQueryConfiguration configuration = ProductQueryConfiguration(code,
-        language: OpenFoodFactsLanguage.POLISH,
+        language: OpenFoodFactsLanguage.WORLD,
         fields: [
           ProductField.NAME,
           ProductField.NUTRIMENTS,

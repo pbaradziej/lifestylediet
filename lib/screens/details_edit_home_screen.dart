@@ -19,14 +19,15 @@ class DetailsEditHomeScreen extends StatefulWidget {
 class _DetailsEditHomeScreenState extends State<DetailsEditHomeScreen> {
   var _controller;
   final _focusNode = FocusNode();
-  String _dropdownValue;
-  double amount = 1;
+  String _dropdownValue = 'serving';
+  double _amount = 1;
 
   initState() {
     super.initState();
     _dropdownValue = widget.product.value;
+    _amount = widget.product.amount;
     _controller =
-        TextEditingController(text: widget.product.amount.round().toString());
+        TextEditingController(text: widget.product.amount.toString());
     _controller.addListener(() {
       final newText = _controller.text.toLowerCase();
       _controller.value = _controller.value.copyWith(
@@ -52,6 +53,7 @@ class _DetailsEditHomeScreenState extends State<DetailsEditHomeScreen> {
       appBar: appBar(context),
       body: Container(
         child: ListView(
+          physics: NeverScrollableScrollPhysics(),
           children: [
             titleBox(),
             caloriesCard(_nutriments),
@@ -130,7 +132,8 @@ class _DetailsEditHomeScreenState extends State<DetailsEditHomeScreen> {
         controller: _controller,
         focusNode: _focusNode,
         onChanged: (value) => setState(() {
-          amount = double.parse(value);
+          value = value.replaceAll(',', '.');
+          _amount = double.parse(value);
         }),
         decoration: InputDecoration(
           border: OutlineInputBorder(
@@ -138,8 +141,9 @@ class _DetailsEditHomeScreenState extends State<DetailsEditHomeScreen> {
           ),
         ),
         textAlign: TextAlign.center,
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         inputFormatters: [
-          WhitelistingTextInputFormatter.digitsOnly,
+          FilteringTextInputFormatter.allow(new RegExp('[0-9\,\.]')),
         ],
       ),
     );
@@ -194,9 +198,9 @@ class _DetailsEditHomeScreenState extends State<DetailsEditHomeScreen> {
             SizedBox(height: 10),
             kcalInfo(_nutriments),
             SizedBox(height: 10),
-            carbsInfo(_nutriments),
-            SizedBox(height: 10),
             proteinInfo(_nutriments),
+            SizedBox(height: 10),
+            carbsInfo(_nutriments),
             SizedBox(height: 10),
             fatsInfo(_nutriments),
             SizedBox(height: 10),
@@ -254,10 +258,10 @@ class _DetailsEditHomeScreenState extends State<DetailsEditHomeScreen> {
       return 'null';
     }
     if (_dropdownValue == 'serving') {
-      perServing *= amount;
+      perServing *= _amount;
       return perServing.roundToDouble().toString();
     }
-    perGrams *= amount;
+    perGrams *= _amount;
     return perGrams.roundToDouble().toString();
   }
 
@@ -372,9 +376,9 @@ class _DetailsEditHomeScreenState extends State<DetailsEditHomeScreen> {
           onPressed: () {
             widget.homeBloc.add(
               UpdateProduct(
-                  id: widget.product.id, amount: amount, value: _dropdownValue),
+                  id: widget.product.id, amount: _amount, value: _dropdownValue),
             );
-            widget.product.amount = amount;
+            widget.product.amount = _amount;
             widget.product.value = _dropdownValue;
             setState(() {});
             Navigator.pop(context);

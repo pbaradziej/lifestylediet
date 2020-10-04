@@ -15,6 +15,8 @@ class SearchFood extends AddEvent {
   List<Object> get props => [search];
 }
 
+class InitialScreen extends AddEvent {}
+
 class AddFood extends AddEvent {}
 
 class AddReturn extends AddEvent {}

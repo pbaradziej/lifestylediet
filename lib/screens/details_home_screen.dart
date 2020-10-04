@@ -22,10 +22,12 @@ class _DetailsHomeScreenState extends State<DetailsHomeScreen> {
   final _controller = TextEditingController(text: '1');
   final _focusNode = FocusNode();
   String _dropdownValue = 'serving';
-  double amount = 1;
+  double _amount = 1;
 
   initState() {
     super.initState();
+    _dropdownValue = widget.product.value;
+    _amount = widget.product.amount;
     _controller.addListener(() {
       final newText = _controller.text.toLowerCase();
       _controller.value = _controller.value.copyWith(
@@ -51,6 +53,7 @@ class _DetailsHomeScreenState extends State<DetailsHomeScreen> {
       appBar: appBar(context),
       body: Container(
         child: ListView(
+          physics: NeverScrollableScrollPhysics(),
           children: [
             titleBox(),
             caloriesCard(_nutriments),
@@ -132,7 +135,7 @@ class _DetailsHomeScreenState extends State<DetailsHomeScreen> {
         children: [
           Text('Amount'),
           SizedBox(height: 4),
-          Text(widget.product.amount.round().toString()),
+          Text(widget.product.amount.toString()),
         ],
       ),
     );
@@ -167,9 +170,9 @@ class _DetailsHomeScreenState extends State<DetailsHomeScreen> {
             SizedBox(height: 10),
             kcalInfo(_nutriments),
             SizedBox(height: 10),
-            carbsInfo(_nutriments),
-            SizedBox(height: 10),
             proteinInfo(_nutriments),
+            SizedBox(height: 10),
+            carbsInfo(_nutriments),
             SizedBox(height: 10),
             fatsInfo(_nutriments),
             SizedBox(height: 10),
@@ -227,10 +230,10 @@ class _DetailsHomeScreenState extends State<DetailsHomeScreen> {
       return 'null';
     }
     if (_dropdownValue == 'serving') {
-      perServing *= amount;
+      perServing *= _amount;
       return perServing.roundToDouble().toString();
     }
-    perGrams *= amount;
+    perGrams *= _amount;
     return perGrams.roundToDouble().toString();
   }
 
@@ -352,7 +355,7 @@ class _DetailsHomeScreenState extends State<DetailsHomeScreen> {
                 Navigator.pop(context);
               },
               child: Text(
-                "Usun",
+                "Usuń",
                 style: TextStyle(color: Colors.white),
               ),
             ),

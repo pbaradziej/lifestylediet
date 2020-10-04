@@ -30,8 +30,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginState(Login event) async* {
     yield LoginLoading();
     bool result = await _repository.login(getUser(event));
-    _uid = _repository.uid;
     if (result) {
+      _uid = _repository.uid;
       yield LoginSuccess(event.user);
     } else {
       yield LoginFailure();

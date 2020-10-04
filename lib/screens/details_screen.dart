@@ -63,24 +63,25 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Widget caloriesCard(Nutriments _nutriments) {
     return Card(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(width: 30),
-          Image.network(widget.product.selectedImages[1].url),
+          Expanded(
+              flex: 40,
+              child: Image.network(widget.product.selectedImages[1].url)),
+          SizedBox(width: 10),
+          Expanded(flex: 60, child: kcalButtons(_nutriments)),
           SizedBox(width: 30),
-          kcalButtons(_nutriments),
         ],
       ),
     );
   }
 
   Widget nutritionCard(Nutriments _nutriments) {
-    return Expanded(
-      child: Card(
-        child: Container(
-          alignment: Alignment.centerLeft,
-          child: nutriments(_nutriments),
-        ),
+    return Card(
+      child: Container(
+        alignment: Alignment.centerLeft,
+        child: nutriments(_nutriments),
       ),
     );
   }
@@ -125,6 +126,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         controller: _controller,
         focusNode: _focusNode,
         onChanged: (value) => setState(() {
+          value = value.replaceAll(',', '.');
           amount = double.parse(value);
         }),
         decoration: InputDecoration(
@@ -133,8 +135,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ),
         ),
         textAlign: TextAlign.center,
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         inputFormatters: [
-          WhitelistingTextInputFormatter.digitsOnly,
+          FilteringTextInputFormatter.allow(new RegExp('[0-9\,\.]')),
         ],
       ),
     );
@@ -338,7 +341,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 SizedBox(width: 10),
                 Flexible(
                   child: Text(
-                    widget.product.productName,
+                    widget.product.productName ?? 'no info',
                     style: titleAddScreenStyle(),
                   ),
                 ),
@@ -365,6 +368,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       actions: [
         FlatButton(
           onPressed: () {
+            Navigator.pop(context);
             widget.addBloc.add(
               AddProduct(
                   uid: widget.uid,
@@ -374,7 +378,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   value: _dropdownValue),
             );
             widget.addBloc.add(AddReturn());
-            Navigator.pop(context);
           },
           child: Text(
             "Zapisz",

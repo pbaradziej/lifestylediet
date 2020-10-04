@@ -13,7 +13,9 @@ class AddBloc extends Bloc<AddEvent, AddState> {
 
   @override
   Stream<AddState> mapEventToState(AddEvent event) async* {
-    if (event is SearchFood) {
+    if (event is InitialScreen) {
+      yield AddLoadedState();
+    } else if (event is SearchFood) {
       yield* mapSearchFood(event);
     } else if (event is AddReturn) {
       yield AddReturnState();

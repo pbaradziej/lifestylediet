@@ -50,8 +50,6 @@ class _FireBaseState extends State<FireBase> {
           child: loadingScreen());
     }
 
-    return Scaffold(
-      body: LoginProvider(),
-    );
+    return LoginProvider();
   }
 }

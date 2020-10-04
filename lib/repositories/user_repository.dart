@@ -6,28 +6,34 @@ class UserRepository {
   User _user;
 
   register(Users users) async {
+    UserCredential result;
     try {
-      await _auth.createUserWithEmailAndPassword(
+      result = await _auth.createUserWithEmailAndPassword(
         email: users.email,
         password: users.password,
       );
-    } catch (LocalizedException) {
+    } catch (PlatformException) {}
+    if (result != null) {
+      return true;
+    } else {
       return false;
     }
-    return true;
   }
 
   login(Users users) async {
+    UserCredential result;
     try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
+      result = await _auth.signInWithEmailAndPassword(
         email: users.email,
         password: users.password,
       );
       _user = result.user;
-    } catch (LocalizedException) {
+    } catch (PlatformException) {}
+    if (result != null) {
+      return true;
+    } else {
       return false;
     }
-    return true;
   }
 
   logout() async {
