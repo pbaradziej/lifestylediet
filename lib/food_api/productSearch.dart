@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:lifestylediet/models/barcode.dart';
-import 'package:lifestylediet/models/food.dart';
+import 'file:///C:/Users/Pawel/AndroidStudioProjects/lifestylediet/lib/food_api/food.dart';
 import 'package:openfoodfacts/model/Product.dart';
 
 class ProductSearch {

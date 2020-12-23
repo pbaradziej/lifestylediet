@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/addBloc/bloc.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
-import 'package:lifestylediet/models/food.dart';
+import 'file:///C:/Users/Pawel/AndroidStudioProjects/lifestylediet/lib/food_api/food.dart';
 import 'package:lifestylediet/screens/details_screen.dart';
 import 'package:lifestylediet/screens/home_screen.dart';
 import 'package:lifestylediet/screens/loading_screen.dart';
@@ -27,10 +27,10 @@ class _AddScreenState extends State<AddScreen> {
 
   @override
   void initState() {
+    super.initState();
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
     _addBloc = BlocProvider.of<AddBloc>(context);
-    super.initState();
   }
 
   _getFoodList(String search) {
@@ -59,15 +59,11 @@ class _AddScreenState extends State<AddScreen> {
                   ],
                 );
               } else if (state is AddSearchState) {
-                return Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: state.products.length,
-                    itemBuilder: (context, index) {
-                      return showFood(state, index);
-                    },
-                  ),
-                );
+                if (state.products.isNotEmpty) {
+                  return _searchListBuilder(state);
+                } else {
+                  return _searchSnackBar();
+                }
               } else {
                 return Container();
               }
@@ -94,6 +90,29 @@ class _AddScreenState extends State<AddScreen> {
         onPressed: () => _addBloc.add(AddReturn()),
       ),
     );
+  }
+
+  Widget _searchListBuilder(AddSearchState state) {
+    return Expanded(
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: state.products.length,
+        itemBuilder: (context, index) {
+          return showFood(state, index);
+        },
+      ),
+    );
+  }
+
+  Widget _searchSnackBar() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Scaffold.of(context)
+        ..showSnackBar(SnackBar(
+          content: Text('Product not found!'),
+        ));
+    });
+    _addBloc.add(InitialScreen());
+    return Container();
   }
 
   Widget searchTF() {
@@ -178,6 +197,16 @@ class _AddScreenState extends State<AddScreen> {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
+  // void _showToast(BuildContext context) {
+  //   final scaffold = Scaffold.of(context);
+  //   scaffold.showSnackBar(
+  //     SnackBar(
+  //       content: const Text('Updating..'),
+  //     ),
+  //   );
+
+  //   this._showToast(context);
+  // }
   Widget _adderCards() {
     return Column(
       children: [
@@ -185,7 +214,7 @@ class _AddScreenState extends State<AddScreen> {
         Row(
           children: [
             _barcodeScanner(),
-            databaseProducts(),
+            _databaseProducts(),
           ],
         ),
       ],
@@ -232,7 +261,7 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Widget databaseProducts() {
+  Widget _databaseProducts() {
     return Expanded(
       child: GestureDetector(
         onTap: () {},
