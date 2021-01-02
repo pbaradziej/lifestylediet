@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:openfoodfacts/openfoodfacts.dart';
+import 'package:lifestylediet/models/databaseProduct.dart';
 
 abstract class AddEvent extends Equatable {
   @override
@@ -24,7 +24,7 @@ class AddReturn extends AddEvent {}
 class AddProduct extends AddEvent {
   final String uid;
   final String meal;
-  final Product product;
+  final DatabaseProduct product;
   final double amount;
   final String value;
 

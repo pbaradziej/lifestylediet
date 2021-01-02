@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lifestylediet/BlocProviders/add.dart';
+import 'package:lifestylediet/BlocProviders/bloc_providers.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/themeAccent/theme.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
-import 'details_home_screen.dart';
+import 'details_screen.dart';
 import 'loading_screen.dart';
 import 'login_screen.dart';
 
@@ -37,8 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+    return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
         if (state is HomeLogoutState) {
           return LoginScreen();
         } else if (state is HomeLoadingState) {
@@ -50,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         } else {
           return Container();
         }
-      }),
+      }
     );
   }
 
@@ -110,14 +109,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget mealList() {
-    return ListView(
-      padding: EdgeInsets.only(top: 0),
-      children: <Widget>[
-        calories(),
-        meal('Breakfast', _breakfast),
-        meal('Dinner', _dinner),
-        meal('Supper', _supper),
-      ],
+    return NotificationListener<OverscrollIndicatorNotification>(
+      onNotification: (OverscrollIndicatorNotification overscroll) {
+        overscroll.disallowGlow();
+      },
+      child: ListView(
+        padding: EdgeInsets.only(top: 0),
+        children: <Widget>[
+          calories(),
+          meal('Breakfast', _breakfast),
+          meal('Dinner', _dinner),
+          meal('Supper', _supper),
+        ],
+      ),
     );
   }
 
@@ -141,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
         trailing: IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              _homeBloc.add(AddProduct(meal));
+              _homeBloc.add(AddProductScreen(meal));
               _homeBloc.dispose();
             }),
       ),
@@ -181,12 +185,12 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         SizedBox(width: 0),
-        _kcalPanel('kcal', 'left', subTitleStyle(),
+        _kcalPanel('kcal', 'left', subTitleStyle,
             (_nutrition.kcalLeft - _nutrition.kcal).toString()),
         SizedBox(width: 20),
-        _kcalPanel('kcal', 'eaten', titleStyle(), _nutrition.kcal.toString()),
+        _kcalPanel('kcal', 'eaten', titleStyle, _nutrition.kcal.toString()),
         SizedBox(width: 20),
-        _kcalPanel('kcal', 'burned', subTitleStyle(), '0'),
+        _kcalPanel('kcal', 'burned', subTitleStyle, '0'),
       ],
     );
   }
@@ -194,8 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _kcalPanel(String name, String action, TextStyle style, String value) {
     return Column(
       children: [
-        Text(name, style: subTitleStyle()),
-        Text(action, style: subTitleStyle()),
+        Text(name, style: subTitleStyle),
+        Text(action, style: subTitleStyle),
         Text(value, style: style)
       ],
     );
@@ -205,9 +209,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _nutritionText('protein', _nutrition.protein.toString(), textStyle()),
-        _nutritionText('carbs', _nutrition.carbs.toString(), textStyle()),
-        _nutritionText('fats', _nutrition.fats.toString(), textStyle()),
+        _nutritionText('protein', _nutrition.protein.toString(), textStyle),
+        _nutritionText('carbs', _nutrition.carbs.toString(), textStyle),
+        _nutritionText('fats', _nutrition.fats.toString(), textStyle),
       ],
     );
   }
@@ -233,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DetailsHomeScreen(
+          builder: (context) => DetailsScreen(
             product: product,
             meal: _homeBloc.meal,
             uid: _loginBloc.uid,
@@ -249,28 +253,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
-    return Row(
-      children: [
-        Text("protein: " +
-            isNullCheckAmount(
-                nutriments.protein, nutriments.proteinPerServing, product)),
-        Text(" carbs: " +
-            isNullCheckAmount(
-                nutriments.carbs, nutriments.carbsPerServing, product)),
-        Text(
-          " fats: " +
-              isNullCheckAmount(
-                  nutriments.fats, nutriments.fatsPerServing, product),
-        ),
-      ],
+    return RichText(
+      text: TextSpan(
+        style: DefaultTextStyle.of(context).style,
+        children: <TextSpan>[
+          TextSpan(
+              text:
+                  "protein: ${isNullCheckAmount(nutriments.protein, nutriments.proteinPerServing, product)}"),
+          TextSpan(
+              text:
+                  " carbs: ${isNullCheckAmount(nutriments.carbs, nutriments.carbsPerServing, product)}"),
+          TextSpan(
+              text:
+                  " fats: ${isNullCheckAmount(nutriments.fats, nutriments.fatsPerServing, product)}"),
+        ],
+      ),
     );
   }
 
   Widget trailingListTile(DatabaseProduct product, Nutriments nutriments) {
     return Text(
-      "kcal: " +
-          isNullCheckAmount(nutriments.caloriesPer100g,
-              nutriments.caloriesPerServing, product),
+      "kcal: ${isNullCheckAmount(nutriments.caloriesPer100g, nutriments.caloriesPerServing, product)}",
     );
   }
 
@@ -279,11 +282,11 @@ class _HomeScreenState extends State<HomeScreen> {
     double val;
     switch (product.value) {
       case 'serving':
-        if (valuePerServing == null) return '?';
+        if (valuePerServing == -1 || valuePerServing == null) return '?';
         val = valuePerServing * product.amount;
         break;
       case '100g':
-        if (value == null) return '?';
+        if (value == -1 || valuePerServing == null) return '?';
         val = value * product.amount;
         break;
     }

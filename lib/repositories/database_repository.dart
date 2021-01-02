@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lifestylediet/models/databaseProduct.dart';
-import 'package:openfoodfacts/model/Product.dart';
 import 'package:uuid/uuid.dart';
 
 class DatabaseRepository {
@@ -9,7 +8,7 @@ class DatabaseRepository {
   DatabaseRepository({this.uid});
 
   Future addUserData(
-      {String meal, Product product, double amount, String value}) async {
+      {String meal, DatabaseProduct product, double amount, String value}) async {
     String uuid = Uuid().v4().toString();
     final CollectionReference mealData =
         FirebaseFirestore.instance.collection(uid);
@@ -17,27 +16,27 @@ class DatabaseRepository {
     return await mealData.doc(uuid).set({
       'id': uuid,
       'meal': meal,
-      'name': product.productName,
-      'image': product.selectedImages[1].url,
+      'name': product.name,
+      'image': product.image,
       'amount': amount,
       'value': value,
       'nutriments': {
-        'caloriesPerServing': product.nutriments.energyServing,
-        'caloriesPer100g': product.nutriments.energyKcal100g,
-        'carbs': product.nutriments.carbohydrates,
-        'carbsPerServing': product.nutriments.carbohydratesServing,
+        'caloriesPerServing': product.nutriments.caloriesPerServing,
+        'caloriesPer100g': product.nutriments.caloriesPer100g,
+        'carbs': product.nutriments.carbs,
+        'carbsPerServing': product.nutriments.carbsPerServing,
         'fiber': product.nutriments.fiber,
-        'fiberPerServing': product.nutriments.fiberServing,
+        'fiberPerServing': product.nutriments.fiberPerServing,
         'sugars': product.nutriments.sugars,
-        'sugarsPerServing': product.nutriments.sugarsServing,
-        'protein': product.nutriments.proteins,
-        'proteinPerServing': product.nutriments.proteinsServing,
-        'fats': product.nutriments.fat,
-        'fatsPerServing': product.nutriments.fatServing,
-        'saturatedFats': product.nutriments.saturatedFat,
-        'saturatedFatsPerServing': product.nutriments.saturatedFatServing,
+        'sugarsPerServing': product.nutriments.sugarsPerServing,
+        'protein': product.nutriments.protein,
+        'proteinPerServing': product.nutriments.proteinPerServing,
+        'fats': product.nutriments.fats,
+        'fatsPerServing': product.nutriments.fatsPerServing,
+        'saturatedFats': product.nutriments.saturatedFats,
+        'saturatedFatsPerServing': product.nutriments.saturatedFatsPerServing,
         'salt': product.nutriments.salt,
-        'saltPerServing': product.nutriments.saltServing
+        'saltPerServing': product.nutriments.saltPerServing
       }
     });
   }

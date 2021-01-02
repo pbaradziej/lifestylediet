@@ -1,30 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lifestylediet/bloc/addBloc/bloc.dart';
-import 'package:lifestylediet/themeAccent/theme.dart';
-import 'package:openfoodfacts/model/Nutriments.dart';
-import 'package:openfoodfacts/openfoodfacts.dart';
+import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
+import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class DetailsScreen extends StatefulWidget {
-  final Product product;
+  final DatabaseProduct product;
   final String meal;
   final String uid;
+  final HomeBloc homeBloc;
   final AddBloc addBloc;
+  bool isEditable;
+  bool isNewProduct;
 
-  DetailsScreen({this.product, this.meal, this.uid, this.addBloc});
+  DetailsScreen(
+      {this.product,
+      this.meal,
+      this.uid,
+      this.homeBloc,
+      this.addBloc,
+      this.isEditable,
+      this.isNewProduct});
 
   @override
   _DetailsScreenState createState() => _DetailsScreenState();
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
-  final _controller = TextEditingController(text: '1');
+  TextEditingController _controller;
+  bool isEditable;
+  bool isNewProduct;
   final _focusNode = FocusNode();
-  String _dropdownValue = 'serving';
-  double amount = 1;
+  String _dropdownValue;
+  double _amount;
 
   initState() {
     super.initState();
+    isEditable = widget.isEditable ?? false;
+    isNewProduct = widget.isNewProduct ?? false;
+    _dropdownValue = widget.product.value ?? 'serving';
+    _amount = widget.product.amount ?? 1;
+    _controller =
+        TextEditingController(text: widget.product.amount.toString() ?? "1");
     _controller.addListener(() {
       final newText = _controller.text.toLowerCase();
       _controller.value = _controller.value.copyWith(
@@ -48,8 +66,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
     return Scaffold(
       appBar: appBar(context),
-      body: Container(
+      body: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (OverscrollIndicatorNotification overscroll) {
+          overscroll.disallowGlow();
+        },
         child: ListView(
+          physics: ClampingScrollPhysics(),
           children: [
             titleBox(),
             caloriesCard(_nutriments),
@@ -63,15 +85,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Widget caloriesCard(Nutriments _nutriments) {
     return Card(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 30),
           Expanded(
-              flex: 40,
-              child: Image.network(widget.product.selectedImages[1].url)),
-          SizedBox(width: 10),
-          Expanded(flex: 60, child: kcalButtons(_nutriments)),
-          SizedBox(width: 30),
+            flex: 1,
+            child: Container(
+              alignment: Alignment.topCenter,
+              child: Image.network(widget.product.image),
+            ),
+          ),
+          Expanded(flex: 1, child: kcalButtons(_nutriments)),
         ],
       ),
     );
@@ -79,10 +102,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   Widget nutritionCard(Nutriments _nutriments) {
     return Card(
-      child: Container(
-        alignment: Alignment.centerLeft,
-        child: nutriments(_nutriments),
-      ),
+      child: nutriments(_nutriments),
     );
   }
 
@@ -91,59 +111,103 @@ class _DetailsScreenState extends State<DetailsScreen> {
       alignment: Alignment.topCenter,
       child: Column(
         children: [
+          SizedBox(height: 20),
           Row(
             children: [
-              servingTextField(),
-              SizedBox(width: 20),
-              dropDownButton(),
+              _servingTextField(),
+              SizedBox(width: 15),
+              _valueDropdownButton(),
             ],
           ),
-          calories('Calories per serving', _nutriments.energyServing),
-          calories('Calories per 100g', _nutriments.energyKcal100g),
+          calories('Calories per serving', _nutriments.caloriesPerServing),
+          calories('Calories per 100g', _nutriments.caloriesPer100g),
         ],
       ),
     );
   }
 
   Widget calories(String text, double energy) {
-    return Column(
-      children: [
-        SizedBox(height: 30),
-        Text(text),
-        Text(
-          energy.toString() != 'null' ? energy.toString() : '0',
-          style: subTitleAddScreenStyle(),
-        ),
-      ],
-    );
-  }
-
-  Widget servingTextField() {
-    return Container(
-      width: 50,
-      height: 60,
-      child: TextFormField(
-        controller: _controller,
-        focusNode: _focusNode,
-        onChanged: (value) => setState(() {
-          value = value.replaceAll(',', '.');
-          amount = double.parse(value);
-        }),
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black45),
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        children: <TextSpan>[
+          TextSpan(
+            text: '$text\n',
+            style: defaultTextStyle,
           ),
-        ),
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(new RegExp('[0-9\,\.]')),
+          TextSpan(
+            text: energy.toString() != 'null' ? energy.toString() : '0',
+            style: subTitleAddScreenStyle,
+          ),
         ],
       ),
     );
   }
 
-  Widget dropDownButton() {
+  Widget _servingTextField() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            'Amount',
+            textAlign: TextAlign.center,
+            style: defaultTextStyle,
+          ),
+        ),
+        Container(
+          width: 50,
+          padding: const EdgeInsets.only(top: 2),
+          height: 60,
+          child: TextFormField(
+            enabled: isEditable,
+            controller: _controller,
+            style: defaultTextStyle,
+            focusNode: _focusNode,
+            onChanged: (value) => setState(() {
+              value = value.replaceAll(',', '.');
+              _amount = double.parse(value);
+            }),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: isEditable
+                    ? BorderSide(color: Colors.black45)
+                    : BorderSide.none,
+              ),
+            ),
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(new RegExp('[0-9\,\.]')),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _valueDropdownButton() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            'Value',
+            style: defaultTextStyle,
+          ),
+        ),
+        isEditable
+            ? _dropdownButton()
+            : Container(
+                alignment: Alignment.center,
+                height: 60,
+                width: 80,
+                child: Text(_dropdownValue, style: defaultTextStyle)),
+      ],
+    );
+  }
+
+  Widget _dropdownButton() {
     return Container(
       height: 60,
       decoration: ShapeDecoration(
@@ -157,6 +221,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         ),
       ),
       child: DropdownButton(
+        style: defaultTextStyle,
         underline: DropdownButtonHideUnderline(child: SizedBox(height: 0)),
         value: _dropdownValue,
         onChanged: (newValue) {
@@ -177,29 +242,33 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   Widget nutriments(Nutriments _nutriments) {
-    return Row(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(width: 20),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 10),
-            Text(
-              "Nutrition info",
-              style: titleAddScreenStyle(),
-            ),
-            SizedBox(height: 10),
-            kcalInfo(_nutriments),
-            SizedBox(height: 10),
-            carbsInfo(_nutriments),
-            SizedBox(height: 10),
-            proteinInfo(_nutriments),
-            SizedBox(height: 10),
-            fatsInfo(_nutriments),
-            SizedBox(height: 10),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 10, bottom: 10),
+          child: Text(
+            "Nutrition info",
+            style: titleAddScreenStyle,
+          ),
         ),
+        _nutritionInfo(_nutriments),
+      ],
+    );
+  }
+
+  Widget _nutritionInfo(Nutriments _nutriments) {
+    return Column(
+      children: [
+        kcalInfo(_nutriments),
+        SizedBox(height: 10),
+        proteinInfo(_nutriments),
+        SizedBox(height: 10),
+        carbsInfo(_nutriments),
+        SizedBox(height: 10),
+        fatsInfo(_nutriments),
+        SizedBox(height: 10),
       ],
     );
   }
@@ -208,10 +277,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return hideNull(
       "kcal ",
       nutrimentsAmount(
-        _nutriments.energyKcal100g,
-        _nutriments.energyServing,
+        _nutriments.caloriesPer100g,
+        _nutriments.caloriesPerServing,
       ),
-      subTitleAddScreenStyle(),
     );
   }
 
@@ -222,40 +290,42 @@ class _DetailsScreenState extends State<DetailsScreen> {
         hideNull(
           "carbs ",
           nutrimentsAmount(
-            _nutriments.carbohydrates,
-            _nutriments.carbohydratesServing,
+            _nutriments.carbs,
+            _nutriments.carbsPerServing,
           ),
-          subTitleAddScreenStyle(),
         ),
         hideNull(
           "fiber ",
           nutrimentsAmount(
             _nutriments.fiber,
-            _nutriments.fiberServing,
+            _nutriments.fiberPerServing,
           ),
-          null,
+          style: TextStyle(),
         ),
         hideNull(
           "sugars ",
           nutrimentsAmount(
             _nutriments.sugars,
-            _nutriments.sugarsServing,
+            _nutriments.sugarsPerServing,
           ),
-          null,
+          style: TextStyle(),
         ),
       ],
     );
   }
 
   String nutrimentsAmount(double perGrams, double perServing) {
-    if (perGrams == null || perServing == null) {
+    if (perGrams == -1 ||
+        perServing == -1 ||
+        perGrams == null ||
+        perServing == null) {
       return 'null';
     }
     if (_dropdownValue == 'serving') {
-      perServing *= amount;
+      perServing *= _amount;
       return perServing.roundToDouble().toString();
     }
-    perGrams *= amount;
+    perGrams *= _amount;
     return perGrams.roundToDouble().toString();
   }
 
@@ -266,10 +336,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
         hideNull(
           "protein ",
           nutrimentsAmount(
-            _nutriments.proteins,
-            _nutriments.proteinsServing,
+            _nutriments.protein,
+            _nutriments.proteinPerServing,
           ),
-          subTitleAddScreenStyle(),
         ),
       ],
     );
@@ -282,47 +351,48 @@ class _DetailsScreenState extends State<DetailsScreen> {
         hideNull(
           "fats ",
           nutrimentsAmount(
-            _nutriments.fat,
-            _nutriments.fatServing,
+            _nutriments.fats,
+            _nutriments.fatsPerServing,
           ),
-          subTitleAddScreenStyle(),
         ),
         hideNull(
           "saturated fats ",
           nutrimentsAmount(
-            _nutriments.saturatedFat,
-            _nutriments.saturatedFatServing,
+            _nutriments.saturatedFats,
+            _nutriments.saturatedFatsPerServing,
           ),
-          null,
+          style: TextStyle(),
         ),
         SizedBox(height: 10),
         hideNull(
           "salt ",
           nutrimentsAmount(
             _nutriments.salt,
-            _nutriments.saltServing,
+            _nutriments.saltPerServing,
           ),
-          subTitleAddScreenStyle(),
         ),
       ],
     );
   }
 
-  hideNull(String name, String value, TextStyle style) {
+  hideNull(String name, String value, {TextStyle style}) {
     if (value == 'null') return SizedBox(height: 0);
-    return SizedBox(
-      width: 300,
-      child: Container(
-        width: double.infinity,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(name, style: style),
-            SizedBox(width: 10),
-            Text(value, style: style ?? TextStyle()),
-          ],
+    TextStyle defaultStyle = style ?? subTitleAddScreenStyle;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Padding(
+          child: Text(name, style: defaultStyle),
+          padding: const EdgeInsets.only(left: 20),
         ),
-      ),
+        new Spacer(
+          flex: 1,
+        ),
+        Padding(
+          child: Text(value, style: defaultStyle),
+          padding: const EdgeInsets.only(right: 20),
+        ),
+      ],
     );
   }
 
@@ -341,8 +411,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 SizedBox(width: 10),
                 Flexible(
                   child: Text(
-                    widget.product.productName ?? 'no info',
-                    style: titleAddScreenStyle(),
+                    widget.product.name,
+                    style: titleAddScreenStyle,
                   ),
                 ),
               ],
@@ -359,32 +429,103 @@ class _DetailsScreenState extends State<DetailsScreen> {
       elevation: 0,
       backgroundColor: Colors.orangeAccent,
       leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),
-        onPressed: () => Navigator.pop(context),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            setState(() {
+              isNewAction();
+            });
+          }),
+      actions: [actionButtons()],
+    );
+  }
+
+  isNewAction() {
+    if (isEditable && !isNewProduct) {
+      isEditable = false;
+      return;
+    }
+
+    return Navigator.pop(context);
+  }
+
+  Widget actionButtons() {
+    if (isEditable && isNewProduct) {
+      return newButtons();
+    } else if (isEditable) {
+      return editButtons();
+    }
+
+    return previewButtons();
+  }
+
+  Widget newButtons() {
+    return FlatButton(
+      onPressed: () {
+        Navigator.pop(context);
+        widget.addBloc.add(
+          AddProduct(
+              uid: widget.uid,
+              meal: widget.meal,
+              product: widget.product,
+              amount: _amount,
+              value: _dropdownValue),
+        );
+        widget.addBloc.add(AddReturn());
+      },
+      child: Text(
+        "Zapisz",
+        style: TextStyle(color: Colors.white),
       ),
-      actions: [
+    );
+  }
+
+  Widget previewButtons() {
+    return Row(
+      children: [
         FlatButton(
           onPressed: () {
-            Navigator.pop(context);
-            widget.addBloc.add(
-              AddProduct(
-                  uid: widget.uid,
-                  meal: widget.meal,
-                  product: widget.product,
-                  amount: amount,
-                  value: _dropdownValue),
+            widget.homeBloc.add(
+              DeleteProduct(id: widget.product.id),
             );
-            widget.addBloc.add(AddReturn());
+            setState(() {});
+            Navigator.pop(context);
           },
           child: Text(
-            "Zapisz",
+            "Usuń",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        FlatButton(
+          onPressed: () {
+            setState(() {
+              isEditable = true;
+            });
+          },
+          child: Text(
+            "Edytuj",
             style: TextStyle(color: Colors.white),
           ),
         ),
       ],
+    );
+  }
+
+  Widget editButtons() {
+    return FlatButton(
+      onPressed: () {
+        widget.homeBloc.add(
+          UpdateProduct(
+              id: widget.product.id, amount: _amount, value: _dropdownValue),
+        );
+        Navigator.pop(context);
+      },
+      child: Text(
+        "Zapisz",
+        style: TextStyle(color: Colors.white),
+      ),
     );
   }
 }

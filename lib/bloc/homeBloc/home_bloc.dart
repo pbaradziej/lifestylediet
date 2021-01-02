@@ -26,7 +26,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapHomeLoad(event);
     } else if (event is Logout) {
       yield* _mapHomeLogout(event);
-    } else if (event is AddProduct) {
+    } else if (event is AddProductScreen) {
       yield* _mapAddProduct(event);
     } else if (event is DeleteProduct) {
       yield* _mapDeleteProduct(event);
@@ -51,7 +51,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     yield HomeLogoutState();
   }
 
-  Stream<HomeState> _mapAddProduct(AddProduct event) async* {
+  Stream<HomeState> _mapAddProduct(AddProductScreen event) async* {
     _meal = event.meal;
     yield HomeAddingState();
   }

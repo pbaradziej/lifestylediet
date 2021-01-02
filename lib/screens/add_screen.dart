@@ -3,12 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/addBloc/bloc.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
-import 'file:///C:/Users/Pawel/AndroidStudioProjects/lifestylediet/lib/food_api/food.dart';
-import 'package:lifestylediet/screens/details_screen.dart';
-import 'package:lifestylediet/screens/home_screen.dart';
-import 'package:lifestylediet/screens/loading_screen.dart';
-import 'package:lifestylediet/themeAccent/theme.dart';
-import 'package:openfoodfacts/model/Product.dart';
+import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/repositories/repositories.dart';
+import 'package:lifestylediet/screens/screens.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
@@ -23,7 +21,7 @@ class _AddScreenState extends State<AddScreen> {
   HomeBloc _homeBloc;
   LoginBloc _loginBloc;
   String _scanBarcode = 'Unknown';
-  Food food = Food();
+  ProductRepository _productRepository = new ProductRepository();
 
   @override
   void initState() {
@@ -39,37 +37,46 @@ class _AddScreenState extends State<AddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => _onWillPop(),
-      child: Column(
-        children: [
-          appBar(),
-          searchTF(),
-          BlocBuilder<AddBloc, AddState>(
-            builder: (context, state) {
-              if (state is AddReturnState) {
-                return HomeScreen();
-              } else if (state is AddLoadedState) {
-                return _adderCards();
-              } else if (state is AddLoadingState) {
-                return Column(
-                  children: [
-                    SizedBox(height: 150),
-                    loadingScreen(),
-                  ],
-                );
-              } else if (state is AddSearchState) {
-                if (state.products.isNotEmpty) {
-                  return _searchListBuilder(state);
-                } else {
-                  return _searchSnackBar();
-                }
-              } else {
-                return Container();
-              }
-            },
+    return Container(
+      //width: double.infinity,
+      //height: double.infinity,
+      color: Colors.white,
+      child: WillPopScope(
+        onWillPop: () => _onWillPop(),
+        child: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (OverscrollIndicatorNotification overscroll) {
+            overscroll.disallowGlow();
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _appBar(),
+              searchTF(),
+              BlocBuilder<AddBloc, AddState>(
+                builder: (context, state) {
+                  if (state is AddReturnState) {
+                    return HomeScreen();
+                  } else if (state is AddLoadedState) {
+                    return _adderCards();
+                  } else if (state is AddLoadingState) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 50),
+                      child: loadingScreen(),
+                    );
+                  } else if (state is AddSearchState) {
+                    if (state.products.isNotEmpty) {
+                      return _searchListBuilder(state);
+                    } else {
+                      return _searchSnackBar();
+                    }
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -78,7 +85,7 @@ class _AddScreenState extends State<AddScreen> {
     _addBloc.add(AddReturn());
   }
 
-  Widget appBar() {
+  Widget _appBar() {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.orangeAccent,
@@ -95,6 +102,7 @@ class _AddScreenState extends State<AddScreen> {
   Widget _searchListBuilder(AddSearchState state) {
     return Expanded(
       child: ListView.builder(
+        padding: const EdgeInsets.all(0),
         shrinkWrap: true,
         itemCount: state.products.length,
         itemBuilder: (context, index) {
@@ -118,65 +126,55 @@ class _AddScreenState extends State<AddScreen> {
   Widget searchTF() {
     return Container(
       alignment: Alignment.centerLeft,
-      width: 330,
-      child: TextField(
-        textInputAction: TextInputAction.search,
-        onChanged: (search) {
-          setState(() {
-            _search = search;
-            if (_search == '') {
-              _addBloc.add(InitialScreen());
-            }
-          });
-        },
-        onSubmitted: (submit) => _getFoodList(_search),
-        style: TextStyle(
-          color: Colors.black,
-          height: 2,
-        ),
-        decoration: new InputDecoration(
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 10.0,
-            horizontal: 10.0,
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: TextField(
+          textInputAction: TextInputAction.search,
+          onChanged: (search) {
+            setState(() {
+              _search = search;
+              if (_search == '') {
+                _addBloc.add(InitialScreen());
+              }
+            });
+          },
+          onSubmitted: (submit) => _getFoodList(_search),
+          style: TextStyle(
+            color: Colors.black,
+            height: 2,
           ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.black45,
+          decoration: new InputDecoration(
+            contentPadding: EdgeInsets.symmetric(
+              vertical: 10.0,
+              horizontal: 10.0,
             ),
-            onPressed: () => _getFoodList(_search),
+            suffixIcon: IconButton(
+              icon: Icon(
+                Icons.search,
+                color: Colors.black45,
+              ),
+              onPressed: () => _getFoodList(_search),
+            ),
+            hintText: "Search product",
+            hintStyle: TextStyle(color: Colors.grey),
+            border: new OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.black45,
+              ),
+              borderRadius: const BorderRadius.all(
+                const Radius.circular(10),
+              ),
+            ),
+            filled: true,
+            fillColor: searchLupe,
           ),
-          hintText: "Search product",
-          hintStyle: TextStyle(color: Colors.grey),
-          border: new OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.black45,
-            ),
-            borderRadius: const BorderRadius.all(
-              const Radius.circular(10),
-            ),
-          ),
-          filled: true,
-          fillColor: searchTextFields(),
         ),
       ),
     );
   }
 
-  _scanner() async {
-    await scanBarcodeNormal();
-    Product product;
-    try {
-      product = await food.getProduct(_scanBarcode);
-    } catch (Exception) {}
-    if (product != null) {
-      _navigateToDetailsScreen(product);
-    } else {
-      _snackBar();
-    }
-  }
-
-  _navigateToDetailsScreen(Product product) {
+  _navigateToDetailsScreen(DatabaseProduct product) {
     return Navigator.push(
       context,
       MaterialPageRoute(
@@ -185,9 +183,77 @@ class _AddScreenState extends State<AddScreen> {
           meal: _homeBloc.meal,
           uid: _loginBloc.uid,
           addBloc: _addBloc,
+          isEditable: true,
+          isNewProduct: true,
         ),
       ),
     );
+  }
+
+  Widget _adderCards() {
+    return Flexible(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(0),
+          children: [ Row(
+          children: [
+            Flexible(flex: 1, child: _barcodeScanner()),
+            Flexible(flex: 1, child: _databaseProducts()),
+          ],
+        ),
+      ],
+      ),
+    );
+  }
+
+  Widget _barcodeScanner() {
+    return GestureDetector(
+      onTap: () {
+        _scanner();
+      },
+      child: Container(
+        height: 170,
+        child: Card(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
+                children: [
+                  SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(
+                      Icons.filter_center_focus,
+                      size: 120,
+                      color: Colors.orange,
+                    ),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              SizedBox(height: 70),
+              Text(
+                'Scanner',
+                style: TextStyle(fontSize: 19),
+              ),
+              SizedBox(height: 18),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _scanner() async {
+    await scanBarcodeNormal();
+    DatabaseProduct product;
+    try {
+      product = await _productRepository.getProduct(_scanBarcode);
+    } catch (Exception) {}
+    if (product != null) {
+      _navigateToDetailsScreen(product);
+    } else {
+      _snackBar();
+    }
   }
 
   _snackBar() {
@@ -197,102 +263,35 @@ class _AddScreenState extends State<AddScreen> {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
-  // void _showToast(BuildContext context) {
-  //   final scaffold = Scaffold.of(context);
-  //   scaffold.showSnackBar(
-  //     SnackBar(
-  //       content: const Text('Updating..'),
-  //     ),
-  //   );
-
-  //   this._showToast(context);
-  // }
-  Widget _adderCards() {
-    return Column(
-      children: [
-        SizedBox(height: 15),
-        Row(
-          children: [
-            _barcodeScanner(),
-            _databaseProducts(),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _barcodeScanner() {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          _scanner();
-        },
-        child: Container(
-          height: 170,
-          child: Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(width: 16),
-                    IconButton(
-                      icon: Icon(
-                        Icons.filter_center_focus,
-                        size: 120,
-                        color: Colors.orange,
-                      ),
-                      onPressed: () {},
-                    ),
-                    SizedBox(width: 10),
-                  ],
-                ),
-                SizedBox(height: 70),
-                Text(
-                  'Scanner',
-                  style: TextStyle(fontSize: 19),
-                ),
-                SizedBox(height: 18),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _databaseProducts() {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {},
-        child: Container(
-          height: 170,
-          child: Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(width: 16),
-                    IconButton(
-                      icon: Icon(
-                        Icons.list,
-                        size: 120,
-                        color: Colors.orange,
-                      ),
-                      onPressed: () {},
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        height: 170,
+        child: Card(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
+                children: [
+                  SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(
+                      Icons.list,
+                      size: 120,
+                      color: Colors.orange,
                     ),
-                    SizedBox(width: 10),
-                  ],
-                ),
-                SizedBox(height: 70),
-                Text(
-                  'Get from database',
-                  style: TextStyle(fontSize: 19),
-                ),
-                SizedBox(height: 18),
-              ],
-            ),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              SizedBox(height: 50),
+              Text(
+                'Get from database',
+                style: TextStyle(fontSize: 19),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         ),
       ),
@@ -300,8 +299,8 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   Widget showFood(AddSearchState state, int index) {
-    Product product = state.products[index];
-    final nutriments = product.nutriments;
+    DatabaseProduct product = state.products[index];
+    Nutriments nutriments = product.nutriments;
 
     return Container(
       height: 100,
@@ -312,7 +311,7 @@ class _AddScreenState extends State<AddScreen> {
             children: [
               Expanded(
                 flex: 22,
-                child: Image.network(product.selectedImages[2].url),
+                child: Image.network(product.image),
               ),
               Expanded(flex: 3, child: SizedBox()),
               _tileContent(product, nutriments),
@@ -324,7 +323,7 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  _detailsNavigator(Product product) {
+  _detailsNavigator(DatabaseProduct product) {
     return Navigator.push(
       context,
       MaterialPageRoute(
@@ -333,12 +332,14 @@ class _AddScreenState extends State<AddScreen> {
           meal: _homeBloc.meal,
           uid: _loginBloc.uid,
           addBloc: _addBloc,
+          isEditable: true,
+          isNewProduct: true,
         ),
       ),
     );
   }
 
-  _tileContent(Product product, final nutriments) {
+  _tileContent(DatabaseProduct product, Nutriments nutriments) {
     return Expanded(
       flex: 72,
       child: Row(
@@ -349,10 +350,10 @@ class _AddScreenState extends State<AddScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  product.productNameEN ??
-                      product.productName ??
-                      product.productNameFR ??
-                      product.productNameDE ??
+                  product.nameEN ??
+                      product.name ??
+                      product.nameFR ??
+                      product.nameDE ??
                       "no info",
                   softWrap: true,
                 ),
@@ -371,30 +372,48 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Widget _subtitleListTile(final product, final nutriments) {
-    return Row(
-      children: [
-        _showValue("protein: ", nutriments.carbohydrates.toString()),
-        _showValue(" carbs: ", nutriments.carbohydrates.toString()),
-        _showValue(" fat: ", nutriments.carbohydrates.toString()),
-      ],
+  Widget _subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
+    return RichText(
+      text: TextSpan(
+        style: DefaultTextStyle.of(context).style,
+        children: <TextSpan>[
+          TextSpan(
+            text: _showValue("protein: ", nutriments.protein.toString()),
+            style: searchListStyle,
+          ),
+          TextSpan(
+            text: _showValue(" carbs: ", nutriments.carbs.toString()),
+            style: searchListStyle,
+          ),
+          TextSpan(
+            text: _showValue(" fat: ", nutriments.fats.toString()),
+            style: searchListStyle,
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _trailingListTile(final product, final nutriments) {
+  Widget _trailingListTile(DatabaseProduct product, Nutriments nutriments) {
     return Column(
       children: [
-        _showValue("kcal: ", nutriments.energyServing.toString()),
-        _showValue("kcal 100g: ", nutriments.energyKcal100g.toString()),
+        Text(
+          _showValue("kcal: ", nutriments.caloriesPerServing.toString()),
+          style: searchListStyle,
+        ),
+        Text(
+          _showValue("kcal 100g: ", nutriments.caloriesPer100g.toString()),
+          style: searchListStyle,
+        ),
       ],
     );
   }
 
-  Widget _showValue(String name, String value) {
-    if (value == 'null') {
-      return Text(name + '?', style: TextStyle(fontSize: 11));
+  String _showValue(String name, String value) {
+    if (value == 'null' || value == "-1.0") {
+      return name + '?';
     }
-    return Text(name + value, style: TextStyle(fontSize: 11));
+    return name + value;
   }
 
   Future<void> scanBarcodeNormal() async {

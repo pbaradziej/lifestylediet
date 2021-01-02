@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/themeAccent/theme.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 Widget loadingScreen() {
   return Center(
@@ -17,8 +17,6 @@ Widget loadingScreen() {
 
 Widget loadingScreenMainScreen() {
   return Container(
-    height: double.infinity,
-    width: double.infinity,
     decoration: appTheme(),
     child: Center(
       child: Container(

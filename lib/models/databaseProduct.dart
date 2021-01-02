@@ -3,12 +3,16 @@ class DatabaseProduct {
   final String meal;
   final String image;
   final String name;
+  final String nameEN;
+  final String nameFR;
+  final String nameDE;
   final Nutriments nutriments;
   double amount;
   String value;
 
   DatabaseProduct(this.id, this.meal, this.amount, this.image, this.name,
-      this.value, this.nutriments);
+      this.value, this.nutriments,
+      {this.nameEN, this.nameFR, this.nameDE});
 
   factory DatabaseProduct.fromJson(Map<String, dynamic> json) {
     return DatabaseProduct(

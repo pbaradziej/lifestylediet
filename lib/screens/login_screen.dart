@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lifestylediet/BlocProviders/home.dart';
-import 'package:lifestylediet/BlocProviders/register.dart';
+import 'package:lifestylediet/BlocProviders/bloc_providers.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
-import 'package:lifestylediet/themeAccent/theme.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'loading_screen.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   LoginBloc _bloc;
   String _email;
   String _password;
+  final FocusNode _passFocus = FocusNode();
+
 
   @override
   initState() {
@@ -40,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -54,9 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
             } else if (state is LoginSuccess) {
               return HomeProvider();
             } else if (state is LoginLoaded) {
-              return loginScreen(state);
+              return loginScreen(state, node);
             } else if (state is LoginFailure) {
-              return loginScreen(state);
+              return loginScreen(state, node);
             } else {
               return loadingScreen();
             }
@@ -66,42 +68,57 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget loginScreen(state) {
+  Widget loginScreen(state, FocusScopeNode node) {
     return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          appBarLogin(),
-          SizedBox(height: 50),
-          Text(
-            'Lifestyle Diet',
-            style: TextStyle(
-              fontSize: 30,
-              color: Colors.white,
+      child: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (OverscrollIndicatorNotification overscroll) {
+          overscroll.disallowGlow();
+        },
+        child: ListView(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 20),
+                Text(
+                  'Lifestyle Diet',
+                  style: TextStyle(
+                    fontSize: 30,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 30),
+                loginTF(state, node),
+                SizedBox(height: 20),
+                passwordTF(state, node),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    rememberMe(),
+                    forgotPassword(),
+                  ],
+                ),
+                //rememberMe(),
+                login(),
+                SizedBox(height: 10),
+                Text(
+                  "- OR -",
+                  style: TextStyle(
+                    color: Colors.white70,
+                  ),
+                ),
+                SizedBox(height: 20),
+                signUp(),
+                SizedBox(height: 20),
+              ],
             ),
-          ),
-          SizedBox(height: 30),
-          loginTF(state),
-          SizedBox(height: 20),
-          passwordTF(state),
-          forgotPassword(),
-          rememberMe(),
-          login(),
-          SizedBox(height: 10),
-          Text(
-            "- OR -",
-            style: TextStyle(
-              color: Colors.white70,
-            ),
-          ),
-          SizedBox(height: 20),
-          signUp(),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget loginTF(state) {
+  Widget loginTF(state, FocusScopeNode node) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,12 +126,14 @@ class _LoginScreenState extends State<LoginScreen> {
         Container(
           alignment: Alignment.centerLeft,
           width: 260,
-          child: TextField(
+          child: TextFormField(
             onChanged: (login) {
               setState(() {
                 _email = login;
               });
             },
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => node.nextFocus(),
             style: TextStyle(
               color: Colors.white,
               height: 2,
@@ -139,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               filled: true,
-              fillColor: appTextFields(),
+              fillColor: appTextFieldsColor,
             ),
           ),
         ),
@@ -147,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget passwordTF(state) {
+  Widget passwordTF(state, FocusScopeNode node) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -155,12 +174,19 @@ class _LoginScreenState extends State<LoginScreen> {
         Container(
           alignment: Alignment.centerLeft,
           width: 260,
-          child: TextField(
+          child: TextFormField(
             obscureText: true,
             onChanged: (password) {
               setState(() {
                 _password = password;
               });
+            },
+            textInputAction: TextInputAction.done,
+            focusNode: _passFocus,
+            onFieldSubmitted: (value) {
+              _passFocus.unfocus();
+              Users user = new Users(_email.trim(), _password);
+              _bloc.add(Login(user: user));
             },
             style: TextStyle(
               color: Colors.white,
@@ -186,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               filled: true,
-              fillColor: appTextFields(),
+              fillColor: appTextFieldsColor,
             ),
           ),
         ),
@@ -275,11 +301,8 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         color: Colors.white,
         onPressed: () {
-          _bloc.add(
-            Login(
-              user: Users(_email.trim(), _password),
-            ),
-          );
+          Users user = new Users(_email.trim(), _password);
+          _bloc.add(Login(user: user));
         },
         child: Text(
           "Login",

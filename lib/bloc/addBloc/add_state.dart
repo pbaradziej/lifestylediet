@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:openfoodfacts/model/Product.dart';
+import 'package:lifestylediet/models/databaseProduct.dart';
 
 abstract class AddState extends Equatable {
   @override
@@ -9,7 +9,7 @@ abstract class AddState extends Equatable {
 class AddLoadingState extends AddState {}
 
 class AddSearchState extends AddState {
-  final List<Product> products;
+  final List<DatabaseProduct> products;
 
   AddSearchState(this.products);
 

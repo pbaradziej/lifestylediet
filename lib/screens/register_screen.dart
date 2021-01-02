@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/themeAccent/theme.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 import 'loading_screen.dart';
 import 'login_screen.dart';
 
@@ -31,6 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return Container(
       height: double.infinity,
       width: double.infinity,
@@ -40,11 +41,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           if (state is RegisterLoading) {
             return loadingScreen();
           } else if (state is RegisterLoaded) {
-            return registerBuilder(state);
+            return registerBuilder(state, node);
           } else if (state is ReturnLogin) {
             return LoginScreen();
           } else if (state is RegisterFailure) {
-            return registerBuilder(state);
+            return registerBuilder(state, node);
           } else {
             return loadingScreen();
           }
@@ -53,42 +54,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget registerBuilder(state) {
+  Widget registerBuilder(state, FocusScopeNode node) {
     return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          appBarLogin(),
-          SizedBox(height: 50),
-          Text(
-            'Sign Up',
-            style: TextStyle(
-              fontSize: 30,
-              color: Colors.white,
+      child: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (OverscrollIndicatorNotification overscroll) {
+          overscroll.disallowGlow();
+        },
+        child: ListView(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 20),
+                Center(
+                  child: Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30),
+                loginTF(state, node),
+                SizedBox(height: 20),
+                passwordTF(state),
+                SizedBox(height: 10),
+                acceptConditions(),
+                SizedBox(height: 20),
+                signUp(state),
+                SizedBox(height: 10),
+                Text(
+                  "- OR -",
+                  style: TextStyle(
+                    color: Colors.white70,
+                  ),
+                ),
+                SizedBox(height: 20),
+                login(),
+                SizedBox(height: 20),
+              ],
             ),
-          ),
-          SizedBox(height: 30),
-          loginTF(state),
-          SizedBox(height: 20),
-          passwordTF(state),
-          SizedBox(height: 10),
-          acceptConditions(),
-          SizedBox(height: 20),
-          signUp(state),
-          Text(
-            "- OR -",
-            style: TextStyle(
-              color: Colors.white70,
-            ),
-          ),
-          SizedBox(height: 20),
-          login(),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget loginTF(state) {
+  Widget loginTF(state, FocusScopeNode node) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -96,12 +109,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Container(
           alignment: Alignment.centerLeft,
           width: 260,
-          child: TextField(
+          child: TextFormField(
             onChanged: (login) {
               setState(() {
                 _email = login;
               });
             },
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => node.nextFocus(),
             style: TextStyle(
               color: Colors.white,
               height: 2,
@@ -126,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               filled: true,
-              fillColor: appTextFields(),
+              fillColor: appTextFieldsColor,
             ),
           ),
         ),
@@ -142,13 +157,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Container(
           alignment: Alignment.centerLeft,
           width: 260,
-          child: TextField(
+          child: TextFormField(
             obscureText: true,
             onChanged: (password) {
               setState(() {
                 _password = password;
               });
             },
+            // textInputAction: TextInputAction.next,
             style: TextStyle(
               color: Colors.white,
               height: 2,
@@ -175,7 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               filled: true,
-              fillColor: appTextFields(),
+              fillColor: appTextFieldsColor,
             ),
           ),
         ),

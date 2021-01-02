@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
 
+Color get appTextFieldsColor => Colors.orangeAccent;
+
+Color get searchLupe => Colors.white70;
+
+TextStyle get searchListStyle => TextStyle(fontSize: 11);
+
+TextStyle get textStyle => TextStyle(fontSize: 20, color: Colors.white);
+
+TextStyle get defaultTextStyle => TextStyle(fontSize: 14, color: Colors.black);
+
+TextStyle get subTitleStyle => TextStyle(fontSize: 25, color: Colors.white);
+
+TextStyle get titleAddScreenStyle => TextStyle(fontSize: 30, color: Colors.black54);
+
+TextStyle get subTitleAddScreenStyle => TextStyle(fontSize: 20, color: Colors.black);
+
+TextStyle get titleStyle => TextStyle(fontSize: 40, color: Colors.white);
+
 appTheme() {
   return BoxDecoration(
     gradient: LinearGradient(
@@ -8,14 +26,6 @@ appTheme() {
       colors: [Colors.orangeAccent, Colors.orange, Colors.deepOrange],
     ),
   );
-}
-
-appTextFields() {
-  return Colors.orangeAccent;
-}
-
-searchTextFields() {
-  return Colors.white70;
 }
 
 menuTheme() {
@@ -30,26 +40,6 @@ menuTheme() {
       bottomRight: Radius.circular(60.0),
     ),
   );
-}
-
-textStyle() {
-  return TextStyle(fontSize: 20, color: Colors.white);
-}
-
-subTitleStyle() {
-  return TextStyle(fontSize: 25, color: Colors.white);
-}
-
-titleAddScreenStyle() {
-  return TextStyle(fontSize: 30, color: Colors.black54);
-}
-
-subTitleAddScreenStyle() {
-  return TextStyle(fontSize: 20, color: Colors.black);
-}
-
-titleStyle() {
-  return TextStyle(fontSize: 40, color: Colors.white);
 }
 
 Widget appBarLogin() {

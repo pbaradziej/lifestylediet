@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:lifestylediet/screens/loading_screen.dart';
-import 'package:lifestylediet/themeAccent/theme.dart';
-import 'BlocProviders/login.dart';
+import 'package:lifestylediet/utils//theme.dart';
+import 'BlocProviders/login_provider.dart';
 
 void main() => runApp(MaterialApp(home: FireBase()));
 

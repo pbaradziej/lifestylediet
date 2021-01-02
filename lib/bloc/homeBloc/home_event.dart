@@ -16,10 +16,10 @@ class HomeLoad extends HomeEvent {
 
 class Logout extends HomeEvent {}
 
-class AddProduct extends HomeEvent {
+class AddProductScreen extends HomeEvent {
   final String meal;
 
-  AddProduct(this.meal);
+  AddProductScreen(this.meal);
 
   @override
   List<Object> get props => [meal];
