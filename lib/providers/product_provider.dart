@@ -1,38 +1,38 @@
-import 'dart:convert';
-import 'package:lifestylediet/models/barcode.dart';
-import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
 class ProductProvider {
-  static const String URI_SCHEME = "https://";
-  static const String URI_HOST = "world.openfoodfacts.org";
-  static const String PREFIX = "/cgi/search.pl?search_terms=";
-  static const String POSTFIX =
-      "&search_simple=1&action=process&json=1&page_size=5";
+  static const String NutritionixAppID = "383e26e4";
+  static const String NutritionixAppKey = "efbeed5ddee5cd9f15afc47f4e5238c5";
+  static const Map<String, String> HEADERS = {
+    'x-app-id': NutritionixAppID,
+    'x-app-key': NutritionixAppKey,
+    'x-remote-user-id': "0"
+  };
 
-  Future searchResultBarcode(String search) async {
-    var productUrl = URI_SCHEME + URI_HOST + PREFIX + search + POSTFIX;
-    final response = await http.get(productUrl);
-    Barcode barcode = Barcode.fromJson(jsonDecode(response.body));
-    return barcode.codeList;
+  static const URL_SEARCH_ITEM =
+      "https://trackapi.nutritionix.com/v2/search/item";
+  static const String URL_NATURAL_SEARCH =
+      "https://trackapi.nutritionix.com/v2/natural/nutrients";
+
+  Future getProductFromBarcode(String code) async {
+    http.Response response = await http.get(URL_SEARCH_ITEM +
+        "?upc=$code&x-app-id=$NutritionixAppID&x-app-key=$NutritionixAppKey");
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Product not found');
+    }
   }
 
-  Future<Product> getProductData(String code) async {
-    ProductQueryConfiguration configuration = ProductQueryConfiguration(code,
-        language: OpenFoodFactsLanguage.WORLD,
-        fields: [
-          ProductField.NAME,
-          ProductField.NUTRIMENTS,
-          ProductField.SELECTED_IMAGE,
-          ProductField.BARCODE,
-        ]);
-    ProductResult result = await OpenFoodAPIClient.getProduct(configuration);
-
-    if (result.status == 1) {
-      return result.product;
+  Future getProductData(String search) async {
+    Map<String, String> body = {"query": search, "timezone": "US/Eastern"};
+    http.Response response =
+        await http.post(URL_NATURAL_SEARCH, headers: HEADERS, body: body);
+    if (response.statusCode == 200) {
+      return response.body;
     } else {
-      throw new Exception("product not found, please insert data for " + code);
+      throw Exception('Product not found');
     }
   }
 }

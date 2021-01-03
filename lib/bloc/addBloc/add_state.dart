@@ -20,3 +20,5 @@ class AddSearchState extends AddState {
 class AddLoadedState extends AddState {}
 
 class AddReturnState extends AddState {}
+
+class ProductNotFoundState extends AddState {}

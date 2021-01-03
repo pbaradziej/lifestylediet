@@ -20,7 +20,7 @@ class _AddScreenState extends State<AddScreen> {
   String _search;
   HomeBloc _homeBloc;
   LoginBloc _loginBloc;
-  String _scanBarcode = 'Unknown';
+  String _barcode = 'Unknown';
   ProductRepository _productRepository = new ProductRepository();
 
   @override
@@ -38,8 +38,6 @@ class _AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      //width: double.infinity,
-      //height: double.infinity,
       color: Colors.white,
       child: WillPopScope(
         onWillPop: () => _onWillPop(),
@@ -58,17 +56,20 @@ class _AddScreenState extends State<AddScreen> {
                     return HomeScreen();
                   } else if (state is AddLoadedState) {
                     return _adderCards();
+                  } else if (state is ProductNotFoundState) {
+                    return _snackBar();
                   } else if (state is AddLoadingState) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 50),
-                      child: loadingScreen(),
+                    return Flexible(
+                      child: ListView(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.only(top: 50),
+                        children: [
+                          loadingScreen(),
+                        ],
+                      ),
                     );
                   } else if (state is AddSearchState) {
-                    if (state.products.isNotEmpty) {
-                      return _searchListBuilder(state);
-                    } else {
-                      return _searchSnackBar();
-                    }
+                    return _searchListBuilder(state);
                   } else {
                     return Container();
                   }
@@ -112,7 +113,7 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Widget _searchSnackBar() {
+  Widget _snackBar() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Scaffold.of(context)
         ..showSnackBar(SnackBar(
@@ -174,34 +175,19 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  _navigateToDetailsScreen(DatabaseProduct product) {
-    return Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DetailsScreen(
-          product: product,
-          meal: _homeBloc.meal,
-          uid: _loginBloc.uid,
-          addBloc: _addBloc,
-          isEditable: true,
-          isNewProduct: true,
-        ),
-      ),
-    );
-  }
-
   Widget _adderCards() {
     return Flexible(
       child: ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.all(0),
-          children: [ Row(
-          children: [
-            Flexible(flex: 1, child: _barcodeScanner()),
-            Flexible(flex: 1, child: _databaseProducts()),
-          ],
-        ),
-      ],
+        children: [
+          Row(
+            children: [
+              Flexible(flex: 1, child: _barcodeScanner()),
+              Flexible(flex: 1, child: _databaseProducts()),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -247,20 +233,13 @@ class _AddScreenState extends State<AddScreen> {
     await scanBarcodeNormal();
     DatabaseProduct product;
     try {
-      product = await _productRepository.getProduct(_scanBarcode);
+      product = await _productRepository.getProductFromBarcode(_barcode);
     } catch (Exception) {}
     if (product != null) {
-      _navigateToDetailsScreen(product);
+      _detailsNavigator(product);
     } else {
       _snackBar();
     }
-  }
-
-  _snackBar() {
-    final snackBar = SnackBar(
-      content: Text('Product not found!'),
-    );
-    Scaffold.of(context).showSnackBar(snackBar);
   }
 
   Widget _databaseProducts() {
@@ -350,11 +329,7 @@ class _AddScreenState extends State<AddScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  product.nameEN ??
-                      product.name ??
-                      product.nameFR ??
-                      product.nameDE ??
-                      "no info",
+                  product.name ?? "no info",
                   softWrap: true,
                 ),
                 _subtitleListTile(product, nutriments),
@@ -378,15 +353,16 @@ class _AddScreenState extends State<AddScreen> {
         style: DefaultTextStyle.of(context).style,
         children: <TextSpan>[
           TextSpan(
-            text: _showValue("protein: ", nutriments.protein.toString()),
+            text: _showValue(
+                "protein: ", nutriments.proteinPerServing.toString()),
             style: searchListStyle,
           ),
           TextSpan(
-            text: _showValue(" carbs: ", nutriments.carbs.toString()),
+            text: _showValue(" carbs: ", nutriments.carbsPerServing.toString()),
             style: searchListStyle,
           ),
           TextSpan(
-            text: _showValue(" fat: ", nutriments.fats.toString()),
+            text: _showValue(" fat: ", nutriments.fatsPerServing.toString()),
             style: searchListStyle,
           ),
         ],
@@ -395,6 +371,7 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   Widget _trailingListTile(DatabaseProduct product, Nutriments nutriments) {
+    String servingUnit = product.servingUnit;
     return Column(
       children: [
         Text(
@@ -402,7 +379,8 @@ class _AddScreenState extends State<AddScreen> {
           style: searchListStyle,
         ),
         Text(
-          _showValue("kcal 100g: ", nutriments.caloriesPer100g.toString()),
+          _showValue(
+              "kcal 100$servingUnit: ", nutriments.caloriesPer100g.toString()),
           style: searchListStyle,
         ),
       ],
@@ -429,7 +407,7 @@ class _AddScreenState extends State<AddScreen> {
     if (!mounted) return;
 
     setState(() {
-      _scanBarcode = barcodeScanRes;
+      _barcode = barcodeScanRes;
     });
   }
 }

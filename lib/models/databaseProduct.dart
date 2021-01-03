@@ -3,16 +3,13 @@ class DatabaseProduct {
   final String meal;
   final String image;
   final String name;
-  final String nameEN;
-  final String nameFR;
-  final String nameDE;
   final Nutriments nutriments;
   double amount;
   String value;
+  String servingUnit;
 
   DatabaseProduct(this.id, this.meal, this.amount, this.image, this.name,
-      this.value, this.nutriments,
-      {this.nameEN, this.nameFR, this.nameDE});
+      this.value, this.servingUnit, this.nutriments);
 
   factory DatabaseProduct.fromJson(Map<String, dynamic> json) {
     return DatabaseProduct(
@@ -22,14 +19,15 @@ class DatabaseProduct {
       json['image'] as String,
       json['name'] as String,
       json['value'] as String,
+      json['servingUnit'] as String,
       Nutriments.fromJson(json['nutriments']),
     );
   }
 }
 
 class Nutriments {
-  final double caloriesPerServing;
   final double caloriesPer100g;
+  final double caloriesPerServing;
   final double carbs;
   final double carbsPerServing;
   final double fiber;
@@ -42,12 +40,16 @@ class Nutriments {
   final double fatsPerServing;
   final double saturatedFats;
   final double saturatedFatsPerServing;
-  final double salt;
-  final double saltPerServing;
+  final double cholesterol;
+  final double cholesterolPerServing;
+  final double sodium;
+  final double sodiumPerServing;
+  final double potassium;
+  final double potassiumPerServing;
 
   Nutriments(
-    this.caloriesPerServing,
     this.caloriesPer100g,
+    this.caloriesPerServing,
     this.carbs,
     this.carbsPerServing,
     this.fiber,
@@ -60,14 +62,18 @@ class Nutriments {
     this.fatsPerServing,
     this.saturatedFats,
     this.saturatedFatsPerServing,
-    this.salt,
-    this.saltPerServing,
+    this.cholesterol,
+    this.cholesterolPerServing,
+    this.sodium,
+    this.sodiumPerServing,
+    this.potassium,
+    this.potassiumPerServing,
   );
 
   factory Nutriments.fromJson(Map<String, dynamic> json) {
     return Nutriments(
-        json['caloriesPerServing'] as double,
         json['caloriesPer100g'] as double,
+        json['caloriesPerServing'] as double,
         json['carbs'] as double,
         json['carbsPerServing'] as double,
         json['fiber'] as double,
@@ -80,7 +86,11 @@ class Nutriments {
         json['fatsPerServing'] as double,
         json['saturatedFats'] as double,
         json['saturatedFatsPerServing'] as double,
-        json['salt'] as double,
-        json['saltPerServing'] as double);
+        json['cholesterol'] as double,
+        json['cholesterolPerServing'] as double,
+        json['sodium'] as double,
+        json['sodiumPerServing'] as double,
+        json['potassium'] as double,
+        json['potassiumPerServing'] as double);
   }
 }

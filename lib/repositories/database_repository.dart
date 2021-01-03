@@ -20,9 +20,10 @@ class DatabaseRepository {
       'image': product.image,
       'amount': amount,
       'value': value,
+      'servingUnit': product.servingUnit,
       'nutriments': {
-        'caloriesPerServing': product.nutriments.caloriesPerServing,
         'caloriesPer100g': product.nutriments.caloriesPer100g,
+        'caloriesPerServing': product.nutriments.caloriesPerServing,
         'carbs': product.nutriments.carbs,
         'carbsPerServing': product.nutriments.carbsPerServing,
         'fiber': product.nutriments.fiber,
@@ -35,8 +36,12 @@ class DatabaseRepository {
         'fatsPerServing': product.nutriments.fatsPerServing,
         'saturatedFats': product.nutriments.saturatedFats,
         'saturatedFatsPerServing': product.nutriments.saturatedFatsPerServing,
-        'salt': product.nutriments.salt,
-        'saltPerServing': product.nutriments.saltPerServing
+        'cholesterol': product.nutriments.cholesterol,
+        'cholesterolPerServing': product.nutriments.cholesterolPerServing,
+        'sodium': product.nutriments.sodium,
+        'sodiumPerServing': product.nutriments.sodiumPerServing,
+        'potassium': product.nutriments.potassium,
+        'potassiumPerServing': product.nutriments.potassiumPerServing,
       }
     });
   }

@@ -1,49 +1,131 @@
 import 'dart:async';
-import 'package:lifestylediet/models/barcode.dart';
+import 'dart:convert';
 import 'package:lifestylediet/models/databaseProduct.dart';
 import 'package:lifestylediet/providers/product_provider.dart';
-import 'package:openfoodfacts/openfoodfacts.dart';
 
 class ProductRepository {
   ProductProvider _productProvider = ProductProvider();
 
-  Future<DatabaseProduct> getProduct(String code) async {
-    Product resultProduct = await _productProvider.getProductData(code);
-    var nutriments = resultProduct.nutriments;
-    Nutriments nutrimentsDatabase = new Nutriments(
-        nutriments.energyServing ?? -1,
-        nutriments.energyKcal100g ?? -1,
-        nutriments.carbohydrates ?? -1,
-        nutriments.carbohydratesServing ?? -1,
-        nutriments.fiber ?? -1,
-        nutriments.fiberServing ?? -1,
-        nutriments.sugars ?? -1,
-        nutriments.sugarsServing ?? -1,
-        nutriments.proteins ?? -1,
-        nutriments.proteinsServing ?? -1,
-        nutriments.fat ?? -1,
-        nutriments.fatServing ?? -1,
-        nutriments.saturatedFat ?? -1,
-        nutriments.saturatedFatServing ?? -1,
-        nutriments.salt ?? -1,
-        nutriments.saltServing ?? -1);
-    DatabaseProduct product = new DatabaseProduct(
-        "",
-        "",
-        1,
-        resultProduct.selectedImages[2].url,
-        resultProduct.productName,
-        "serving",
-        nutrimentsDatabase,
-        nameEN: resultProduct.productNameEN,
-        nameDE: resultProduct.productNameDE,
-        nameFR: resultProduct.productNameFR);
-    return product;
+  Future<DatabaseProduct> getProductFromBarcode(String code) async {
+    final body = await _productProvider.getProductFromBarcode(code);
+    Map<String, dynamic> productMap = jsonDecode(body);
+    Object product = productMap["foods"][0];
+    DatabaseProduct databaseProduct = _getDatabaseProduct(product);
+
+    return databaseProduct;
+  }
+
+  Future<List<DatabaseProduct>> getSearchProducts(String search) async {
+    final body = await _productProvider.getProductData(search);
+    Map<String, dynamic> productMap = jsonDecode(body);
+    List products = productMap["foods"];
+    List<DatabaseProduct> databaseProductList = new List<DatabaseProduct>();
+    for (var product in products) {
+      DatabaseProduct databaseProduct = _getDatabaseProduct(product);
+      databaseProductList.add(databaseProduct);
+    }
+    return databaseProductList;
+  }
+
+  DatabaseProduct _getDatabaseProduct(final product) {
+    Nutriments nutrimentsDatabase = _getNutriments(product);
+    Map photos = product["photo"];
+    return new DatabaseProduct(
+      "",
+      "",
+      1,
+      photos["thumb"] ?? photos["highres"],
+      product["food_name"],
+      "serving",
+      _servingUnit(product),
+      nutrimentsDatabase,
+    );
+  }
+
+  Nutriments _getNutriments(final product) {
+    double servingWeight = _getServing(product);
+    return new Nutriments(
+      _calculatePer100g(
+        product["nf_calories"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_calories"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_total_carbohydrate"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_total_carbohydrate"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_dietary_fiber"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_dietary_fiber"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_sugars"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_sugars"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_protein"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_protein"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_total_fat"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_total_fat"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_saturated_fat"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_saturated_fat"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_cholesterol"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_cholesterol"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_sodium"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_sodium"]?.toDouble()) ?? -1,
+      _calculatePer100g(
+        product["nf_potassium"]?.toDouble() ?? -1,
+        servingWeight,
+      ),
+      formatTo2Digits(product["nf_potassium"]?.toDouble()) ?? -1,
+    );
+  }
+
+  String _servingUnit(final product) {
+    if (product["serving_weight_grams"] != null) {
+      return "g";
     }
 
-    Future getSearchProducts(String search) async {
-      search = search.replaceAll(' ', '-');
-      List<Code> barcodeList = await _productProvider.searchResultBarcode(search);
-      return barcodeList;
+    return product["serving_unit"];
+  }
+
+  double _getServing(final product) {
+    if (product["serving_weight_grams"] != null) {
+      return product["serving_weight_grams"]?.toDouble();
     }
+
+    return product["serving_qty"]?.toDouble();
+  }
+
+  double formatTo2Digits(double value) {
+    if (value == null) {
+      return -1;
+    }
+
+    return double.parse((value).toStringAsFixed(2));
+  }
+
+  double _calculatePer100g(double value, double servingWeight) {
+    double servingWeightPer100 = servingWeight / 100;
+    double valueIn100g = value / servingWeightPer100;
+
+    return double.parse((valueIn100g).toStringAsFixed(2));
+  }
 }

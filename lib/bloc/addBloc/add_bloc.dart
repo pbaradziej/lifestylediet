@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:lifestylediet/models/barcode.dart';
 import 'package:lifestylediet/models/databaseProduct.dart';
 import 'package:lifestylediet/repositories/database_repository.dart';
 import 'package:lifestylediet/repositories/product_repository.dart';
@@ -27,16 +26,12 @@ class AddBloc extends Bloc<AddEvent, AddState> {
 
   Stream<AddState> mapSearchFood(SearchFood event) async* {
     yield AddLoadingState();
-    List<DatabaseProduct> _productsList = new List();
-    List<Code> _productBarcodeList =
-        await _productRepository.getSearchProducts(event.search);
-    for (Code barcode in _productBarcodeList) {
-      DatabaseProduct product =
-          await _productRepository.getProduct(barcode.code);
-      _productsList.add(product);
-      if (_productsList.length == 5) {
-        break;
-      }
+    List<DatabaseProduct> _productsList;
+    try {
+      _productsList = await _productRepository.getSearchProducts(event.search);
+    } catch (Exception) {
+      yield ProductNotFoundState();
+      return;
     }
 
     yield AddSearchState(_productsList);
@@ -49,6 +44,7 @@ class AddBloc extends Bloc<AddEvent, AddState> {
         product: event.product,
         amount: event.amount,
         value: event.value);
+
     yield AddReturnState();
   }
 }
