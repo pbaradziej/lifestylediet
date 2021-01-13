@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
-import 'loading_screen.dart';
-import 'login_screen.dart';
+import 'package:lifestylediet/screens/screens.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -67,13 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 SizedBox(height: 20),
                 Center(
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: Text('Sign Up', style: titleStyle),
                 ),
                 SizedBox(height: 30),
                 loginTF(state, node),

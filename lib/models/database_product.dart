@@ -7,9 +7,10 @@ class DatabaseProduct {
   double amount;
   String value;
   String servingUnit;
+  bool isExpanded;
 
   DatabaseProduct(this.id, this.meal, this.amount, this.image, this.name,
-      this.value, this.servingUnit, this.nutriments);
+      this.value, this.servingUnit, this.nutriments, {this.isExpanded = true});
 
   factory DatabaseProduct.fromJson(Map<String, dynamic> json) {
     return DatabaseProduct(

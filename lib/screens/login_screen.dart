@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lifestylediet/BlocProviders/bloc_providers.dart';
+import 'package:flutter/services.dart';
+
+import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'loading_screen.dart';
-import 'package:flutter/services.dart';
+import 'package:lifestylediet/screens/screens.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -17,8 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   LoginBloc _bloc;
   String _email;
   String _password;
+  bool _showPassword = true;
   final FocusNode _passFocus = FocusNode();
-
 
   @override
   initState() {
@@ -80,13 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 20),
-                Text(
-                  'Lifestyle Diet',
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.white,
-                  ),
-                ),
+                Text('Lifestyle Diet', style: titleStyle),
                 SizedBox(height: 30),
                 loginTF(state, node),
                 SizedBox(height: 20),
@@ -138,31 +133,34 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.white,
               height: 2,
             ),
-            decoration: new InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              errorText: state is LoginFailure ? 'invalid email' : '',
-              errorStyle: TextStyle(fontSize: 12, height: 0.3),
-              prefixIcon: Icon(
-                Icons.mail,
-                color: Colors.white60,
-              ),
-              hintText: "Enter your Email",
-              hintStyle: TextStyle(color: Colors.white60),
-              border: new OutlineInputBorder(
-                borderSide: state is LoginFailure
-                    ? BorderSide(color: Colors.red)
-                    : BorderSide.none,
-                borderRadius: const BorderRadius.all(
-                  const Radius.circular(10),
-                ),
-              ),
-              filled: true,
-              fillColor: appTextFieldsColor,
-            ),
+            decoration: loginDecoration(state),
           ),
         ),
       ],
+    );
+  }
+
+  InputDecoration loginDecoration(state) {
+    return InputDecoration(
+      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+      errorText: state is LoginFailure ? 'invalid email' : '',
+      errorStyle: TextStyle(fontSize: 12, height: 0.3),
+      prefixIcon: Icon(
+        Icons.mail,
+        color: Colors.white60,
+      ),
+      hintText: "Enter Email",
+      hintStyle: TextStyle(color: Colors.white60),
+      border: new OutlineInputBorder(
+        borderSide: state is LoginFailure
+            ? BorderSide(color: Colors.red)
+            : BorderSide.none,
+        borderRadius: const BorderRadius.all(
+          const Radius.circular(10),
+        ),
+      ),
+      filled: true,
+      fillColor: appTextFieldsColor,
     );
   }
 
@@ -175,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
           alignment: Alignment.centerLeft,
           width: 260,
           child: TextFormField(
-            obscureText: true,
+            obscureText: _showPassword,
             onChanged: (password) {
               setState(() {
                 _password = password;
@@ -192,31 +190,45 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.white,
               height: 2,
             ),
-            decoration: new InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              errorText: state is LoginFailure ? 'invalid password' : '',
-              errorStyle: TextStyle(fontSize: 12, height: 0.3),
-              prefixIcon: Icon(
-                Icons.vpn_key,
-                color: Colors.white60,
-              ),
-              hintText: "Enter your Password",
-              hintStyle: TextStyle(color: Colors.white60),
-              border: new OutlineInputBorder(
-                borderSide: state is LoginFailure
-                    ? BorderSide(color: Colors.red)
-                    : BorderSide.none,
-                borderRadius: const BorderRadius.all(
-                  const Radius.circular(10),
-                ),
-              ),
-              filled: true,
-              fillColor: appTextFieldsColor,
-            ),
+            decoration: passwordDecoration(state),
           ),
         ),
       ],
+    );
+  }
+
+  InputDecoration passwordDecoration(state) {
+    return InputDecoration(
+      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+      errorText: state is LoginFailure ? 'invalid password' : '',
+      errorStyle: TextStyle(fontSize: 12, height: 0.3),
+      suffixIcon: IconButton(
+        color: Colors.white60,
+        onPressed: () {
+          setState(() {
+            _showPassword = !_showPassword;
+          });
+        },
+        icon: Icon(
+          _showPassword ? Icons.visibility_off : Icons.visibility,
+        ),
+      ),
+      prefixIcon: Icon(
+        Icons.vpn_key,
+        color: Colors.white60,
+      ),
+      hintText: "Enter Password",
+      hintStyle: TextStyle(color: Colors.white60),
+      border: new OutlineInputBorder(
+        borderSide: state is LoginFailure
+            ? BorderSide(color: Colors.red)
+            : BorderSide.none,
+        borderRadius: const BorderRadius.all(
+          const Radius.circular(10),
+        ),
+      ),
+      filled: true,
+      fillColor: appTextFieldsColor,
     );
   }
 

@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:lifestylediet/models/databaseProduct.dart';
-import 'package:lifestylediet/models/nutrition.dart';
-import 'package:lifestylediet/repositories/database_repository.dart';
-import 'package:lifestylediet/repositories/user_repository.dart';
+import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/repositories/repositories.dart';
 import 'bloc.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
@@ -14,6 +12,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<DatabaseProduct> supperList = [];
   Nutrition _nutrition = Nutrition(2500, 0, 0, 0, 0, 0);
   String uid;
+  List<Meal> mealList = [];
 
   String get meal => _meal;
 
@@ -42,8 +41,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _databaseRepository = DatabaseRepository(uid: event.uid);
     productList = await _databaseRepository.getUserData();
     await mealLists(productList);
-    yield HomeLoadedState(breakfastList, dinnerList, supperList, _nutrition);
-  }
+    List<Meal> mealList = createMealList();
+    yield HomeLoadedState(mealList, _nutrition);
+    }
 
   Stream<HomeState> _mapHomeLogout(Logout event) async* {
     yield HomeLoadingState();
@@ -64,7 +64,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _databaseRepository.deleteProduct(productList[index]);
     productList.removeAt(index);
     await mealLists(productList);
-    yield HomeLoadedState(breakfastList, dinnerList, supperList, _nutrition);
+    yield HomeLoadedState(mealList, _nutrition);
   }
 
   Stream<HomeState> _mapUpdateProduct(UpdateProduct event) async* {
@@ -77,7 +77,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     productList[index].amount = event.amount;
     await mealLists(productList);
     _databaseRepository.updateProduct(productList[index]);
-    yield HomeLoadedState(breakfastList, dinnerList, supperList, _nutrition);
+    yield HomeLoadedState(mealList, _nutrition);
+  }
+
+  List<Meal> createMealList() {
+    Meal breakfast = new Meal("Breakfast", true, breakfastList);
+    Meal dinner = new Meal("Dinner", false, dinnerList);
+    Meal supper = new Meal("Supper", false, supperList);
+    mealList = [breakfast, dinner, supper];
+    return mealList;
   }
 
   mealLists(List<DatabaseProduct> productList) {
@@ -109,8 +117,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         valueOfNutriment(nutriments.fats, nutriments.fatsPerServing, product);
   }
 
-  valueOfNutriment(
-      double value, double valuePerServing, DatabaseProduct product) {
+  valueOfNutriment(double value, double valuePerServing,
+      DatabaseProduct product) {
     double val;
     switch (product.value) {
       case 'serving':

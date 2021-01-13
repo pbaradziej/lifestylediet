@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:lifestylediet/models/databaseProduct.dart';
+import 'package:lifestylediet/models/models.dart';
 
 abstract class AddEvent extends Equatable {
   @override
@@ -32,4 +32,15 @@ class AddProduct extends AddEvent {
 
   @override
   List<Object> get props => [uid, meal, product, amount, value];
+}
+
+class AddProductList extends AddEvent {
+  final String uid;
+  final String meal;
+  final List<DatabaseProduct> products;
+
+  AddProductList({this.uid, this.meal, this.products});
+
+  @override
+  List<Object> get props => [uid, meal, products];
 }

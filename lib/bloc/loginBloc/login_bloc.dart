@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/repositories/user_repository.dart';
+import 'package:lifestylediet/repositories/repositories.dart';
 import 'bloc.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {

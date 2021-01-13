@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 Color get appTextFieldsColor => Colors.orangeAccent;
 
@@ -10,13 +11,17 @@ TextStyle get textStyle => TextStyle(fontSize: 20, color: Colors.white);
 
 TextStyle get defaultTextStyle => TextStyle(fontSize: 14, color: Colors.black);
 
+TextStyle get defaultProfileTextStyle => TextStyle(fontSize: 17, color: Colors.black);
+
 TextStyle get subTitleStyle => TextStyle(fontSize: 25, color: Colors.white);
 
 TextStyle get titleAddScreenStyle => TextStyle(fontSize: 30, color: Colors.black54);
 
 TextStyle get subTitleAddScreenStyle => TextStyle(fontSize: 20, color: Colors.black);
 
-TextStyle get titleStyle => TextStyle(fontSize: 40, color: Colors.white);
+TextStyle get titleHomeStyle => TextStyle(fontSize: 40, color: Colors.white);
+
+TextStyle get titleStyle => GoogleFonts.aleo(fontWeight: FontWeight.bold, fontSize: 35, color: Colors.grey[100]);
 
 appTheme() {
   return BoxDecoration(

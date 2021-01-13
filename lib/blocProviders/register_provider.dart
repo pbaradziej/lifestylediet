@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
-import '../screens/register_screen.dart';
+import 'package:lifestylediet/screens/screens.dart';
 
 class RegisterProvider extends StatelessWidget {
   @override

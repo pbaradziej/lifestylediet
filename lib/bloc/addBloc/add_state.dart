@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:lifestylediet/models/databaseProduct.dart';
+import 'package:lifestylediet/models/models.dart';
 
 abstract class AddState extends Equatable {
   @override

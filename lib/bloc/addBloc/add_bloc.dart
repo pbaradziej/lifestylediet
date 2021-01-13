@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:lifestylediet/models/databaseProduct.dart';
-import 'package:lifestylediet/repositories/database_repository.dart';
-import 'package:lifestylediet/repositories/product_repository.dart';
+import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/repositories/repositories.dart';
 
 import 'bloc.dart';
 
@@ -21,20 +20,17 @@ class AddBloc extends Bloc<AddEvent, AddState> {
       yield AddReturnState();
     } else if (event is AddProduct) {
       yield* mapAddProduct(event);
+    } else if(event is AddProductList) {
+      yield* mapAddProductList(event);
     }
   }
 
   Stream<AddState> mapSearchFood(SearchFood event) async* {
     yield AddLoadingState();
-    List<DatabaseProduct> _productsList;
-    try {
-      _productsList = await _productRepository.getSearchProducts(event.search);
-    } catch (Exception) {
-      yield ProductNotFoundState();
-      return;
-    }
 
-    yield AddSearchState(_productsList);
+    await Future.delayed(Duration(seconds: 1));
+
+    yield AddLoadedState();
   }
 
   Stream<AddState> mapAddProduct(AddProduct event) async* {
@@ -44,6 +40,20 @@ class AddBloc extends Bloc<AddEvent, AddState> {
         product: event.product,
         amount: event.amount,
         value: event.value);
+
+    yield AddReturnState();
+  }
+
+  Stream<AddState> mapAddProductList(AddProductList event) async* {
+    yield AddLoadingState();
+    List<DatabaseProduct> products = event.products;
+    products.forEach((product) async {
+      await DatabaseRepository(uid: event.uid).addUserData(
+          meal: event.meal,
+          product: product,
+          amount: product.amount,
+          value: product.value);
+    });
 
     yield AddReturnState();
   }

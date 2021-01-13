@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifestylediet/models/databaseProduct.dart';
+import 'package:lifestylediet/models/models.dart';
 import 'package:uuid/uuid.dart';
 
 class DatabaseRepository {

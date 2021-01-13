@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
 import 'package:lifestylediet/bloc/addBloc/bloc.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
@@ -7,8 +10,6 @@ import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/repositories/repositories.dart';
 import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class AddScreen extends StatefulWidget {
   @override
@@ -31,8 +32,22 @@ class _AddScreenState extends State<AddScreen> {
     _addBloc = BlocProvider.of<AddBloc>(context);
   }
 
-  _getFoodList(String search) {
+  _getFoodList(String search) async {
+    List<DatabaseProduct> products;
     _addBloc.add(SearchFood(search));
+    try {
+      products = await _productRepository.getSearchProducts(search);
+    } catch (Exception) {
+      setState(() {
+        return _snackBar();
+      });
+    }
+    int productsListSize = products?.length ?? 0;
+    if (productsListSize > 1) {
+      return _multiDetailsNavigator(products);
+    } else if (productsListSize == 1) {
+      return _detailsNavigator(products.first);
+    }
   }
 
   @override
@@ -69,7 +84,16 @@ class _AddScreenState extends State<AddScreen> {
                       ),
                     );
                   } else if (state is AddSearchState) {
-                    return _searchListBuilder(state);
+                    List<DatabaseProduct> products = state.products;
+                    int productsListSize = products.length;
+                    if (productsListSize > 1) {
+                      return _multiDetailsNavigator(products);
+                    } else if (productsListSize == 1) {
+                      return _detailsNavigator(products.first);
+                    } else {
+                      return _snackBar();
+                    }
+                    // return _searchListBuilder(state);
                   } else {
                     return Container();
                   }
@@ -77,6 +101,20 @@ class _AddScreenState extends State<AddScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  _multiDetailsNavigator(List<DatabaseProduct> products) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiDetailsScreen(
+          products: products,
+          meal: _homeBloc.meal,
+          uid: _loginBloc.uid,
+          addBloc: _addBloc,
         ),
       ),
     );
@@ -140,38 +178,46 @@ class _AddScreenState extends State<AddScreen> {
               }
             });
           },
-          onSubmitted: (submit) => _getFoodList(_search),
+          onSubmitted: (submit) {
+            _getFoodList(_search);
+          },
           style: TextStyle(
             color: Colors.black,
             height: 2,
           ),
-          decoration: new InputDecoration(
-            contentPadding: EdgeInsets.symmetric(
-              vertical: 10.0,
-              horizontal: 10.0,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                Icons.search,
-                color: Colors.black45,
-              ),
-              onPressed: () => _getFoodList(_search),
-            ),
-            hintText: "Search product",
-            hintStyle: TextStyle(color: Colors.grey),
-            border: new OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.black45,
-              ),
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(10),
-              ),
-            ),
-            filled: true,
-            fillColor: searchLupe,
-          ),
+          decoration: searchDecoration(),
         ),
       ),
+    );
+  }
+
+  InputDecoration searchDecoration() {
+    return InputDecoration(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 10.0,
+        horizontal: 10.0,
+      ),
+      suffixIcon: IconButton(
+        icon: Icon(
+          Icons.search,
+          color: Colors.black45,
+        ),
+        onPressed: () {
+          _getFoodList(_search);
+        },
+      ),
+      hintText: "Search product",
+      hintStyle: TextStyle(color: Colors.grey),
+      border: new OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black45,
+        ),
+        borderRadius: const BorderRadius.all(
+          const Radius.circular(10),
+        ),
+      ),
+      filled: true,
+      fillColor: searchLupe,
     );
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/addBloc/bloc.dart';
-import 'package:lifestylediet/screens/add_screen.dart';
+import 'package:lifestylediet/screens/screens.dart';
 
 class AddProvider extends StatelessWidget {
   @override

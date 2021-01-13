@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:lifestylediet/models/databaseProduct.dart';
-import 'package:lifestylediet/providers/product_provider.dart';
+import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/providers/providers.dart';
 
 class ProductRepository {
   ProductProvider _productProvider = ProductProvider();
