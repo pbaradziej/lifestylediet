@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
+import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
 
 import 'package:lifestylediet/utils/theme.dart';
 
@@ -9,6 +12,16 @@ class ChartScreen extends StatefulWidget {
 }
 
 class _ChartScreenState extends State<ChartScreen> {
+  HomeBloc _homeBloc;
+  LoginBloc _loginBloc;
+
+  @override
+  initState() {
+    super.initState();
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _homeBloc = BlocProvider.of<HomeBloc>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -42,7 +55,8 @@ class _ChartScreenState extends State<ChartScreen> {
           children: [
             summaryHeadLine("Wykres Wagi"),
             SizedBox(height: 20),
-            weightLineChart()
+            weightLineChart(),
+            SizedBox(height: 20),
           ],
         ),
       ),

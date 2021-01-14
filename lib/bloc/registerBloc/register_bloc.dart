@@ -27,11 +27,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   Stream<RegisterState> _mapRegisterState(Register event) async* {
     yield RegisterLoading();
     bool result = await _repository.register(getUser(event));
-    if (result) {
-      yield ReturnLogin();
-    } else {
-      yield RegisterFailure();
-    }
+    yield RegisterResult(result);
   }
 
   Stream<RegisterState> _mapLoginState(Return event) async* {

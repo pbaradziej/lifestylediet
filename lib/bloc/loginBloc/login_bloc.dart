@@ -6,8 +6,17 @@ import 'bloc.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   UserRepository _repository = UserRepository();
   String _uid;
+  String _uidPD;
+  String _uidWT;
+  String _uidCI;
 
   String get uid => _uid;
+
+  String get personalUid => _uidPD;
+
+  String get weightUid => _uidWT;
+
+  String get caloriesUid => _uidCI;
 
   @override
   LoginState get initialState => LoginLoading();
@@ -32,6 +41,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     bool result = await _repository.login(getUser(event));
     if (result) {
       _uid = _repository.uid;
+      _uidPD = _uid + "PD";
+      _uidWT = _uid + "WT";
+      _uidCI = _uid + "CI";
       yield LoginSuccess(event.user);
     } else {
       yield LoginFailure();

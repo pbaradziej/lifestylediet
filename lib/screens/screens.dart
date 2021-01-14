@@ -8,3 +8,5 @@ export 'meal_screen.dart';
 export 'profile_screen.dart';
 export 'chart_screen.dart';
 export 'multi_details_screen.dart';
+export 'registerScreens/goals_screen.dart';
+export 'registerScreens/personal_data_screen.dart';

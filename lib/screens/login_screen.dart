@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 
 import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
+import 'package:lifestylediet/components/components.dart';
+import 'package:lifestylediet/components/raised_button.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/screens/screens.dart';
@@ -16,10 +18,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   LoginBloc _bloc;
-  String _email;
-  String _password;
-  bool _showPassword = true;
+  bool _hidePassword = true;
   final FocusNode _passFocus = FocusNode();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   initState() {
@@ -53,7 +55,11 @@ class _LoginScreenState extends State<LoginScreen> {
             if (state is LoginLoading) {
               return loadingScreen();
             } else if (state is RegisterLoading) {
-              return RegisterProvider();
+              return PersonalDataScreen(
+                email: "s",
+                password: "s",
+              );
+              //return RegisterProvider();
             } else if (state is LoginSuccess) {
               return HomeProvider();
             } else if (state is LoginLoaded) {
@@ -114,103 +120,45 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget loginTF(state, FocusScopeNode node) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Email", style: TextStyle(color: Colors.white)),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 260,
-          child: TextFormField(
-            onChanged: (login) {
-              setState(() {
-                _email = login;
-              });
-            },
-            textInputAction: TextInputAction.next,
-            onEditingComplete: () => node.nextFocus(),
-            style: TextStyle(
-              color: Colors.white,
-              height: 2,
-            ),
-            decoration: loginDecoration(state),
-          ),
-        ),
-      ],
-    );
-  }
-
-  InputDecoration loginDecoration(state) {
-    return InputDecoration(
-      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+    return TextFormFieldComponent(
+      label: "Email",
+      controller: _emailController,
+      hintText: "Enter Email",
+      borderSide: state is LoginFailure,
       errorText: state is LoginFailure ? 'invalid email' : '',
-      errorStyle: TextStyle(fontSize: 12, height: 0.3),
+      onEditingComplete: () => node.nextFocus(),
       prefixIcon: Icon(
         Icons.mail,
         color: Colors.white60,
       ),
-      hintText: "Enter Email",
-      hintStyle: TextStyle(color: Colors.white60),
-      border: new OutlineInputBorder(
-        borderSide: state is LoginFailure
-            ? BorderSide(color: Colors.red)
-            : BorderSide.none,
-        borderRadius: const BorderRadius.all(
-          const Radius.circular(10),
-        ),
-      ),
-      filled: true,
-      fillColor: appTextFieldsColor,
     );
   }
 
   Widget passwordTF(state, FocusScopeNode node) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Password", style: TextStyle(color: Colors.white)),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 260,
-          child: TextFormField(
-            obscureText: _showPassword,
-            onChanged: (password) {
-              setState(() {
-                _password = password;
-              });
-            },
-            textInputAction: TextInputAction.done,
-            focusNode: _passFocus,
-            onFieldSubmitted: (value) {
-              _passFocus.unfocus();
-              Users user = new Users(_email.trim(), _password);
-              _bloc.add(Login(user: user));
-            },
-            style: TextStyle(
-              color: Colors.white,
-              height: 2,
-            ),
-            decoration: passwordDecoration(state),
-          ),
-        ),
-      ],
-    );
-  }
-
-  InputDecoration passwordDecoration(state) {
-    return InputDecoration(
-      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+    return TextFormFieldComponent(
+      label: "Password",
+      controller: _passwordController,
+      obscureText: _hidePassword,
+      textInputAction: TextInputAction.done,
+      onFieldSubmitted: (value) {
+        _passFocus.unfocus();
+        Users user = new Users(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+        _bloc.add(Login(user: user));
+        _rememberMeController();
+      },
       errorText: state is LoginFailure ? 'invalid password' : '',
-      errorStyle: TextStyle(fontSize: 12, height: 0.3),
       suffixIcon: IconButton(
         color: Colors.white60,
         onPressed: () {
           setState(() {
-            _showPassword = !_showPassword;
+            _hidePassword = !_hidePassword;
           });
         },
         icon: Icon(
-          _showPassword ? Icons.visibility_off : Icons.visibility,
+          _hidePassword ? Icons.visibility_off : Icons.visibility,
         ),
       ),
       prefixIcon: Icon(
@@ -218,17 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
         color: Colors.white60,
       ),
       hintText: "Enter Password",
-      hintStyle: TextStyle(color: Colors.white60),
-      border: new OutlineInputBorder(
-        borderSide: state is LoginFailure
-            ? BorderSide(color: Colors.red)
-            : BorderSide.none,
-        borderRadius: const BorderRadius.all(
-          const Radius.circular(10),
-        ),
-      ),
-      filled: true,
-      fillColor: appTextFieldsColor,
+      borderSide: state is LoginFailure,
     );
   }
 
@@ -249,37 +187,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget rememberMe() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14.0, 0, 0, 0),
-      child: Container(
-        height: 20,
-        alignment: Alignment.centerLeft,
-        child: Row(
-          children: [
-            Theme(
-              data: ThemeData(unselectedWidgetColor: Colors.white),
-              child: Checkbox(
-                value: _rememberMe,
-                checkColor: Colors.green,
-                activeColor: Colors.white,
-                onChanged: (bool value) {
-                  setState(() {
-                    _rememberMe = value;
-                  });
-                },
-              ),
-            ),
-            Text(
-              "Remember me",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-              ),
-            )
-          ],
-        ),
-      ),
+    return LogicComponent(
+      label: "Remember me",
+      value: _rememberMe,
     );
+  }
+
+  _rememberMeController() {
+    if(!_rememberMe) {
+      _emailController.clear();
+    }
+
+    _passwordController.clear();
   }
 
   Widget signUp() {
@@ -301,26 +220,16 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget login() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 15),
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      width: double.infinity,
-      child: RaisedButton(
-        padding: EdgeInsets.all(15),
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        color: Colors.white,
-        onPressed: () {
-          Users user = new Users(_email.trim(), _password);
-          _bloc.add(Login(user: user));
-        },
-        child: Text(
-          "Login",
-          style: TextStyle(color: Colors.black45),
-        ),
-      ),
+    return RaisedButtonComponent(
+      label: "Login",
+      onPressed:  () {
+        Users user = new Users(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+        _bloc.add(Login(user: user));
+        _rememberMeController();
+      },
     );
   }
 }

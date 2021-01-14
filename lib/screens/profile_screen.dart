@@ -181,8 +181,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           summaryRow("Waga", "85 kg"),
-          summaryRow("BMI", "23"),
           summaryRow("Wzrost", "188 cm"),
+          summaryRow("BMI", "23"),
         ],
       ),
     );

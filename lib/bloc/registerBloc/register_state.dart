@@ -11,4 +11,11 @@ class RegisterLoaded extends RegisterState {}
 
 class ReturnLogin extends RegisterState {}
 
-class RegisterFailure extends RegisterState {}
+class RegisterResult extends RegisterState {
+  final bool result;
+
+  RegisterResult(this.result);
+
+  @override
+  List<Object> get props => [result];
+}

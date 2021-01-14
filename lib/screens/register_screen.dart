@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
+import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 import 'package:lifestylediet/screens/screens.dart';
@@ -11,11 +12,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  bool _rememberMe = false;
   bool _acceptTerms = false;
-  String _email;
-  String _password;
+  bool _acceptedConditions = false;
+  bool _hidePassword = true;
   RegisterBloc _bloc;
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   initState() {
@@ -43,8 +45,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             return registerBuilder(state, node);
           } else if (state is ReturnLogin) {
             return LoginScreen();
-          } else if (state is RegisterFailure) {
-            return registerBuilder(state, node);
+          } else if (state is RegisterResult) {
+            return _registerResult(state, node);
           } else {
             return loadingScreen();
           }
@@ -69,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text('Sign Up', style: titleStyle),
                 ),
                 SizedBox(height: 30),
-                loginTF(state, node),
+                loginTF(node, state),
                 SizedBox(height: 20),
                 passwordTF(state),
                 SizedBox(height: 10),
@@ -94,163 +96,76 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget loginTF(state, FocusScopeNode node) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Email", style: TextStyle(color: Colors.white)),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 260,
-          child: TextFormField(
-            onChanged: (login) {
-              setState(() {
-                _email = login;
-              });
-            },
-            textInputAction: TextInputAction.next,
-            onEditingComplete: () => node.nextFocus(),
-            style: TextStyle(
-              color: Colors.white,
-              height: 2,
-            ),
-            decoration: new InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              errorText: state is RegisterFailure ? 'Enter an email' : '',
-              errorStyle: TextStyle(fontSize: 12, height: 0.3),
-              prefixIcon: Icon(
-                Icons.mail,
-                color: Colors.white60,
-              ),
-              hintText: "Enter Email",
-              hintStyle: TextStyle(color: Colors.white60),
-              border: new OutlineInputBorder(
-                borderSide: state is RegisterFailure
-                    ? BorderSide(color: Colors.red)
-                    : BorderSide.none,
-                borderRadius: const BorderRadius.all(
-                  const Radius.circular(10),
-                ),
-              ),
-              filled: true,
-              fillColor: appTextFieldsColor,
-            ),
-          ),
-        ),
-      ],
+  _registerResult(RegisterResult state, node) {
+    if (state.result) {
+      return PersonalDataScreen(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+    } else {
+      return registerBuilder(state, node);
+    }
+  }
+
+  Widget loginTF(FocusScopeNode node, state) {
+    return TextFormFieldComponent(
+      label: "Email",
+      controller: _emailController,
+      hintText: "Enter Email",
+      borderSide: state is RegisterResult,
+      errorText: state is RegisterResult ? 'invalid email' : '',
+      onEditingComplete: () => node.nextFocus(),
+      prefixIcon: Icon(
+        Icons.mail,
+        color: Colors.white60,
+      ),
     );
   }
 
   Widget passwordTF(state) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Password", style: TextStyle(color: Colors.white)),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 260,
-          child: TextFormField(
-            obscureText: true,
-            onChanged: (password) {
-              setState(() {
-                _password = password;
-              });
-            },
-            // textInputAction: TextInputAction.next,
-            style: TextStyle(
-              color: Colors.white,
-              height: 2,
-            ),
-            decoration: new InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              errorText: state is RegisterFailure
-                  ? 'Enter a password 6+ chars long'
-                  : '',
-              errorStyle: TextStyle(fontSize: 12, height: 0.3),
-              prefixIcon: Icon(
-                Icons.vpn_key,
-                color: Colors.white60,
-              ),
-              hintText: "Enter Password",
-              hintStyle: TextStyle(color: Colors.white60),
-              border: new OutlineInputBorder(
-                borderSide: state is RegisterFailure
-                    ? BorderSide(color: Colors.red)
-                    : BorderSide.none,
-                borderRadius: const BorderRadius.all(
-                  const Radius.circular(10),
-                ),
-              ),
-              filled: true,
-              fillColor: appTextFieldsColor,
-            ),
-          ),
+    return TextFormFieldComponent(
+      label: "Password",
+      controller: _passwordController,
+      obscureText: _hidePassword,
+      textInputAction: TextInputAction.done,
+      errorText:
+          state is RegisterResult ? 'Enter a password 6+ chars long' : '',
+      suffixIcon: IconButton(
+        color: Colors.white60,
+        onPressed: () {
+          setState(() {
+            _hidePassword = !_hidePassword;
+          });
+        },
+        icon: Icon(
+          _hidePassword ? Icons.visibility_off : Icons.visibility,
         ),
-      ],
+      ),
+      prefixIcon: Icon(
+        Icons.vpn_key,
+        color: Colors.white60,
+      ),
+      hintText: "Enter Password",
+      borderSide: state is RegisterResult,
     );
   }
 
   Widget acceptConditions() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14.0, 0, 0, 0),
-      child: Container(
-        height: 20,
-        alignment: Alignment.centerLeft,
-        child: Row(
-          children: [
-            Theme(
-              data: ThemeData(
-                unselectedWidgetColor: _acceptTerms ? Colors.red : Colors.white,
-              ),
-              child: Checkbox(
-                value: _rememberMe,
-                checkColor: Colors.green,
-                activeColor: Colors.white,
-                onChanged: (bool value) {
-                  setState(() {
-                    _rememberMe = value;
-                  });
-                },
-              ),
-            ),
-            Text(
-              "Accept Conditions",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-              ),
-            )
-          ],
-        ),
-      ),
+    return LogicComponent(
+      label: "Accept Conditions",
+      value: _acceptTerms,
+      submitted: _acceptedConditions,
     );
   }
 
   Widget signUp(state) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 15),
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      width: double.infinity,
-      child: RaisedButton(
-        disabledColor: Colors.grey,
-        padding: EdgeInsets.all(15),
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        color: Colors.white,
-        onPressed: () {
-          setState(() {
-            _rememberMe ? registerUser() : _acceptTerms = true;
-          });
-        },
-        child: Text(
-          "Sign Up",
-          style: TextStyle(color: Colors.black45),
-        ),
-      ),
+    return RaisedButtonComponent(
+      label: "Sign Up",
+      onPressed:  () {
+        setState(() {
+          _acceptTerms ? registerUser() : _acceptedConditions = true;
+        });
+      },
     );
   }
 
@@ -274,7 +189,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   registerUser() {
-    Users _user = Users(_email.trim(), _password);
+    Users _user = Users(
+      _emailController.text?.trim(),
+      _passwordController.text,
+    );
     Register _register = Register(user: _user);
     _bloc.add(_register);
   }
