@@ -1,22 +1,22 @@
 import 'package:bloc/bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/repositories/repositories.dart';
+
 import 'bloc.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   UserRepository _repository = UserRepository();
   String _uid;
-  String _uidPD;
-  String _uidWT;
-  String _uidCI;
+  String _currentDate;
 
   String get uid => _uid;
 
-  String get personalUid => _uidPD;
+  String get currentDate => _currentDate;
 
-  String get weightUid => _uidWT;
-
-  String get caloriesUid => _uidCI;
+  void setCurrentDate(String currentDate) {
+    this._currentDate = currentDate;
+  }
 
   @override
   LoginState get initialState => LoginLoading();
@@ -27,7 +27,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield* _mapLoginLoadState();
     } else if (event is Login) {
       yield* _mapLoginState(event);
-    } else if (event is Register) {
+    } else if (event is RegisterLoadEvent) {
       yield* _mapRegisterLoadState();
     }
   }
@@ -41,9 +41,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     bool result = await _repository.login(getUser(event));
     if (result) {
       _uid = _repository.uid;
-      _uidPD = _uid + "PD";
-      _uidWT = _uid + "WT";
-      _uidCI = _uid + "CI";
+      DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
+      String strDate = dateFormat.format(DateTime.now());
+      _currentDate = strDate;
       yield LoginSuccess(event.user);
     } else {
       yield LoginFailure();
@@ -51,7 +51,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   Stream<LoginState> _mapRegisterLoadState() async* {
-    yield RegisterLoading();
+    yield RegisterLoadingState();
   }
 
   getUser(event) {

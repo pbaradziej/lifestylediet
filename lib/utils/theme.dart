@@ -23,6 +23,8 @@ TextStyle get titleHomeStyle => TextStyle(fontSize: 40, color: Colors.white);
 
 TextStyle get titleStyle => GoogleFonts.aleo(fontWeight: FontWeight.bold, fontSize: 35, color: Colors.grey[100]);
 
+TextStyle get titleDateStyle => GoogleFonts.aleo( fontSize: 25, color: Colors.grey[700]);
+
 appTheme() {
   return BoxDecoration(
     gradient: LinearGradient(

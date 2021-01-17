@@ -11,6 +11,7 @@ class DetailsScreen extends StatefulWidget {
   final String uid;
   final HomeBloc homeBloc;
   final AddBloc addBloc;
+  final String currentDate;
   bool isEditable;
   bool isNewProduct;
 
@@ -22,6 +23,7 @@ class DetailsScreen extends StatefulWidget {
     this.addBloc,
     this.isEditable,
     this.isNewProduct,
+    this.currentDate,
   });
 
   @override
@@ -130,6 +132,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           AddProduct(
               uid: widget.uid,
               meal: widget.meal,
+              currentDate: widget.currentDate,
               product: widget.product,
               amount: _amount,
               value: _dropdownValue),

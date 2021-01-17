@@ -14,6 +14,7 @@ class TextFormFieldComponent extends StatefulWidget {
   final Widget prefixIcon;
   final Widget suffixIcon;
   final bool obscureText;
+  final bool enabled;
 
   const TextFormFieldComponent({
     Key key,
@@ -29,6 +30,7 @@ class TextFormFieldComponent extends StatefulWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.obscureText = false,
+    this.enabled = true,
   }) : super(key: key);
 
   @override
@@ -48,6 +50,7 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
   Widget _prefixIcon;
   Widget _suffixIcon;
   bool _obscureText;
+  bool _enabled;
 
   void initComponents() {
     _label = widget.label;
@@ -62,12 +65,12 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
     _prefixIcon = widget.prefixIcon;
     _suffixIcon = widget.suffixIcon;
     _obscureText = widget.obscureText;
+    _enabled = widget.enabled;
   }
 
   @override
   Widget build(BuildContext context) {
     initComponents();
-    final node = FocusScope.of(context);
     return Container(
       height: 90,
       width: _halfScreen ? 140 : 260,
@@ -77,11 +80,12 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
         children: [
           Text(_label, style: TextStyle(color: Colors.white)),
           TextFormField(
+            enabled: _enabled,
             obscureText: _obscureText,
             onFieldSubmitted: _onFieldSubmitted,
             controller: _controller,
             textInputAction: _action,
-            onEditingComplete: _onEditingComplete ?? () => node.nextFocus(),
+            onEditingComplete: _onEditingComplete,
             style: TextStyle(color: Colors.white, fontSize: 15),
             decoration: new InputDecoration(
               prefixIcon: _prefixIcon,

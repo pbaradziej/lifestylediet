@@ -73,6 +73,8 @@ class _AddScreenState extends State<AddScreen> {
                     return _adderCards();
                   } else if (state is ProductNotFoundState) {
                     return _snackBar();
+                  } else if (state is DatabaseProductsState) {
+                    return _searchListBuilder(state);
                   } else if (state is AddLoadingState) {
                     return Flexible(
                       child: ListView(
@@ -113,6 +115,7 @@ class _AddScreenState extends State<AddScreen> {
         builder: (context) => MultiDetailsScreen(
           products: products,
           meal: _homeBloc.meal,
+          currentDate: _homeBloc.currentDate,
           uid: _loginBloc.uid,
           addBloc: _addBloc,
         ),
@@ -138,7 +141,7 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Widget _searchListBuilder(AddSearchState state) {
+  Widget _searchListBuilder(DatabaseProductsState state) {
     return Expanded(
       child: ListView.builder(
         padding: const EdgeInsets.all(0),
@@ -290,7 +293,9 @@ class _AddScreenState extends State<AddScreen> {
 
   Widget _databaseProducts() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        _addBloc.add(DatabaseProductList(_homeBloc.uid));
+      },
       child: Container(
         height: 170,
         child: Card(
@@ -323,7 +328,7 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Widget showFood(AddSearchState state, int index) {
+  Widget showFood(DatabaseProductsState state, int index) {
     DatabaseProduct product = state.products[index];
     Nutriments nutriments = product.nutriments;
 
@@ -355,6 +360,7 @@ class _AddScreenState extends State<AddScreen> {
         builder: (context) => DetailsScreen(
           product: product,
           meal: _homeBloc.meal,
+          currentDate: _homeBloc.currentDate,
           uid: _loginBloc.uid,
           addBloc: _addBloc,
           isEditable: true,

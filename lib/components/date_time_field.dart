@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/utils/theme.dart';
 import 'package:intl/intl.dart';
+import 'package:lifestylediet/utils/theme.dart';
 
 class DateTimeFieldComponent extends StatefulWidget {
   final TextEditingController controller;
@@ -116,8 +116,8 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
+      firstDate: DateTime(1920),
+      lastDate: DateTime(2022),
       builder: (BuildContext context, Widget child) {
         return Theme(
           data: ThemeData.light().copyWith(

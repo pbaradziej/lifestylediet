@@ -1,26 +1,48 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
+import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/screens/edit_profile_screen.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class ProfileScreen extends StatefulWidget {
+  final PersonalData personalData;
+  final NutrimentsData nutrimentsData;
+
+  const ProfileScreen(
+    this.personalData,
+    this.nutrimentsData, {
+    Key key,
+  }) : super(key: key);
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
   HomeBloc _homeBloc;
+  PersonalData _personalData;
+  NutrimentsData _nutrimentsData;
 
   @override
   initState() {
-    super.initState();
+    _personalData = widget.personalData;
+    _nutrimentsData = widget.nutrimentsData;
     _homeBloc = BlocProvider.of<HomeBloc>(context);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_homeBloc.state is HomeLoadedState) {
+      HomeLoadedState state = _homeBloc.state;
+      _personalData = state.personalData;
+      _nutrimentsData = state.nutrimentsData;
+    }
     return ListView(
       children: [
         SizedBox(
@@ -74,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         Text(
-          "Paweł Baradziej",
+          _personalData.firstName + " " + _personalData.lastName,
           style: Theme.of(context).textTheme.subhead,
         ),
       ],
@@ -104,17 +126,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-   void settingsMenu(Settings result) {
-      switch (result) {
-        case Settings.changePlan:
-          break;
-        case Settings.changeProfileData:
-          break;
-        case Settings.logout:
-          _homeBloc.add(Logout());
-          break;
-      }
-   }
+  // ignore: missing_return
+  settingsMenu(Settings result) {
+    switch (result) {
+      case Settings.changePlan:
+        return alertDialog(context);
+        break;
+      case Settings.changeProfileData:
+        return Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditProfileScreen(
+              personalData: _personalData,
+              bloc: _homeBloc,
+            ),
+          ),
+        );
+        break;
+      case Settings.logout:
+        _homeBloc.add(Logout());
+        break;
+    }
+  }
+
+  Future alertDialog(BuildContext context) {
+    List<String> plans = ["Schudnąć", "Utrzymać wagę", "Przytyć"];
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+              title: Text("Select Plan"),
+              content: SingleChildScrollView(
+                child: Container(
+                  width: double.infinity,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: plans
+                        .map((e) => RadioListTile(
+                              title: Text(e),
+                              value: e,
+                              groupValue: _personalData.goal,
+                              selected: _personalData.goal == e,
+                              onChanged: (value) {
+                                if (value != _personalData.goal) {
+                                  _personalData.goal = value;
+                                  _homeBloc.add(ChangePlan(_personalData.goal));
+                                  setState(() {});
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ));
+        });
+  }
 
   Widget summaryPersonalData() {
     return Card(
@@ -160,9 +227,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: new charts.PieChart(
         _getSeriesData(),
         animate: true,
-        defaultRenderer: new charts.ArcRendererConfig(
-            arcWidth: 60,
-            arcRendererDecorators: [new charts.ArcLabelDecorator()]),
+        defaultRenderer:
+            new charts.ArcRendererConfig(arcWidth: 90, arcRendererDecorators: [
+          new charts.ArcLabelDecorator(
+              labelPosition: charts.ArcLabelPosition.inside,
+              insideLabelStyleSpec: new charts.TextStyleSpec(
+                  fontSize: 16, color: charts.Color.fromHex(code: "#FFFFFF")))
+        ]),
       ),
     );
   }
@@ -175,17 +246,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget personalData() {
+    double bmi = double.parse(_personalData.weight) /
+        pow(double.parse(_personalData.height) / 100, 2);
     return Padding(
       padding: const EdgeInsets.only(top: 8, left: 26, right: 26),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          summaryRow("Waga", "85 kg"),
-          summaryRow("Wzrost", "188 cm"),
-          summaryRow("BMI", "23"),
+          summaryRow("Waga", "${_personalData.weight} kg"),
+          summaryRow("Wzrost", "${_personalData.height} cm"),
+          summaryRow("Płeć", "${_personalData.sex}"),
+          summaryRow("Data urodzenia", "${_personalData.date}"),
+          summaryRow("Aktywność fizyczna", "${_personalData.activity}"),
+          summaryRow("Cel", "${_personalData.goal}"),
+          summaryRow("BMI", "${bmi.toStringAsFixed(2).toString()}"),
+          checkBMI(bmi),
         ],
       ),
     );
+  }
+
+  Widget checkBMI(double bmi) {
+    if (bmi >= 25) {
+      return Text(
+          "Nadwaga. Masa ciała jest zbyt wysoka. Rozważ konsultację lekarską i modyfikację stylu życia.",
+          softWrap: true,
+          style: TextStyle(fontSize: 16, color: Colors.red));
+    } else if (bmi < 25 && bmi > 18.5) {
+      return Text(
+          "Masa ciała jest prawidłowa. Dbaj o bogatą w warzywa i owoce dietę oraz codzienną dawkę sportu.",
+          softWrap: true,
+          style: TextStyle(fontSize: 16, color: Colors.green));
+    } else {
+      return Text(
+          "Wygłodzenie. Masa ciała jest zbyt niska. Skontaktuj się ze swoim lekarzem, który przeprowadzi wywiad medyczny.",
+          softWrap: true,
+          style: TextStyle(fontSize: 16, color: Colors.red));
+    }
   }
 
   Widget personalBodyStatistics() {
@@ -194,16 +291,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          summaryRow("Kcal", "0"),
-          summaryRow("Protein", "0"),
-          summaryRow("Carbs", "0", padding: 0),
-          summaryRow("Fiber", "0", style: TextStyle(), padding: 0),
-          summaryRow("Sugars", "0", style: TextStyle()),
-          summaryRow("Fats", "0", padding: 0),
-          summaryRow("Saturated fats", "0", style: TextStyle()),
-          summaryRow("Cholesterol", "0"),
-          summaryRow("Sodium", "0"),
-          summaryRow("Potassium", "0"),
+          summaryCaloriesRow(
+            "Kcal",
+            _nutrimentsData.calories,
+          ),
+          summaryCaloriesRow(
+            "Protein",
+            _nutrimentsData.protein,
+          ),
+          summaryCaloriesRow(
+            "Carbs",
+            _nutrimentsData.carbs,
+            padding: 0,
+          ),
+          summaryCaloriesRow(
+            "Fiber",
+            _nutrimentsData.fiber,
+            style: TextStyle(),
+            padding: 0,
+          ),
+          summaryCaloriesRow(
+            "Sugars",
+            _nutrimentsData.sugars,
+            style: TextStyle(),
+          ),
+          summaryCaloriesRow(
+            "Fats",
+            _nutrimentsData.fats,
+            padding: 0,
+          ),
+          summaryCaloriesRow(
+            "Saturated fats",
+            _nutrimentsData.saturatedFats,
+            style: TextStyle(),
+          ),
+          summaryCaloriesRow(
+            "Cholesterol",
+            _nutrimentsData.cholesterol,
+          ),
+          summaryCaloriesRow(
+            "Sodium",
+            _nutrimentsData.sodium,
+          ),
+          summaryCaloriesRow(
+            "Potassium",
+            _nutrimentsData.potassium,
+          ),
         ],
       ),
     );
@@ -216,45 +349,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double padding,
   }) {
     return Padding(
-      padding: EdgeInsets.only(bottom: padding ?? 5.0),
+      padding: EdgeInsets.only(bottom: padding ?? 7.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(name, style: style ?? defaultProfileTextStyle),
-          Text(value, style: style ?? defaultProfileTextStyle),
+          Flexible(
+            flex: 1,
+            child: Text(
+              name,
+              style: style ?? defaultProfileTextStyle,
+              softWrap: true,
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: Text(
+              value,
+              style: style ?? defaultProfileTextStyle,
+              softWrap: true,
+              textAlign: TextAlign.right,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  final data = [
-    GradesData('A', 190),
-    GradesData('B', 230),
-    GradesData('C', 150),
-    GradesData('D', 73),
-    GradesData('E', 31),
-    GradesData('Fail', 13),
-  ];
+  Widget summaryCaloriesRow(
+    String name,
+    double value, {
+    TextStyle style,
+    double padding,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: padding ?? 7.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            flex: 1,
+            child: Text(
+              name,
+              style: style ?? defaultProfileTextStyle,
+              softWrap: true,
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: Text(
+              value.toStringAsFixed(2).toString(),
+              style: style ?? defaultProfileTextStyle,
+              softWrap: true,
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   _getSeriesData() {
-    List<charts.Series<GradesData, String>> series = [
+    final data = [
+      KcalData('Protein', _nutrimentsData.protein),
+      KcalData('Carbs', _nutrimentsData.carbs),
+      KcalData('Fats', _nutrimentsData.fats),
+    ];
+    List<charts.Series<KcalData, String>> series = [
       charts.Series(
-          id: "Grades",
+          id: "Nutrition",
           data: data,
-          labelAccessorFn: (GradesData row, _) =>
-              '${row.gradeSymbol}: ${row.numberOfStudents}',
-          domainFn: (GradesData grades, _) => grades.gradeSymbol,
-          measureFn: (GradesData grades, _) => grades.numberOfStudents)
+          labelAccessorFn: (KcalData row, _) =>
+              '${row.nutrition}:\n${row.value.toStringAsFixed(2).toString()}',
+          domainFn: (KcalData grades, _) => grades.nutrition,
+          measureFn: (KcalData grades, _) => (grades.value).floorToDouble())
     ];
     return series;
   }
 }
 
-class GradesData {
-  final String gradeSymbol;
-  final int numberOfStudents;
+class KcalData {
+  final String nutrition;
+  final double value;
 
-  GradesData(this.gradeSymbol, this.numberOfStudents);
+  KcalData(this.nutrition, this.value);
 }
 
 enum Settings { changeProfileData, changePlan, logout }

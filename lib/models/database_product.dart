@@ -1,5 +1,6 @@
 class DatabaseProduct {
   final String id;
+  final String date;
   final String meal;
   final String image;
   final String name;
@@ -9,12 +10,14 @@ class DatabaseProduct {
   String servingUnit;
   bool isExpanded;
 
-  DatabaseProduct(this.id, this.meal, this.amount, this.image, this.name,
-      this.value, this.servingUnit, this.nutriments, {this.isExpanded = true});
+  DatabaseProduct(this.id, this.date, this.meal, this.amount, this.image,
+      this.name, this.value, this.servingUnit, this.nutriments,
+      {this.isExpanded = true});
 
   factory DatabaseProduct.fromJson(Map<String, dynamic> json) {
     return DatabaseProduct(
       json['id'] as String,
+      json['date'] as String,
       json['meal'] as String,
       json['amount'] as double,
       json['image'] as String,

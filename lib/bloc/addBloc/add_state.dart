@@ -22,3 +22,12 @@ class AddLoadedState extends AddState {}
 class AddReturnState extends AddState {}
 
 class ProductNotFoundState extends AddState {}
+
+class DatabaseProductsState extends AddState {
+  final List<DatabaseProduct> products;
+
+  DatabaseProductsState(this.products);
+
+  @override
+  List<Object> get props => [products];
+}

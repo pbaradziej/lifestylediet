@@ -1,41 +1,57 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
-import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
-
+import 'package:lifestylediet/components/components.dart';
+import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/theme.dart';
 
 class ChartScreen extends StatefulWidget {
+  final List<WeightProgress> weightProgressList;
+  final PersonalData personalData;
+
+  const ChartScreen({
+    Key key,
+    this.weightProgressList,
+    this.personalData,
+  }) : super(key: key);
+
   @override
   _ChartScreenState createState() => _ChartScreenState();
 }
 
 class _ChartScreenState extends State<ChartScreen> {
   HomeBloc _homeBloc;
-  LoginBloc _loginBloc;
+  TextEditingController _weightController = new TextEditingController();
+  List<WeightProgress> _weightProgressList;
+  PersonalData _personalData;
 
   @override
   initState() {
     super.initState();
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _weightProgressList = widget.weightProgressList;
+    _personalData = widget.personalData;
     _homeBloc = BlocProvider.of<HomeBloc>(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_homeBloc.state is HomeLoadedState) {
+      HomeLoadedState state = _homeBloc.state;
+      _personalData = state.personalData;
+      _weightProgressList = state.weightProgress;
+    }
     return ListView(
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                weightChart(),
-                bmiChart(),
-              ],
-            ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              weightChart(),
+              bmiChart(),
+            ],
           ),
         ),
       ],
@@ -46,9 +62,9 @@ class _ChartScreenState extends State<ChartScreen> {
     return Card(
       elevation: 2,
       child: Container(
-        height: 300,
+        height: 450,
         width: double.infinity,
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -57,6 +73,32 @@ class _ChartScreenState extends State<ChartScreen> {
             SizedBox(height: 20),
             weightLineChart(),
             SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                NumericComponent(
+                  controller: _weightController,
+                  label: "Waga",
+                  halfScreen: true,
+                  unit: "kg",
+                  filled: false,
+                  textInputAction: TextInputAction.done,
+                ),
+                Container(
+                  width: 150,
+                  child: RaisedButtonComponent(
+                    label: "Dodaj Wagę",
+                    onPressed: () async {
+                      if (_weightController.text.isNotEmpty) {
+                        _homeBloc.add(AddWeight(_weightController.text));
+                        setState(() {});
+                      }
+                    },
+                    circle: false,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -65,9 +107,10 @@ class _ChartScreenState extends State<ChartScreen> {
 
   Widget weightLineChart() {
     return Expanded(
-      child: new charts.LineChart(
-        _getSeriesData(),
+      child: new charts.TimeSeriesChart(
+        _getSeriesWeightData(),
         animate: true,
+        dateTimeFactory: const charts.LocalDateTimeFactory(),
       ),
     );
   }
@@ -78,7 +121,7 @@ class _ChartScreenState extends State<ChartScreen> {
       child: Container(
         height: 300,
         width: double.infinity,
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -94,9 +137,10 @@ class _ChartScreenState extends State<ChartScreen> {
 
   Widget bmiLineChart() {
     return Expanded(
-      child: new charts.LineChart(
-        _getSeriesData(),
+      child: new charts.TimeSeriesChart(
+        _getSeriesBMIData(),
         animate: true,
+        dateTimeFactory: const charts.LocalDateTimeFactory(),
       ),
     );
   }
@@ -108,31 +152,37 @@ class _ChartScreenState extends State<ChartScreen> {
     );
   }
 
-  final data = [
-    new SalesData(0, 1500000),
-    new SalesData(1, 1735000),
-    new SalesData(2, 1678000),
-    new SalesData(3, 1890000),
-    new SalesData(4, 1907000),
-  ];
-
-  _getSeriesData() {
-    List<charts.Series<SalesData, int>> series = [
+  _getSeriesWeightData() {
+    List<charts.Series<WeightProgress, DateTime>> series = [
       charts.Series(
-          id: "Sales",
-          data: data,
-          domainFn: (SalesData series, _) => series.year,
-          measureFn: (SalesData series, _) => series.sales,
-          colorFn: (SalesData series, _) =>
+          id: "Weight progress",
+          data: _weightProgressList,
+          domainFn: (WeightProgress series, _) => DateTime.parse(series.date),
+          measureFn: (WeightProgress series, _) => double.parse(series.weight),
+          colorFn: (WeightProgress series, _) =>
               charts.MaterialPalette.blue.shadeDefault)
     ];
     return series;
   }
-}
 
-class SalesData {
-  final int year;
-  final int sales;
+  _getSeriesBMIData() {
+    List<charts.Series<WeightProgress, DateTime>> series = [
+      charts.Series(
+          id: "Weight progress",
+          data: _weightProgressList,
+          domainFn: (WeightProgress series, _) => DateTime.parse(series.date),
+          measureFn: (WeightProgress series, _) => getBMI(series.weight),
+          colorFn: (WeightProgress series, _) =>
+              charts.MaterialPalette.blue.shadeDefault)
+    ];
+    return series;
+  }
 
-  SalesData(this.year, this.sales);
+  double getBMI(String weight) {
+    double weightDouble = double.parse(weight);
+    double bmi =
+        weightDouble / pow(double.parse(_personalData.height) / 100, 2);
+
+    return bmi.roundToDouble();
+  }
 }

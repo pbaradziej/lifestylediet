@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lifestylediet/models/models.dart';
 
 abstract class HomeEvent extends Equatable {
   @override
@@ -18,11 +19,30 @@ class Logout extends HomeEvent {}
 
 class AddProductScreen extends HomeEvent {
   final String meal;
+  final String currentDate;
 
-  AddProductScreen(this.meal);
+  AddProductScreen(this.meal, this.currentDate);
 
   @override
-  List<Object> get props => [meal];
+  List<Object> get props => [meal, currentDate];
+}
+
+class AddWeight extends HomeEvent {
+  final String weight;
+
+  AddWeight(this.weight);
+
+  @override
+  List<Object> get props => [weight];
+}
+
+class ChangePlan extends HomeEvent {
+  final String plan;
+
+  ChangePlan(this.plan);
+
+  @override
+  List<Object> get props => [plan];
 }
 
 class UpdateProduct extends HomeEvent {
@@ -35,6 +55,15 @@ class UpdateProduct extends HomeEvent {
 
   @override
   List<Object> get props => [id, amount, value, index];
+}
+
+class UpdateProfileData extends HomeEvent {
+  final PersonalData personalData;
+
+  UpdateProfileData({this.personalData});
+
+  @override
+  List<Object> get props => [personalData];
 }
 
 class DeleteProduct extends HomeEvent {

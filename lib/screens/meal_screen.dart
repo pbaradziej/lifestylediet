@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
@@ -10,8 +11,15 @@ import 'package:lifestylediet/screens/screens.dart';
 class MealScreen extends StatefulWidget {
   final List<Meal> meals;
   final Nutrition nutrition;
+  final PersonalData personalData;
+  String currentDate;
 
-  MealScreen(this.meals, this.nutrition);
+  MealScreen(
+    this.meals,
+    this.nutrition,
+    this.personalData,
+    this.currentDate,
+  );
 
   @override
   _MealScreenState createState() => _MealScreenState();
@@ -21,12 +29,16 @@ class _MealScreenState extends State<MealScreen> {
   List<Meal> _meals;
   Nutrition _nutrition;
   HomeBloc _homeBloc;
+  PersonalData _personalData;
   LoginBloc _loginBloc;
+  String _currentDate;
 
   @override
   void initState() {
+    _currentDate = widget.currentDate;
     _meals = widget.meals;
     _nutrition = widget.nutrition;
+    _personalData = widget.personalData;
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
@@ -34,6 +46,16 @@ class _MealScreenState extends State<MealScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_homeBloc.state is HomeLoadedState) {
+      HomeLoadedState state = _homeBloc.state;
+      _personalData = state.personalData;
+    }
+    _nutrition = _homeBloc.getNutrition(_personalData);
+    _getNutritionWithCurrentDate(_meals);
+    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
+    String strDate = dateFormat.format(DateTime.now());
+    String strLastDate =
+        dateFormat.format(DateTime.now().subtract(Duration(days: 7)));
     return NotificationListener<OverscrollIndicatorNotification>(
       onNotification: (OverscrollIndicatorNotification overscroll) {
         overscroll.disallowGlow();
@@ -42,14 +64,107 @@ class _MealScreenState extends State<MealScreen> {
         padding: EdgeInsets.only(top: 0),
         children: [
           calories(),
+          Card(
+            color: Colors.white,
+            child: ListTile(
+              leading: dataSubtractIconButton(dateFormat, strLastDate),
+              trailing: dataAddIconButton(dateFormat, strDate),
+              title: Text(
+                _currentDate,
+                style: titleDateStyle,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
           SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.only(top: 10, bottom: 15),
+              padding: const EdgeInsets.only(bottom: 15),
               child: mealPanelList(),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _getNutritionWithCurrentDate(List<Meal> mealList) {
+    for (Meal meal in mealList) {
+      for (DatabaseProduct product in meal.mealList) {
+        if (_currentDate == product.date) {
+          _kcalAmount(product);
+        }
+      }
+    }
+  }
+
+  _kcalAmount(DatabaseProduct product) {
+    Nutriments nutriments = product.nutriments;
+    _nutrition.kcal += _valueOfNutriment(
+        nutriments.caloriesPer100g, nutriments.caloriesPerServing, product);
+    _nutrition.protein -= _valueOfNutriment(
+        nutriments.protein, nutriments.proteinPerServing, product);
+    _nutrition.carbs -= _valueOfNutriment(
+        nutriments.carbs, nutriments.carbsPerServing, product);
+    _nutrition.fats -=
+        _valueOfNutriment(nutriments.fats, nutriments.fatsPerServing, product);
+  }
+
+  _valueOfNutriment(
+      double value, double valuePerServing, DatabaseProduct product) {
+    double val;
+    switch (product.value) {
+      case 'serving':
+        if (valuePerServing == null) return 0;
+        val = valuePerServing * product.amount;
+        break;
+      case '100g':
+        if (value == null) return 0;
+        val = value * product.amount;
+        break;
+    }
+    return val.toInt();
+  }
+
+  Widget dataSubtractIconButton(DateFormat dateFormat, String strLastDate) {
+    return IconButton(
+      splashColor:
+          _currentDate == strLastDate ? Colors.white : Color(0x66C8C8C8),
+      highlightColor:
+          _currentDate == strLastDate ? Colors.white : Color(0x66C8C8C8),
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        if (_currentDate != strLastDate) {
+          setState(() {
+            DateTime subDate =
+                DateTime.parse(_currentDate).subtract(Duration(days: 1));
+            _currentDate = dateFormat.format(subDate);
+            widget.currentDate = _currentDate;
+            _loginBloc.setCurrentDate(_currentDate);
+          });
+        }
+      },
+      color: _currentDate == strLastDate ? Colors.grey[300] : Colors.grey[500],
+    );
+  }
+
+  Widget dataAddIconButton(DateFormat dateFormat, String strDate) {
+    return IconButton(
+      splashColor: _currentDate == strDate ? Colors.white : Color(0x66C8C8C8),
+      highlightColor:
+          _currentDate == strDate ? Colors.white : Color(0x66C8C8C8),
+      icon: Icon(Icons.arrow_forward),
+      color: _currentDate == strDate ? Colors.grey[300] : Colors.grey[500],
+      onPressed: () {
+        if (_currentDate != strDate) {
+          setState(() {
+            DateTime addDate =
+                DateTime.parse(_currentDate).add(Duration(days: 1));
+            _currentDate = dateFormat.format(addDate);
+            widget.currentDate = _currentDate;
+            _loginBloc.setCurrentDate(_currentDate);
+          });
+        }
+      },
     );
   }
 
@@ -94,7 +209,7 @@ class _MealScreenState extends State<MealScreen> {
                     ],
                   ),
                   onPressed: () {
-                    _homeBloc.add(AddProductScreen(meal.name));
+                    _homeBloc.add(AddProductScreen(meal.name, _currentDate));
                     _homeBloc.dispose();
                   },
                 ),
@@ -105,15 +220,29 @@ class _MealScreenState extends State<MealScreen> {
   }
 
   Widget listBuilder(List<DatabaseProduct> mealList) {
+    List<DatabaseProduct> currentMealList =
+        getProductsWithCurrentDate(mealList);
     return ListView.builder(
       padding: EdgeInsets.only(top: 0),
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: mealList.length,
+      itemCount: currentMealList.length,
       itemBuilder: (context, index) {
-        return showFood(mealList, index);
+        return showFood(currentMealList, index);
       },
     );
+  }
+
+  List<DatabaseProduct> getProductsWithCurrentDate(
+      List<DatabaseProduct> mealList) {
+    List<DatabaseProduct> currentMealList = [];
+    for (DatabaseProduct product in mealList) {
+      if (_currentDate == product.date) {
+        currentMealList.add(product);
+      }
+    }
+
+    return currentMealList;
   }
 
   Widget calories() {
@@ -125,7 +254,7 @@ class _MealScreenState extends State<MealScreen> {
       child: Column(
         children: [
           kcalRow(),
-          SizedBox(height: 26),
+          SizedBox(height: 14),
           nutritionRow(),
         ],
       ),
@@ -161,9 +290,10 @@ class _MealScreenState extends State<MealScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _nutritionText('protein', _nutrition.protein.toString(), textStyle),
-        _nutritionText('carbs', _nutrition.carbs.toString(), textStyle),
-        _nutritionText('fats', _nutrition.fats.toString(), textStyle),
+        _nutritionText(
+            'protein\nleft', _nutrition.protein.toString(), textStyle),
+        _nutritionText('carbs\nleft', _nutrition.carbs.toString(), textStyle),
+        _nutritionText('fats\nleft', _nutrition.fats.toString(), textStyle),
       ],
     );
   }
@@ -171,7 +301,12 @@ class _MealScreenState extends State<MealScreen> {
   Widget _nutritionText(String name, String value, TextStyle style) {
     return Column(
       children: [
-        Text(name, style: style),
+        Text(
+          name,
+          style: style,
+          softWrap: true,
+          textAlign: TextAlign.center,
+        ),
         SizedBox(height: 5),
         Text(value, style: style),
       ],
@@ -190,7 +325,7 @@ class _MealScreenState extends State<MealScreen> {
           _homeBloc.add(
             DeleteProduct(id: product.id),
           );
-          //setState(() {});
+          setState(() {});
         },
         icon: Icon(
           Icons.delete,

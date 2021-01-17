@@ -1,16 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class PersonalDataScreen extends StatefulWidget {
   final String email;
   final String password;
+  final RegisterBloc bloc;
 
   const PersonalDataScreen({
     Key key,
     this.email,
     this.password,
+    this.bloc,
   }) : super(key: key);
 
   @override
@@ -20,19 +23,20 @@ class PersonalDataScreen extends StatefulWidget {
 class _PersonalDataScreenState extends State<PersonalDataScreen> {
   DateTime selectedDate = DateTime.now();
   TextEditingController _sexController = TextEditingController(text: "Male");
-  TextEditingController _weightController = TextEditingController(text: "");
-  TextEditingController _heightController = TextEditingController(text: "");
   TextEditingController _dateController = TextEditingController();
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
+  RegisterBloc _bloc;
 
   @override
   initState() {
+    _bloc = widget.bloc;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return Container(
       height: double.infinity,
       width: double.infinity,
@@ -50,14 +54,8 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                   SizedBox(height: 20),
                   Text('Personal Info', style: titleStyle),
                   SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _firstNameField(),
-                      _lastNameField(),
-                    ],
-                  ),
-                  SizedBox(height: 10),
+                  _firstNameField(node),
+                  _lastNameField(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -66,13 +64,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _weightField(),
-                      _heightField(),
-                    ],
-                  ),
+                  _nextButton(),
                   SizedBox(height: 20),
                 ],
               ),
@@ -83,12 +75,12 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     );
   }
 
-  Widget _firstNameField() {
+  Widget _firstNameField(node) {
     return TextFormFieldComponent(
       controller: _firstNameController,
       label: "Firstname",
+      onEditingComplete: () => node.nextFocus(),
       hintText: "Enter Firstname...",
-      halfScreen: true,
     );
   }
 
@@ -97,7 +89,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       controller: _lastNameController,
       label: "Lastname",
       hintText: "Enter Lastname...",
-      halfScreen: true,
+      textInputAction: TextInputAction.done,
     );
   }
 
@@ -119,21 +111,21 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     );
   }
 
-  Widget _weightField() {
-    return NumericComponent(
-      controller: _weightController,
-      label: "Weight",
-      halfScreen: true,
-      unit: "kg",
-    );
-  }
-
-  Widget _heightField() {
-    return NumericComponent(
-      controller: _heightController,
-      label: "Height",
-      halfScreen: true,
-      unit: "cm",
+  Widget _nextButton() {
+    return RaisedButtonComponent(
+      label: "Next",
+      onPressed: () {
+        _bloc.add(
+          PersonalDataEvent(
+            email: widget.email,
+            password: widget.password,
+            sex: _sexController.text,
+            firstName: _firstNameController.text,
+            lastName: _lastNameController.text,
+            date: _dateController.text,
+          ),
+        );
+      },
     );
   }
 }

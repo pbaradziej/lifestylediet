@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
+import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
@@ -18,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   RegisterBloc _bloc;
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _checkboxController = TextEditingController();
 
   @override
   initState() {
@@ -47,6 +49,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
             return LoginScreen();
           } else if (state is RegisterResult) {
             return _registerResult(state, node);
+          } else if (state is PersonalDataResult) {
+            return GoalsScreen(
+              email: state.email,
+              password: state.password,
+              sex: state.sex,
+              firstName: state.firstName,
+              lastName: state.lastName,
+              date: state.date,
+              bloc: _bloc,
+            );
           } else {
             return loadingScreen();
           }
@@ -101,6 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return PersonalDataScreen(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        bloc: _bloc,
       );
     } else {
       return registerBuilder(state, node);
@@ -153,7 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget acceptConditions() {
     return LogicComponent(
       label: "Accept Conditions",
-      value: _acceptTerms,
+      controller: _checkboxController,
       submitted: _acceptedConditions,
     );
   }
@@ -161,9 +174,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget signUp(state) {
     return RaisedButtonComponent(
       label: "Sign Up",
-      onPressed:  () {
+      onPressed: () {
         setState(() {
-          _acceptTerms ? registerUser() : _acceptedConditions = true;
+          _checkboxController.text == 'true'
+              ? registerUser()
+              : _acceptedConditions = true;
         });
       },
     );

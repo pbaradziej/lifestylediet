@@ -48,68 +48,67 @@ class _DropdownComponentState extends State<DropdownComponent> {
   Widget build(BuildContext context) {
     initComponents();
     return Container(
-        width: _halfScreen ? 140 : 260,
-        height: 80,
-        alignment: Alignment.centerLeft,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(_label, style: TextStyle(color: Colors.white)),
-            FormField<String>(
-              builder: (FormFieldState<String> state) {
-                return InputDecorator(
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: appTextFieldsColor,
-                    errorText: _errorText,
-                    errorStyle: TextStyle(fontSize: 12, height: 0.3),
-                    hintText: _hintText,
-                    hintStyle: TextStyle(color: Colors.white60, fontSize: 15),
-                    border: new OutlineInputBorder(
-                      borderSide: _borderSide
-                          ? BorderSide(color: Colors.red)
-                          : BorderSide.none,
-                      borderRadius: const BorderRadius.all(
-                        const Radius.circular(10),
-                      ),
+      width: _halfScreen ? 140 : 260,
+      height: 80,
+      alignment: Alignment.centerLeft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(_label, style: TextStyle(color: Colors.white)),
+          FormField<String>(
+            builder: (FormFieldState<String> state) {
+              return InputDecorator(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: appTextFieldsColor,
+                  errorText: _errorText,
+                  errorStyle: TextStyle(fontSize: 12, height: 0.3),
+                  hintText: _hintText,
+                  hintStyle: TextStyle(color: Colors.white60, fontSize: 15),
+                  border: new OutlineInputBorder(
+                    borderSide: _borderSide
+                        ? BorderSide(color: Colors.red)
+                        : BorderSide.none,
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(10),
                     ),
                   ),
-                  isEmpty: _controller.text == '',
-                  child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        icon: Icon(                // Add this
-                          Icons.arrow_drop_down,  // Add this
-                          color: Colors.grey[200],   // Add this
-                        ),
-                        dropdownColor: Colors.orangeAccent,
-                        value: _controller.text,
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                        isDense: true,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _controller.text = newValue;
-                            state.didChange(newValue);
-                          });
-                        },
-                        items: _values.map<DropdownMenuItem<String>>(
-                          (String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style:
-                                    TextStyle(color: Colors.white, fontSize: 15),
-                              ),
-                            );
-                          },
-                        ).toList(),
-                      ),
+                ),
+                isEmpty: _controller.text == '',
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.grey[200],
                     ),
-                );
-              },
-            ),
-          ],
-        ),
+                    dropdownColor: Colors.orangeAccent,
+                    value: _controller.text,
+                    style: TextStyle(color: Colors.white, fontSize: 15),
+                    isDense: true,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        _controller.text = newValue;
+                        state.didChange(newValue);
+                      });
+                    },
+                    items: _values.map<DropdownMenuItem<String>>(
+                      (String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        );
+                      },
+                    ).toList(),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

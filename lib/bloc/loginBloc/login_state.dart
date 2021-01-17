@@ -18,4 +18,4 @@ class LoginSuccess extends LoginState {
 
 class LoginFailure extends LoginState {}
 
-class RegisterLoading extends LoginState {}
+class RegisterLoadingState extends LoginState {}

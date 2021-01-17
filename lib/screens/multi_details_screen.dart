@@ -11,6 +11,7 @@ class MultiDetailsScreen extends StatefulWidget {
   final String uid;
   final HomeBloc homeBloc;
   final AddBloc addBloc;
+  final String currentDate;
 
   MultiDetailsScreen({
     this.products,
@@ -18,6 +19,7 @@ class MultiDetailsScreen extends StatefulWidget {
     this.uid,
     this.homeBloc,
     this.addBloc,
+    this.currentDate,
   });
 
   @override
@@ -104,9 +106,10 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
         Navigator.pop(context);
         widget.addBloc.add(
           AddProductList(
-              uid: widget.uid,
-              meal: widget.meal,
-              products: widget.products,
+            uid: widget.uid,
+            meal: widget.meal,
+            currentDate: widget.currentDate,
+            products: widget.products,
           ),
         );
         widget.addBloc.add(AddReturn());
@@ -223,8 +226,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
             }),
             decoration: InputDecoration(
               border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black45)
-              ),
+                  borderSide: BorderSide(color: Colors.black45)),
             ),
             textAlign: TextAlign.center,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -309,7 +311,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
       _nutrimentsAmount(
         nutriments.caloriesPer100g,
         nutriments.caloriesPerServing,
-          product,
+        product,
       ),
     );
   }
@@ -421,7 +423,8 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  String _nutrimentsAmount(double perGrams, double perServing, DatabaseProduct product) {
+  String _nutrimentsAmount(
+      double perGrams, double perServing, DatabaseProduct product) {
     if (perGrams == -1 ||
         perServing == -1 ||
         perGrams == null ||

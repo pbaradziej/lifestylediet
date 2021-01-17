@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 
 class LogicComponent extends StatefulWidget {
   final String label;
-  final bool value;
   final bool submitted;
-
+  final TextEditingController controller;
 
   const LogicComponent({
     Key key,
     this.label = "",
-    this.value = false,
     this.submitted = false,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -19,13 +18,13 @@ class LogicComponent extends StatefulWidget {
 
 class _LogicComponentState extends State<LogicComponent> {
   String _label;
-  bool _value;
   bool _submitted;
+  TextEditingController _controller;
 
   void initComponents() {
     _label = widget.label;
-    _value = widget.value;
     _submitted = widget.submitted;
+    _controller = widget.controller;
   }
 
   @override
@@ -40,14 +39,15 @@ class _LogicComponentState extends State<LogicComponent> {
           children: [
             Theme(
               data: ThemeData(
-                unselectedWidgetColor: _submitted ? Colors.red : Colors.white),
+                  unselectedWidgetColor:
+                      _submitted ? Colors.red : Colors.white),
               child: Checkbox(
-                value: _value,
+                value: _controller.text == 'true',
                 checkColor: Colors.green,
                 activeColor: Colors.white,
                 onChanged: (bool value) {
                   setState(() {
-                    _value = value;
+                    _controller.text = value.toString();
                   });
                 },
               ),

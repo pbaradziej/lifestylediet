@@ -16,6 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
   HomeBloc _homeBloc;
   LoginBloc _loginBloc;
   Nutrition _nutrition;
+  PersonalData _personalData;
+  NutrimentsData _nutrimentsData;
+  List<WeightProgress> _weightProgressList;
   List<Meal> _meals = [];
 
   @override
@@ -50,6 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
   _homeScreen(HomeLoadedState state) {
     _meals = state.meals;
     _nutrition = state.nutrition;
+    _personalData = state.personalData;
+    _weightProgressList = state.weightProgress;
+    _nutrimentsData = state.nutrimentsData;
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -57,9 +63,20 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: _appBar(),
         body: TabBarView(
           children: [
-            MealScreen(_meals, _nutrition),
-            ChartScreen(),
-            ProfileScreen(),
+            MealScreen(
+              _meals,
+              _nutrition,
+              _personalData,
+              _loginBloc.currentDate,
+            ),
+            ChartScreen(
+              weightProgressList: _weightProgressList,
+              personalData: _personalData,
+            ),
+            ProfileScreen(
+              _personalData,
+              _nutrimentsData,
+            ),
           ],
         ),
       ),
@@ -82,5 +99,4 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.orangeAccent,
     );
   }
-
 }

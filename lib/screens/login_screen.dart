@@ -16,12 +16,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _rememberMe = false;
   LoginBloc _bloc;
   bool _hidePassword = true;
   final FocusNode _passFocus = FocusNode();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _checkboxController = TextEditingController();
 
   @override
   initState() {
@@ -54,13 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (content, state) {
             if (state is LoginLoading) {
               return loadingScreen();
-            } else if (state is RegisterLoading) {
-              return PersonalDataScreen(
-                email: "s",
-                password: "s",
-              );
-              //return RegisterProvider();
+            } else if (state is RegisterLoadingState) {
+              return RegisterProvider();
             } else if (state is LoginSuccess) {
+              _rememberMeController();
               return HomeProvider();
             } else if (state is LoginLoaded) {
               return loginScreen(state, node);
@@ -93,13 +90,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 20),
                 passwordTF(state, node),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     rememberMe(),
-                    forgotPassword(),
+                    //forgotPassword(),
                   ],
                 ),
-                //rememberMe(),
                 login(),
                 SizedBox(height: 10),
                 Text(
@@ -189,12 +185,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget rememberMe() {
     return LogicComponent(
       label: "Remember me",
-      value: _rememberMe,
+      controller: _checkboxController,
     );
   }
 
   _rememberMeController() {
-    if(!_rememberMe) {
+    if (_checkboxController.text == 'true') {
       _emailController.clear();
     }
 
@@ -204,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget signUp() {
     return GestureDetector(
       onTap: () {
-        _bloc.add(Register());
+        _bloc.add(RegisterLoadEvent());
       },
       child: RichText(
         text: TextSpan(
@@ -222,13 +218,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget login() {
     return RaisedButtonComponent(
       label: "Login",
-      onPressed:  () {
+      onPressed: () {
         Users user = new Users(
           _emailController.text.trim(),
           _passwordController.text,
         );
         _bloc.add(Login(user: user));
-        _rememberMeController();
       },
     );
   }

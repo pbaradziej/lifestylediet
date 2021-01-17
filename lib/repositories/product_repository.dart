@@ -33,6 +33,7 @@ class ProductRepository {
     return new DatabaseProduct(
       "",
       "",
+      "",
       1,
       photos["thumb"] ?? photos["highres"],
       product["food_name"],
