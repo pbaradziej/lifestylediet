@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
-
-import 'package:lifestylediet/blocProviders/bloc_providers.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
+import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/components/components.dart';
-import 'package:lifestylediet/components/raised_button.dart';
-import 'package:lifestylediet/utils/common_utils.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/screens/screens.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -22,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _checkboxController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -58,7 +57,8 @@ class _LoginScreenState extends State<LoginScreen> {
               return RegisterProvider();
             } else if (state is LoginSuccess) {
               _rememberMeController();
-              return HomeProvider();
+              return HomeProvider(
+                  uid: state.uid, currentDate: state.currentDate);
             } else if (state is LoginLoaded) {
               return loginScreen(state, node);
             } else if (state is LoginFailure) {
@@ -80,34 +80,38 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         child: ListView(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 20),
-                Text('Lifestyle Diet', style: titleStyle),
-                SizedBox(height: 30),
-                loginTF(state, node),
-                SizedBox(height: 20),
-                passwordTF(state, node),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    rememberMe(),
-                    //forgotPassword(),
-                  ],
-                ),
-                login(),
-                SizedBox(height: 10),
-                Text(
-                  "- OR -",
-                  style: TextStyle(
-                    color: Colors.white70,
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 20),
+                  Text('Lifestyle Diet', style: titleStyle),
+                  SizedBox(height: 30),
+                  loginTF(state, node),
+                  SizedBox(height: 20),
+                  passwordTF(state, node),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      rememberMe(),
+                      //forgotPassword(),
+                    ],
                   ),
-                ),
-                SizedBox(height: 20),
-                signUp(),
-                SizedBox(height: 20),
-              ],
+                  login(),
+                  SizedBox(height: 10),
+                  Text(
+                    "- OR -",
+                    style: TextStyle(
+                      color: Colors.white70,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  signUp(),
+                  SizedBox(height: 20),
+                ],
+              ),
             ),
           ],
         ),
@@ -121,7 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _emailController,
       hintText: "Enter Email",
       borderSide: state is LoginFailure,
-      errorText: state is LoginFailure ? 'invalid email' : '',
+      errorText: state is LoginFailure ? 'Invalid email' : null,
+      minCharacters: 3,
+      minCharactersMessage: "Enter an email 3+ chars long",
       onEditingComplete: () => node.nextFocus(),
       prefixIcon: Icon(
         Icons.mail,
@@ -138,14 +144,18 @@ class _LoginScreenState extends State<LoginScreen> {
       textInputAction: TextInputAction.done,
       onFieldSubmitted: (value) {
         _passFocus.unfocus();
-        Users user = new Users(
-          _emailController.text.trim(),
-          _passwordController.text,
-        );
-        _bloc.add(Login(user: user));
-        _rememberMeController();
+        if (_formKey.currentState.validate()) {
+          Users user = new Users(
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
+          _bloc.add(Login(user: user));
+          _rememberMeController();
+        }
       },
-      errorText: state is LoginFailure ? 'invalid password' : '',
+      errorText: state is LoginFailure ? 'Invalid password' : null,
+      minCharacters: 6,
+      minCharactersMessage: "Enter an email 6+ chars long",
       suffixIcon: IconButton(
         color: Colors.white60,
         onPressed: () {
@@ -219,11 +229,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return RaisedButtonComponent(
       label: "Login",
       onPressed: () {
-        Users user = new Users(
-          _emailController.text.trim(),
-          _passwordController.text,
-        );
-        _bloc.add(Login(user: user));
+        if (_formKey.currentState.validate()) {
+          Users user = new Users(
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
+          _bloc.add(Login(user: user));
+        }
       },
     );
   }

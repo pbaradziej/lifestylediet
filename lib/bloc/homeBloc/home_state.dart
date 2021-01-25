@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/models/weight_progress.dart';
 
 abstract class HomeState extends Equatable {
   @override
@@ -9,31 +7,17 @@ abstract class HomeState extends Equatable {
 
 class HomeLoadingState extends HomeState {}
 
-class HomeLoadedState extends HomeState {
-  final List<Meal> meals;
-  final Nutrition nutrition;
-  final PersonalData personalData;
-  final List<WeightProgress> weightProgress;
-  final NutrimentsData nutrimentsData;
+class HomeLoadedState extends HomeState {}
 
-  HomeLoadedState(
-    this.meals,
-    this.nutrition,
-    this.personalData,
-    this.weightProgress,
-    this.nutrimentsData,
-  );
+class HomeAddingState extends HomeState {
+  final String meal;
+  final String currentDate;
+  final String uid;
+
+  HomeAddingState(this.meal, this.currentDate, this.uid);
 
   @override
-  List<Object> get props => [
-        meals,
-        nutrition,
-        personalData,
-        weightProgress,
-        nutrimentsData,
-      ];
+  List<Object> get props => [meal, currentDate, uid];
 }
-
-class HomeAddingState extends HomeState {}
 
 class HomeLogoutState extends HomeState {}

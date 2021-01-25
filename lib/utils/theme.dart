@@ -11,19 +11,24 @@ TextStyle get textStyle => TextStyle(fontSize: 20, color: Colors.white);
 
 TextStyle get defaultTextStyle => TextStyle(fontSize: 14, color: Colors.black);
 
-TextStyle get defaultProfileTextStyle => TextStyle(fontSize: 17, color: Colors.black);
+TextStyle get defaultProfileTextStyle =>
+    TextStyle(fontSize: 17, color: Colors.black);
 
 TextStyle get subTitleStyle => TextStyle(fontSize: 25, color: Colors.white);
 
-TextStyle get titleAddScreenStyle => TextStyle(fontSize: 30, color: Colors.black54);
+TextStyle get titleAddScreenStyle =>
+    TextStyle(fontSize: 30, color: Colors.black54);
 
-TextStyle get subTitleAddScreenStyle => TextStyle(fontSize: 20, color: Colors.black);
+TextStyle get subTitleAddScreenStyle =>
+    TextStyle(fontSize: 20, color: Colors.black);
 
 TextStyle get titleHomeStyle => TextStyle(fontSize: 40, color: Colors.white);
 
-TextStyle get titleStyle => GoogleFonts.aleo(fontWeight: FontWeight.bold, fontSize: 35, color: Colors.grey[100]);
+TextStyle get titleStyle => GoogleFonts.aleo(
+    fontWeight: FontWeight.bold, fontSize: 35, color: Colors.grey[100]);
 
-TextStyle get titleDateStyle => GoogleFonts.aleo( fontSize: 25, color: Colors.grey[700]);
+TextStyle get titleDateStyle =>
+    GoogleFonts.aleo(fontSize: 25, color: Colors.grey[700]);
 
 appTheme() {
   return BoxDecoration(

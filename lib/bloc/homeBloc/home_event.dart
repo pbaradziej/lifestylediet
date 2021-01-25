@@ -6,14 +6,7 @@ abstract class HomeEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class HomeLoad extends HomeEvent {
-  final String uid;
-
-  HomeLoad(this.uid);
-
-  @override
-  List<Object> get props => [uid];
-}
+class HomeLoad extends HomeEvent {}
 
 class Logout extends HomeEvent {}
 

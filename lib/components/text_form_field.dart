@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/utils/theme.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class TextFormFieldComponent extends StatefulWidget {
   final TextEditingController controller;
@@ -15,6 +15,8 @@ class TextFormFieldComponent extends StatefulWidget {
   final Widget suffixIcon;
   final bool obscureText;
   final bool enabled;
+  final int minCharacters;
+  final String minCharactersMessage;
 
   const TextFormFieldComponent({
     Key key,
@@ -31,6 +33,8 @@ class TextFormFieldComponent extends StatefulWidget {
     this.suffixIcon,
     this.obscureText = false,
     this.enabled = true,
+    this.minCharacters = 0,
+    this.minCharactersMessage = "",
   }) : super(key: key);
 
   @override
@@ -51,6 +55,8 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
   Widget _suffixIcon;
   bool _obscureText;
   bool _enabled;
+  int _minCharacters;
+  String _minCharactersMessage;
 
   void initComponents() {
     _label = widget.label;
@@ -66,6 +72,8 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
     _suffixIcon = widget.suffixIcon;
     _obscureText = widget.obscureText;
     _enabled = widget.enabled;
+    _minCharacters = widget.minCharacters;
+    _minCharactersMessage = widget.minCharactersMessage;
   }
 
   @override
@@ -84,9 +92,26 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
             obscureText: _obscureText,
             onFieldSubmitted: _onFieldSubmitted,
             controller: _controller,
+            onChanged: (_) {
+              _errorText = null;
+              setState(() {});
+            },
             textInputAction: _action,
             onEditingComplete: _onEditingComplete,
             style: TextStyle(color: Colors.white, fontSize: 15),
+            validator: (value) {
+              if (value.isEmpty) {
+                _errorText = 'Please enter some text';
+                return 'Please enter some text';
+              }
+
+              if (value.length < _minCharacters) {
+                _errorText = _minCharactersMessage;
+                return _minCharactersMessage;
+              }
+
+              return null;
+            },
             decoration: new InputDecoration(
               prefixIcon: _prefixIcon,
               suffixIcon: _suffixIcon,
@@ -96,6 +121,24 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
               errorStyle: TextStyle(fontSize: 12, height: 0.3),
               hintText: _hintText,
               hintStyle: TextStyle(color: Colors.white60, fontSize: 15),
+              enabledBorder: new OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(10),
+                ),
+              ),
+              errorBorder: new OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red),
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(10),
+                ),
+              ),
+              focusedBorder: new OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(10),
+                ),
+              ),
               border: new OutlineInputBorder(
                 borderSide: _borderSide
                     ? BorderSide(color: Colors.red)

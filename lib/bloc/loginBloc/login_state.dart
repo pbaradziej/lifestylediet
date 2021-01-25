@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:lifestylediet/models/models.dart';
 
 abstract class LoginState extends Equatable {
   @override
@@ -11,9 +10,13 @@ class LoginLoading extends LoginState {}
 class LoginLoaded extends LoginState {}
 
 class LoginSuccess extends LoginState {
-  final Users user;
+  final String uid;
+  final String currentDate;
 
-  LoginSuccess(this.user);
+  LoginSuccess(this.uid, this.currentDate);
+
+  @override
+  List<Object> get props => [uid, currentDate];
 }
 
 class LoginFailure extends LoginState {}

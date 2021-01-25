@@ -18,6 +18,7 @@ class ProductProvider {
   Future getProductFromBarcode(String code) async {
     http.Response response = await http.get(URL_SEARCH_ITEM +
         "?upc=$code&x-app-id=$NutritionixAppID&x-app-key=$NutritionixAppKey");
+
     if (response.statusCode == 200) {
       return response.body;
     } else {
@@ -29,6 +30,7 @@ class ProductProvider {
     Map<String, String> body = {"query": search, "timezone": "US/Eastern"};
     http.Response response =
         await http.post(URL_NATURAL_SEARCH, headers: HEADERS, body: body);
+
     if (response.statusCode == 200) {
       return response.body;
     } else {

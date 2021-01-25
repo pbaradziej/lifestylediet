@@ -1,23 +1,14 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/utils/theme.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class ChartScreen extends StatefulWidget {
-  final List<WeightProgress> weightProgressList;
-  final PersonalData personalData;
-
-  const ChartScreen({
-    Key key,
-    this.weightProgressList,
-    this.personalData,
-  }) : super(key: key);
-
   @override
   _ChartScreenState createState() => _ChartScreenState();
 }
@@ -26,31 +17,24 @@ class _ChartScreenState extends State<ChartScreen> {
   HomeBloc _homeBloc;
   TextEditingController _weightController = new TextEditingController();
   List<WeightProgress> _weightProgressList;
-  PersonalData _personalData;
 
   @override
   initState() {
     super.initState();
-    _weightProgressList = widget.weightProgressList;
-    _personalData = widget.personalData;
     _homeBloc = BlocProvider.of<HomeBloc>(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_homeBloc.state is HomeLoadedState) {
-      HomeLoadedState state = _homeBloc.state;
-      _personalData = state.personalData;
-      _weightProgressList = state.weightProgress;
-    }
+    _weightProgressList = _homeBloc.weightProgressList;
     return ListView(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              weightChart(),
-              bmiChart(),
+              _weightChart(),
+              _bmiChart(),
             ],
           ),
         ),
@@ -58,7 +42,7 @@ class _ChartScreenState extends State<ChartScreen> {
     );
   }
 
-  Widget weightChart() {
+  Widget _weightChart() {
     return Card(
       elevation: 2,
       child: Container(
@@ -69,43 +53,47 @@ class _ChartScreenState extends State<ChartScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            summaryHeadLine("Wykres Wagi"),
+            _summaryHeadLine("Wykres Wagi"),
             SizedBox(height: 20),
-            weightLineChart(),
+            _weightLineChart(),
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                NumericComponent(
-                  controller: _weightController,
-                  label: "Waga",
-                  halfScreen: true,
-                  unit: "kg",
-                  filled: false,
-                  textInputAction: TextInputAction.done,
-                ),
-                Container(
-                  width: 150,
-                  child: RaisedButtonComponent(
-                    label: "Dodaj Wagę",
-                    onPressed: () async {
-                      if (_weightController.text.isNotEmpty) {
-                        _homeBloc.add(AddWeight(_weightController.text));
-                        setState(() {});
-                      }
-                    },
-                    circle: false,
-                  ),
-                ),
-              ],
-            ),
+            _addWeight(),
           ],
         ),
       ),
     );
   }
 
-  Widget weightLineChart() {
+  Widget _addWeight() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        NumericComponent(
+          controller: _weightController,
+          label: "Waga",
+          halfScreen: true,
+          unit: "kg",
+          filled: false,
+          textInputAction: TextInputAction.done,
+        ),
+        Container(
+          width: 150,
+          child: RaisedButtonComponent(
+            label: "Dodaj Wagę",
+            onPressed: () async {
+              if (_weightController.text.isNotEmpty) {
+                _homeBloc.add(AddWeight(_weightController.text));
+                setState(() {});
+              }
+            },
+            circle: false,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _weightLineChart() {
     return Expanded(
       child: new charts.TimeSeriesChart(
         _getSeriesWeightData(),
@@ -115,7 +103,7 @@ class _ChartScreenState extends State<ChartScreen> {
     );
   }
 
-  Widget bmiChart() {
+  Widget _bmiChart() {
     return Card(
       elevation: 2,
       child: Container(
@@ -126,16 +114,16 @@ class _ChartScreenState extends State<ChartScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            summaryHeadLine("Wykres BMI"),
+            _summaryHeadLine("Wykres BMI"),
             SizedBox(height: 20),
-            bmiLineChart(),
+            _bmiLineChart(),
           ],
         ),
       ),
     );
   }
 
-  Widget bmiLineChart() {
+  Widget _bmiLineChart() {
     return Expanded(
       child: new charts.TimeSeriesChart(
         _getSeriesBMIData(),
@@ -145,7 +133,7 @@ class _ChartScreenState extends State<ChartScreen> {
     );
   }
 
-  Widget summaryHeadLine(String name) {
+  Widget _summaryHeadLine(String name) {
     return Padding(
       padding: const EdgeInsets.only(left: 18),
       child: Text(name, style: subTitleAddScreenStyle),
@@ -171,17 +159,17 @@ class _ChartScreenState extends State<ChartScreen> {
           id: "Weight progress",
           data: _weightProgressList,
           domainFn: (WeightProgress series, _) => DateTime.parse(series.date),
-          measureFn: (WeightProgress series, _) => getBMI(series.weight),
+          measureFn: (WeightProgress series, _) => _getBMI(series.weight),
           colorFn: (WeightProgress series, _) =>
               charts.MaterialPalette.blue.shadeDefault)
     ];
     return series;
   }
 
-  double getBMI(String weight) {
+  double _getBMI(String weight) {
+    PersonalData personalData = _homeBloc.personalData;
     double weightDouble = double.parse(weight);
-    double bmi =
-        weightDouble / pow(double.parse(_personalData.height) / 100, 2);
+    double bmi = weightDouble / pow(double.parse(personalData.height) / 100, 2);
 
     return bmi.roundToDouble();
   }

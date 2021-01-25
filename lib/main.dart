@@ -1,9 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
-import 'package:lifestylediet/blocProviders/login_provider.dart';
 
 void main() => runApp(MaterialApp(home: FireBase()));
 

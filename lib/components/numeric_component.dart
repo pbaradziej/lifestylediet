@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lifestylediet/utils/theme.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class NumericComponent extends StatefulWidget {
   final TextEditingController controller;
@@ -20,7 +20,7 @@ class NumericComponent extends StatefulWidget {
     this.controller,
     this.label = "",
     this.borderSide = false,
-    this.errorText = "",
+    this.errorText,
     this.halfScreen = false,
     this.textInputAction = TextInputAction.next,
     this.onEditingComplete,
@@ -79,14 +79,22 @@ class _NumericComponentState extends State<NumericComponent> {
           ),
           TextFormField(
             initialValue: _initialValue,
-            //controller: _controller,
             textInputAction: _action,
             onEditingComplete: _onEditingComplete,
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
             ),
+            validator: (value) {
+              if (value.isEmpty) {
+                _errorText = 'Please enter a number';
+                return 'Please enter a number';
+              }
+
+              return null;
+            },
             onChanged: (value) => setState(() {
+              _errorText = null;
               value = value.replaceAll(',', '.');
               _controller.text = value;
             }),
@@ -108,6 +116,12 @@ class _NumericComponentState extends State<NumericComponent> {
               hintStyle: TextStyle(
                 color: Colors.white60,
                 fontSize: 15,
+              ),
+              errorBorder: new OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red),
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(10),
+                ),
               ),
               border: new OutlineInputBorder(
                 borderSide: _borderSide

@@ -12,8 +12,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   String get uid => _uid;
 
-  String get currentDate => _currentDate;
-
   void setCurrentDate(String currentDate) {
     this._currentDate = currentDate;
   }
@@ -43,8 +41,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       _uid = _repository.uid;
       DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
       String strDate = dateFormat.format(DateTime.now());
-      _currentDate = strDate;
-      yield LoginSuccess(event.user);
+      yield LoginSuccess(_uid, strDate);
     } else {
       yield LoginFailure();
     }

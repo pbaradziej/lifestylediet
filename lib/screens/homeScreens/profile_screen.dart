@@ -1,24 +1,14 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/screens/edit_profile_screen.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:lifestylediet/screens/screens.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final PersonalData personalData;
-  final NutrimentsData nutrimentsData;
-
-  const ProfileScreen(
-    this.personalData,
-    this.nutrimentsData, {
-    Key key,
-  }) : super(key: key);
-
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -30,19 +20,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   initState() {
-    _personalData = widget.personalData;
-    _nutrimentsData = widget.nutrimentsData;
     _homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_homeBloc.state is HomeLoadedState) {
-      HomeLoadedState state = _homeBloc.state;
-      _personalData = state.personalData;
-      _nutrimentsData = state.nutrimentsData;
-    }
+    _personalData = _homeBloc.personalData;
+    _nutrimentsData = _homeBloc.nutrimentsData;
     return ListView(
       children: [
         SizedBox(
@@ -136,10 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => EditProfileScreen(
-              personalData: _personalData,
-              bloc: _homeBloc,
-            ),
+            builder: (context) => EditProfileScreen(bloc: _homeBloc),
           ),
         );
         break;
@@ -155,31 +137,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-              title: Text("Select Plan"),
-              content: SingleChildScrollView(
-                child: Container(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: plans
-                        .map((e) => RadioListTile(
-                              title: Text(e),
-                              value: e,
-                              groupValue: _personalData.goal,
-                              selected: _personalData.goal == e,
-                              onChanged: (value) {
-                                if (value != _personalData.goal) {
-                                  _personalData.goal = value;
-                                  _homeBloc.add(ChangePlan(_personalData.goal));
-                                  setState(() {});
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                            ))
-                        .toList(),
-                  ),
+            title: Text("Select Plan"),
+            content: SingleChildScrollView(
+              child: Container(
+                width: double.infinity,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: plans
+                      .map((e) => RadioListTile(
+                            title: Text(e),
+                            value: e,
+                            groupValue: _personalData.goal,
+                            selected: _personalData.goal == e,
+                            onChanged: (value) {
+                              if (value != _personalData.goal) {
+                                _personalData.goal = value;
+                                _homeBloc.add(ChangePlan(_personalData.goal));
+                                setState(() {});
+                                Navigator.of(context).pop();
+                              }
+                            },
+                          ))
+                      .toList(),
                 ),
-              ));
+              ),
+            ),
+          );
         });
   }
 
@@ -291,52 +274,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          summaryCaloriesRow(
-            "Kcal",
-            _nutrimentsData.calories,
-          ),
-          summaryCaloriesRow(
-            "Protein",
-            _nutrimentsData.protein,
-          ),
-          summaryCaloriesRow(
-            "Carbs",
-            _nutrimentsData.carbs,
-            padding: 0,
-          ),
-          summaryCaloriesRow(
-            "Fiber",
-            _nutrimentsData.fiber,
-            style: TextStyle(),
-            padding: 0,
-          ),
-          summaryCaloriesRow(
-            "Sugars",
-            _nutrimentsData.sugars,
-            style: TextStyle(),
-          ),
-          summaryCaloriesRow(
-            "Fats",
-            _nutrimentsData.fats,
-            padding: 0,
-          ),
-          summaryCaloriesRow(
-            "Saturated fats",
-            _nutrimentsData.saturatedFats,
-            style: TextStyle(),
-          ),
-          summaryCaloriesRow(
-            "Cholesterol",
-            _nutrimentsData.cholesterol,
-          ),
-          summaryCaloriesRow(
-            "Sodium",
-            _nutrimentsData.sodium,
-          ),
-          summaryCaloriesRow(
-            "Potassium",
-            _nutrimentsData.potassium,
-          ),
+          summaryCaloriesRow("Kcal", _nutrimentsData.calories),
+          summaryCaloriesRow("Protein", _nutrimentsData.protein),
+          summaryCaloriesRow("Carbs", _nutrimentsData.carbs, padding: 0),
+          summaryCaloriesRow("Fiber", _nutrimentsData.fiber,
+              style: TextStyle(), padding: 0),
+          summaryCaloriesRow("Sugars", _nutrimentsData.sugars,
+              style: TextStyle()),
+          summaryCaloriesRow("Fats", _nutrimentsData.fats, padding: 0),
+          summaryCaloriesRow("Saturated fats", _nutrimentsData.saturatedFats,
+              style: TextStyle()),
+          summaryCaloriesRow("Cholesterol", _nutrimentsData.cholesterol),
+          summaryCaloriesRow("Sodium", _nutrimentsData.sodium),
+          summaryCaloriesRow("Potassium", _nutrimentsData.potassium),
         ],
       ),
     );

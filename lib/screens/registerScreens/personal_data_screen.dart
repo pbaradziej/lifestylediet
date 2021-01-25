@@ -2,19 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
 import 'package:lifestylediet/components/components.dart';
+import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class PersonalDataScreen extends StatefulWidget {
-  final String email;
-  final String password;
   final RegisterBloc bloc;
 
-  const PersonalDataScreen({
-    Key key,
-    this.email,
-    this.password,
-    this.bloc,
-  }) : super(key: key);
+  const PersonalDataScreen({Key key, this.bloc}) : super(key: key);
 
   @override
   _PersonalDataScreenState createState() => _PersonalDataScreenState();
@@ -27,6 +21,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
   RegisterBloc _bloc;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -48,29 +43,36 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           },
           child: ListView(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 20),
-                  Text('Personal Info', style: titleStyle),
-                  SizedBox(height: 30),
-                  _firstNameField(node),
-                  _lastNameField(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _birthdayDateComponent(),
-                      _sexDropdownButton(),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  _nextButton(),
-                  SizedBox(height: 20),
-                ],
-              ),
+              _personalDataForm(node),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Form _personalDataForm(node) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 20),
+          Text('Personal Info', style: titleStyle),
+          SizedBox(height: 30),
+          _firstNameField(node),
+          _lastNameField(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _birthdayDateComponent(),
+              _sexDropdownButton(),
+            ],
+          ),
+          SizedBox(height: 10),
+          _nextButton(),
+          SizedBox(height: 20),
+        ],
       ),
     );
   }
@@ -115,16 +117,23 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     return RaisedButtonComponent(
       label: "Next",
       onPressed: () {
-        _bloc.add(
-          PersonalDataEvent(
-            email: widget.email,
-            password: widget.password,
-            sex: _sexController.text,
-            firstName: _firstNameController.text,
-            lastName: _lastNameController.text,
-            date: _dateController.text,
-          ),
-        );
+        if (_formKey.currentState.validate()) {
+          PersonalData personalData = new PersonalData(
+            _sexController.text,
+            "",
+            "",
+            _dateController.text,
+            _firstNameController.text,
+            _lastNameController.text,
+            "",
+            "",
+          );
+          _bloc.add(
+            PersonalDataEvent(
+              personalData: personalData,
+            ),
+          );
+        }
       },
     );
   }

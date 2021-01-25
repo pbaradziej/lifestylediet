@@ -7,23 +7,17 @@ import 'package:lifestylediet/utils/common_utils.dart';
 
 class DetailsScreen extends StatefulWidget {
   final DatabaseProduct product;
-  final String meal;
-  final String uid;
   final HomeBloc homeBloc;
   final AddBloc addBloc;
-  final String currentDate;
   bool isEditable;
   bool isNewProduct;
 
   DetailsScreen({
     this.product,
-    this.meal,
-    this.uid,
     this.homeBloc,
     this.addBloc,
     this.isEditable,
     this.isNewProduct,
-    this.currentDate,
   });
 
   @override
@@ -101,7 +95,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
               _isNewAction();
             });
           }),
-      actions: [actionButtons()],
+      actions: [_actionButtons()],
     );
   }
 
@@ -114,28 +108,23 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return Navigator.pop(context);
   }
 
-  Widget actionButtons() {
+  Widget _actionButtons() {
     if (isEditable && isNewProduct) {
-      return newButtons();
+      return _newButtons();
     } else if (isEditable) {
-      return editButtons();
+      return _editButtons();
     }
 
-    return previewButtons();
+    return _previewButtons();
   }
 
-  Widget newButtons() {
+  Widget _newButtons() {
     return FlatButton(
       onPressed: () {
         Navigator.pop(context);
         widget.addBloc.add(
           AddProduct(
-              uid: widget.uid,
-              meal: widget.meal,
-              currentDate: widget.currentDate,
-              product: widget.product,
-              amount: _amount,
-              value: _dropdownValue),
+              product: widget.product, amount: _amount, value: _dropdownValue),
         );
         widget.addBloc.add(AddReturn());
       },
@@ -146,7 +135,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
-  Widget previewButtons() {
+  Widget _previewButtons() {
     return Row(
       children: [
         FlatButton(
@@ -177,7 +166,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
-  Widget editButtons() {
+  Widget _editButtons() {
     return FlatButton(
       onPressed: () {
         widget.homeBloc.add(

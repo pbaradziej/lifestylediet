@@ -21,33 +21,21 @@ class Register extends RegisterEvent {
 }
 
 class PersonalDataEvent extends RegisterEvent {
-  final String email;
-  final String password;
-  final String sex;
-  final String date;
-  final String firstName;
-  final String lastName;
+  final PersonalData personalData;
 
   PersonalDataEvent({
-    this.email,
-    this.password,
-    this.sex,
-    this.date,
-    this.firstName,
-    this.lastName,
+    this.personalData,
   });
 
   @override
-  List<Object> get props => [email, password, sex, date, firstName, lastName];
+  List<Object> get props => [personalData];
 }
 
 class GoalsEvent extends RegisterEvent {
-  final String email;
-  final String password;
   final PersonalData personalData;
 
-  GoalsEvent({this.email, this.password, this.personalData});
+  GoalsEvent({this.personalData});
 
   @override
-  List<Object> get props => [email, password, personalData];
+  List<Object> get props => [personalData];
 }

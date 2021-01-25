@@ -5,28 +5,9 @@ import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class GoalsScreen extends StatefulWidget {
-  final String email;
-  final String password;
-  final String sex;
-  final String weight;
-  final String height;
-  final String date;
-  final String firstName;
-  final String lastName;
   final RegisterBloc bloc;
 
-  const GoalsScreen({
-    Key key,
-    this.email,
-    this.password,
-    this.sex,
-    this.weight,
-    this.height,
-    this.date,
-    this.firstName,
-    this.lastName,
-    this.bloc,
-  }) : super(key: key);
+  const GoalsScreen({Key key, this.bloc}) : super(key: key);
 
   @override
   _GoalsScreenState createState() => _GoalsScreenState();
@@ -40,6 +21,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
   TextEditingController _weightController = TextEditingController(text: "");
   TextEditingController _heightController = TextEditingController(text: "");
   RegisterBloc _bloc;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -61,28 +43,35 @@ class _GoalsScreenState extends State<GoalsScreen> {
           },
           child: ListView(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 20),
-                  Text('Goals', style: titleStyle),
-                  SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _weightField(node),
-                      _heightField(),
-                    ],
-                  ),
-                  _activityDropdownButton(),
-                  _goalsDropdownButton(),
-                  SizedBox(height: 20),
-                  _doneButton(),
-                ],
-              ),
+              _goalsForm(node),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Form _goalsForm(node) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 20),
+          Text('Goals', style: titleStyle),
+          SizedBox(height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _weightField(node),
+              _heightField(),
+            ],
+          ),
+          _activityDropdownButton(),
+          _goalsDropdownButton(),
+          SizedBox(height: 20),
+          _doneButton(),
+        ],
       ),
     );
   }
@@ -131,20 +120,19 @@ class _GoalsScreenState extends State<GoalsScreen> {
     return RaisedButtonComponent(
       label: "Done",
       onPressed: () {
-        PersonalData personalData = new PersonalData(
-          widget.sex,
-          _weightController.text,
-          _heightController.text,
-          widget.date,
-          widget.firstName,
-          widget.lastName,
-          _activityController.text,
-          _goalsController.text,
-        );
-        _bloc.add(GoalsEvent(
-            email: widget.email,
-            password: widget.password,
-            personalData: personalData));
+        if (_formKey.currentState.validate()) {
+          PersonalData personalData = new PersonalData(
+            "",
+            _weightController.text,
+            _heightController.text,
+            "",
+            "",
+            "",
+            _activityController.text,
+            _goalsController.text,
+          );
+          _bloc.add(GoalsEvent(personalData: personalData));
+        }
       },
     );
   }

@@ -105,12 +105,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
       onPressed: () {
         Navigator.pop(context);
         widget.addBloc.add(
-          AddProductList(
-            uid: widget.uid,
-            meal: widget.meal,
-            currentDate: widget.currentDate,
-            products: widget.products,
-          ),
+          AddProductList(products: widget.products),
         );
         widget.addBloc.add(AddReturn());
       },

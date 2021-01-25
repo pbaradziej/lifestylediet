@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
-import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/utils/common_utils.dart';
 import 'package:lifestylediet/screens/screens.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -13,13 +12,13 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  bool _acceptTerms = false;
-  bool _acceptedConditions = false;
+  bool _acceptedConditions = true;
   bool _hidePassword = true;
   RegisterBloc _bloc;
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _checkboxController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -50,15 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           } else if (state is RegisterResult) {
             return _registerResult(state, node);
           } else if (state is PersonalDataResult) {
-            return GoalsScreen(
-              email: state.email,
-              password: state.password,
-              sex: state.sex,
-              firstName: state.firstName,
-              lastName: state.lastName,
-              date: state.date,
-              bloc: _bloc,
-            );
+            return GoalsScreen(bloc: _bloc);
           } else {
             return loadingScreen();
           }
@@ -75,32 +66,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
         },
         child: ListView(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 20),
-                Center(
-                  child: Text('Sign Up', style: titleStyle),
-                ),
-                SizedBox(height: 30),
-                loginTF(node, state),
-                SizedBox(height: 20),
-                passwordTF(state),
-                SizedBox(height: 10),
-                acceptConditions(),
-                SizedBox(height: 20),
-                signUp(state),
-                SizedBox(height: 10),
-                Text(
-                  "- OR -",
-                  style: TextStyle(
-                    color: Colors.white70,
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 20),
+                  Center(
+                    child: Text('Sign Up', style: titleStyle),
                   ),
-                ),
-                SizedBox(height: 20),
-                login(),
-                SizedBox(height: 20),
-              ],
+                  SizedBox(height: 30),
+                  loginTF(node, state),
+                  SizedBox(height: 20),
+                  passwordTF(state),
+                  SizedBox(height: 10),
+                  acceptConditions(),
+                  SizedBox(height: 20),
+                  signUp(state),
+                  SizedBox(height: 10),
+                  Text("- OR -", style: TextStyle(color: Colors.white70)),
+                  SizedBox(height: 20),
+                  login(),
+                  SizedBox(height: 20),
+                ],
+              ),
             ),
           ],
         ),
@@ -110,11 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   _registerResult(RegisterResult state, node) {
     if (state.result) {
-      return PersonalDataScreen(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        bloc: _bloc,
-      );
+      return PersonalDataScreen(bloc: _bloc);
     } else {
       return registerBuilder(state, node);
     }
@@ -125,8 +110,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       label: "Email",
       controller: _emailController,
       hintText: "Enter Email",
+      minCharacters: 3,
+      minCharactersMessage: "Enter an email 3+ chars long",
       borderSide: state is RegisterResult,
-      errorText: state is RegisterResult ? 'invalid email' : '',
+      errorText: state is RegisterResult ? 'invalid email' : null,
       onEditingComplete: () => node.nextFocus(),
       prefixIcon: Icon(
         Icons.mail,
@@ -141,8 +128,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       controller: _passwordController,
       obscureText: _hidePassword,
       textInputAction: TextInputAction.done,
-      errorText:
-          state is RegisterResult ? 'Enter a password 6+ chars long' : '',
+      minCharacters: 6,
+      minCharactersMessage: "Enter a password 6+ chars long",
       suffixIcon: IconButton(
         color: Colors.white60,
         onPressed: () {
@@ -167,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return LogicComponent(
       label: "Accept Conditions",
       controller: _checkboxController,
-      submitted: _acceptedConditions,
+      validationEnabled: _acceptedConditions,
     );
   }
 
@@ -176,9 +163,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       label: "Sign Up",
       onPressed: () {
         setState(() {
-          _checkboxController.text == 'true'
-              ? registerUser()
-              : _acceptedConditions = true;
+          if (_formKey.currentState.validate()) {
+            Users _user = Users(
+              _emailController.text?.trim(),
+              _passwordController.text,
+            );
+            Register _register = Register(user: _user);
+            _bloc.add(_register);
+          }
         });
       },
     );
@@ -201,14 +193,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
-  }
-
-  registerUser() {
-    Users _user = Users(
-      _emailController.text?.trim(),
-      _passwordController.text,
-    );
-    Register _register = Register(user: _user);
-    _bloc.add(_register);
   }
 }

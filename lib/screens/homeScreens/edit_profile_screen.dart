@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
-
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  final PersonalData personalData;
   final HomeBloc bloc;
 
-  const EditProfileScreen({
-    Key key,
-    this.personalData,
-    this.bloc,
-  }) : super(key: key);
+  const EditProfileScreen({Key key, this.bloc}) : super(key: key);
 
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
@@ -32,7 +26,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   initState() {
-    _personalData = widget.personalData;
+    _homeBloc = widget.bloc;
+    _personalData = _homeBloc.personalData;
     _sexController = TextEditingController(text: _personalData.sex);
     _dateController = TextEditingController(text: _personalData.date);
     _firstNameController = TextEditingController(text: _personalData.firstName);
@@ -40,16 +35,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _activityController = TextEditingController(text: _personalData.activity);
     _weightController = TextEditingController(text: _personalData.weight);
     _heightController = TextEditingController(text: _personalData.height);
-    _homeBloc = widget.bloc;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_homeBloc.state is HomeLoadedState) {
-      HomeLoadedState state = _homeBloc.state;
-      _personalData = state.personalData;
-    }
     final node = FocusScope.of(context);
     return Scaffold(
       body: Container(
@@ -136,27 +126,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _saveButton() {
-    return RaisedButtonComponent(
-      label: "Save",
-      onPressed: () {
-        PersonalData personalData = new PersonalData(
-          _sexController.text,
-          _weightController.text,
-          _heightController.text,
-          _dateController.text,
-          _firstNameController.text,
-          _lastNameController.text,
-          _activityController.text,
-          _personalData.goal,
-        );
-        _homeBloc.add(UpdateProfileData(personalData: personalData));
-        setState(() {});
-        Navigator.of(context).pop();
-      },
-    );
-  }
-
   Widget _activityDropdownButton() {
     return DropdownComponent(
       controller: _activityController,
@@ -188,6 +157,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       halfScreen: true,
       unit: "cm",
       textInputAction: TextInputAction.done,
+    );
+  }
+
+  Widget _saveButton() {
+    return RaisedButtonComponent(
+      label: "Save",
+      onPressed: () {
+        PersonalData personalData = new PersonalData(
+          _sexController.text,
+          _weightController.text,
+          _heightController.text,
+          _dateController.text,
+          _firstNameController.text,
+          _lastNameController.text,
+          _activityController.text,
+          _personalData.goal,
+        );
+        _homeBloc.add(UpdateProfileData(personalData: personalData));
+        setState(() {});
+        Navigator.of(context).pop();
+      },
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/providers/providers.dart';
 
@@ -41,6 +42,14 @@ class ProductRepository {
       _servingUnit(product),
       nutrimentsDatabase,
     );
+  }
+
+  String _servingUnit(final product) {
+    if (product["serving_weight_grams"] != null) {
+      return "g";
+    }
+
+    return product["serving_unit"];
   }
 
   Nutriments _getNutriments(final product) {
@@ -97,14 +106,6 @@ class ProductRepository {
       ),
       formatTo2Digits(product["nf_potassium"]?.toDouble()) ?? -1,
     );
-  }
-
-  String _servingUnit(final product) {
-    if (product["serving_weight_grams"] != null) {
-      return "g";
-    }
-
-    return product["serving_unit"];
   }
 
   double _getServing(final product) {

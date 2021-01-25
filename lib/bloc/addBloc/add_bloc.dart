@@ -5,6 +5,12 @@ import 'package:lifestylediet/repositories/repositories.dart';
 import 'bloc.dart';
 
 class AddBloc extends Bloc<AddEvent, AddState> {
+  final String meal;
+  final String currentDate;
+  final String uid;
+
+  AddBloc(this.meal, this.currentDate, this.uid);
+
   @override
   AddState get initialState => AddLoadedState();
 
@@ -35,9 +41,9 @@ class AddBloc extends Bloc<AddEvent, AddState> {
 
   Stream<AddState> _mapAddProduct(AddProduct event) async* {
     yield AddLoadingState();
-    await DatabaseRepository(uid: event.uid).addUserData(
-        meal: event.meal,
-        currentDate: event.currentDate,
+    await DatabaseRepository(uid: uid).addProduct(
+        meal: meal,
+        currentDate: currentDate,
         product: event.product,
         amount: event.amount,
         value: event.value);
@@ -49,9 +55,9 @@ class AddBloc extends Bloc<AddEvent, AddState> {
     yield AddLoadingState();
     List<DatabaseProduct> products = event.products;
     products.forEach((product) async {
-      await DatabaseRepository(uid: event.uid).addUserData(
-          meal: event.meal,
-          currentDate: event.currentDate,
+      await DatabaseRepository(uid: uid).addProduct(
+          meal: meal,
+          currentDate: currentDate,
           product: product,
           amount: product.amount,
           value: product.value);
@@ -63,9 +69,9 @@ class AddBloc extends Bloc<AddEvent, AddState> {
   Stream<AddState> _mapDatabaseProductList(DatabaseProductList event) async* {
     yield AddLoadingState();
     List<DatabaseProduct> _productsList;
-    DatabaseRepository databaseRepository =
-        new DatabaseRepository(uid: event.uid);
-    _productsList = await databaseRepository.getDatabaseData();
+    DatabaseLocalRepository databaseLocalRepository =
+        new DatabaseLocalRepository(uid: uid);
+    _productsList = await databaseLocalRepository.getDatabaseData();
     yield DatabaseProductsState(_productsList);
   }
 }

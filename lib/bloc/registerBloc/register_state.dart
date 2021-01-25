@@ -20,23 +20,4 @@ class RegisterResult extends RegisterState {
   List<Object> get props => [result];
 }
 
-class PersonalDataResult extends RegisterState {
-  final String email;
-  final String password;
-  final String sex;
-  final String date;
-  final String firstName;
-  final String lastName;
-
-  PersonalDataResult({
-    this.email,
-    this.password,
-    this.sex,
-    this.date,
-    this.firstName,
-    this.lastName,
-  });
-
-  @override
-  List<Object> get props => [email, password, sex, date, firstName, lastName];
-}
+class PersonalDataResult extends RegisterState {}

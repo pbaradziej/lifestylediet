@@ -1,11 +1,11 @@
 class PersonalData {
   final String sex;
   String weight;
-  final String height;
+  String height;
   final String date;
   final String firstName;
   final String lastName;
-  final String activity;
+  String activity;
   String goal;
 
   PersonalData(
