@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/utils/common_utils.dart';
 import 'package:lifestylediet/screens/screens.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -254,17 +254,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return Text(
           "Nadwaga. Masa ciała jest zbyt wysoka. Rozważ konsultację lekarską i modyfikację stylu życia.",
           softWrap: true,
-          style: TextStyle(fontSize: 16, color: Colors.red));
+          style: redProfileTextStyle);
     } else if (bmi < 25 && bmi > 18.5) {
       return Text(
           "Masa ciała jest prawidłowa. Dbaj o bogatą w warzywa i owoce dietę oraz codzienną dawkę sportu.",
           softWrap: true,
-          style: TextStyle(fontSize: 16, color: Colors.green));
+          style: greenProfileTextStyle);
     } else {
       return Text(
           "Wygłodzenie. Masa ciała jest zbyt niska. Skontaktuj się ze swoim lekarzem, który przeprowadzi wywiad medyczny.",
           softWrap: true,
-          style: TextStyle(fontSize: 16, color: Colors.red));
+          style: redProfileTextStyle);
     }
   }
 

@@ -18,10 +18,6 @@ class _DatabaseProductsState extends State<DatabaseProducts> {
 
   @override
   Widget build(BuildContext context) {
-    return _databaseProducts();
-  }
-
-  Widget _databaseProducts() {
     return GestureDetector(
       onTap: () {
         _addBloc.add(DatabaseProductList());

@@ -15,6 +15,7 @@ class _SearchFieldState extends State<SearchField> {
   AddBloc _addBloc;
   ProductRepository _productRepository = new ProductRepository();
   String _search;
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -24,10 +25,6 @@ class _SearchFieldState extends State<SearchField> {
 
   @override
   Widget build(BuildContext context) {
-    return _searchTF();
-  }
-
-  Widget _searchTF() {
     return Container(
       alignment: Alignment.centerLeft,
       width: double.infinity,
@@ -46,10 +43,7 @@ class _SearchFieldState extends State<SearchField> {
           onSubmitted: (submit) {
             _getFoodList(_search);
           },
-          style: TextStyle(
-            color: Colors.black,
-            height: 2,
-          ),
+          style: searchTextStyle,
           decoration: _searchDecoration(),
         ),
       ),
@@ -65,17 +59,17 @@ class _SearchFieldState extends State<SearchField> {
       suffixIcon: IconButton(
         icon: Icon(
           Icons.search,
-          color: Colors.black45,
+          color: defaultBorderColor,
         ),
         onPressed: () {
           _getFoodList(_search);
         },
       ),
-      hintText: "Search product",
+      hintText: "Search products...",
       hintStyle: TextStyle(color: Colors.grey),
       border: new OutlineInputBorder(
         borderSide: BorderSide(
-          color: Colors.black45,
+          color: defaultBorderColor,
         ),
         borderRadius: const BorderRadius.all(
           const Radius.circular(10),

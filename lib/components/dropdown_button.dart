@@ -9,6 +9,7 @@ class DropdownComponent extends StatefulWidget {
   final String errorText;
   final bool halfScreen;
   final List<String> values;
+  final bool alertDialog;
 
   const DropdownComponent({
     Key key,
@@ -19,6 +20,7 @@ class DropdownComponent extends StatefulWidget {
     this.errorText,
     this.halfScreen = false,
     this.values,
+    this.alertDialog = false,
   }) : super(key: key);
 
   @override
@@ -33,6 +35,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
   TextEditingController _controller;
   bool _halfScreen;
   List<String> _values;
+  bool _alertDialog;
 
   void initComponents() {
     _label = widget.label;
@@ -42,6 +45,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
     _controller = widget.controller;
     _halfScreen = widget.halfScreen;
     _values = widget.values;
+    _alertDialog = widget.alertDialog;
   }
 
   @override
@@ -49,25 +53,28 @@ class _DropdownComponentState extends State<DropdownComponent> {
     initComponents();
     return Container(
       width: _halfScreen ? 140 : 260,
-      height: 80,
+      height: _alertDialog ? 83 : 80,
       alignment: Alignment.centerLeft,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_label, style: TextStyle(color: Colors.white)),
+          Text(
+            _label,
+            style: _alertDialog ? TextStyle(color: Colors.black) : labelStyle,
+          ),
           FormField<String>(
             builder: (FormFieldState<String> state) {
               return InputDecorator(
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: appTextFieldsColor,
+                  fillColor: backgroundColor,
                   errorText: _errorText,
-                  errorStyle: TextStyle(fontSize: 12, height: 0.3),
+                  errorStyle: errorStyle,
                   hintText: _hintText,
-                  hintStyle: TextStyle(color: Colors.white60, fontSize: 15),
+                  hintStyle: hintStyle,
                   border: new OutlineInputBorder(
                     borderSide: _borderSide
-                        ? BorderSide(color: Colors.red)
+                        ? BorderSide(color: errorColor)
                         : BorderSide.none,
                     borderRadius: const BorderRadius.all(
                       const Radius.circular(10),
@@ -79,11 +86,11 @@ class _DropdownComponentState extends State<DropdownComponent> {
                   child: DropdownButton<String>(
                     icon: Icon(
                       Icons.arrow_drop_down,
-                      color: Colors.grey[200],
+                      color: iconColors,
                     ),
-                    dropdownColor: Colors.orangeAccent,
+                    dropdownColor: backgroundColor,
                     value: _controller.text,
-                    style: TextStyle(color: Colors.white, fontSize: 15),
+                    style: textStyle,
                     isDense: true,
                     onChanged: (String newValue) {
                       setState(() {
@@ -95,10 +102,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
                       (String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(
-                            value,
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          ),
+                          child: Text(value, style: textStyle),
                         );
                       },
                     ).toList(),

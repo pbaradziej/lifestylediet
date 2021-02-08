@@ -85,11 +85,11 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
   Widget _appBar(BuildContext context) {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: backgroundColor,
       leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.white,
+            color: defaultColor,
           ),
           onPressed: () {
             setState(() {
@@ -111,7 +111,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
       },
       child: Text(
         "Zapisz",
-        style: TextStyle(color: Colors.white),
+        style: labelStyle,
       ),
     );
   }
@@ -221,7 +221,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
             }),
             decoration: InputDecoration(
               border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black45)),
+                  borderSide: BorderSide(color: defaultBorderColor)),
             ),
             textAlign: TextAlign.center,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -257,7 +257,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
           side: BorderSide(
             width: 1.0,
             style: BorderStyle.solid,
-            color: Colors.black45,
+            color: defaultBorderColor,
           ),
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
         ),

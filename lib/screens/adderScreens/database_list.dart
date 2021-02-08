@@ -6,41 +6,43 @@ import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class DatabaseListScreen extends StatefulWidget {
-  final DatabaseProductsState state;
+  final List<DatabaseProduct> products;
 
-  const DatabaseListScreen({Key key, this.state}) : super(key: key);
+  const DatabaseListScreen({Key key, this.products}) : super(key: key);
 
   @override
   _DatabaseListScreenState createState() => _DatabaseListScreenState();
 }
 
 class _DatabaseListScreenState extends State<DatabaseListScreen> {
-  DatabaseProductsState _state;
+  List<DatabaseProduct> _products;
   AddBloc _addBloc;
 
   @override
   void initState() {
-    _state = widget.state;
+    _products = widget.products;
     _addBloc = BlocProvider.of<AddBloc>(context);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Flexible(
+      fit: FlexFit.loose,
       child: ListView.builder(
+        physics: ClampingScrollPhysics(),
         padding: const EdgeInsets.all(0),
         shrinkWrap: true,
-        itemCount: _state.products.length,
+        itemCount: _products.length,
         itemBuilder: (context, index) {
-          return _showFood(_state, index);
+          return _showFood(_products, index);
         },
       ),
     );
   }
 
-  Widget _showFood(DatabaseProductsState state, int index) {
-    DatabaseProduct product = state.products[index];
+  Widget _showFood(List<DatabaseProduct> products, int index) {
+    DatabaseProduct product = products[index];
     Nutriments nutriments = product.nutriments;
 
     return Container(

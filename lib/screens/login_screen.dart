@@ -101,12 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   login(),
                   SizedBox(height: 10),
-                  Text(
-                    "- OR -",
-                    style: TextStyle(
-                      color: Colors.white70,
-                    ),
-                  ),
+                  Text("- OR -", style: loginMenuHintStyle),
                   SizedBox(height: 20),
                   signUp(),
                   SizedBox(height: 20),
@@ -131,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onEditingComplete: () => node.nextFocus(),
       prefixIcon: Icon(
         Icons.mail,
-        color: Colors.white60,
+        color: iconTrailingColors,
       ),
     );
   }
@@ -157,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
       minCharacters: 6,
       minCharactersMessage: "Enter an email 6+ chars long",
       suffixIcon: IconButton(
-        color: Colors.white60,
+        color: iconTrailingColors,
         onPressed: () {
           setState(() {
             _hidePassword = !_hidePassword;
@@ -169,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       prefixIcon: Icon(
         Icons.vpn_key,
-        color: Colors.white60,
+        color: iconTrailingColors,
       ),
       hintText: "Enter Password",
       borderSide: state is LoginFailure,
@@ -216,8 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
         text: TextSpan(
           children: [
             TextSpan(
-                text: "Don\'t have an account?",
-                style: TextStyle(color: Colors.white70)),
+                text: "Don\'t have an account?", style: loginMenuHintStyle),
             TextSpan(text: " Sign up")
           ],
         ),

@@ -44,7 +44,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(_label, style: TextStyle(color: Colors.white)),
+        Text(_label, style: labelStyle),
         FormField<String>(
           enabled: _validationEnabled,
           validator: (value) {
@@ -65,10 +65,9 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
                       height: 65,
                       width: _halfScreen ? 140 : 260,
                       decoration: new BoxDecoration(
-                        color: appTextFieldsColor,
+                        color: backgroundColor,
                         border: Border.all(
-                          color:
-                              state.hasError ? Colors.red : appTextFieldsColor,
+                          color: state.hasError ? errorColor : backgroundColor,
                         ),
                         borderRadius: const BorderRadius.all(
                           const Radius.circular(10),
@@ -83,19 +82,17 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 controller: _controller,
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 15),
+                                style: textStyle,
                                 decoration: new InputDecoration(
                                   contentPadding:
                                       EdgeInsets.symmetric(vertical: 10),
                                   hintText: _hintText,
-                                  hintStyle: TextStyle(
-                                      color: Colors.white60, fontSize: 15),
+                                  hintStyle: hintStyle,
                                   border: new OutlineInputBorder(
                                     borderSide: BorderSide.none,
                                   ),
                                   filled: true,
-                                  fillColor: appTextFieldsColor,
+                                  fillColor: backgroundColor,
                                 ),
                               ),
                             ),
@@ -104,7 +101,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
                             flex: 3,
                             child: Icon(
                               Icons.calendar_today,
-                              color: Colors.grey[200],
+                              color: iconColors,
                             ),
                           ),
                         ],
@@ -118,7 +115,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
                         style: TextStyle(
                           fontSize: 12,
                           //height: 0.3,
-                          color: Colors.red,
+                          color: errorColor,
                         ),
                       )
                     : Container(),
@@ -137,15 +134,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
       firstDate: DateTime(1920),
       lastDate: DateTime(2022),
       builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Colors.deepOrange,
-            accentColor: Colors.orangeAccent,
-            colorScheme: ColorScheme.light(primary: Colors.orange),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child,
-        );
+        return datePickerTheme(child);
       },
     );
     if (picked != null && picked != selectedDate)

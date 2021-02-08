@@ -14,6 +14,7 @@ class NumericComponent extends StatefulWidget {
   final String hintText;
   final String unit;
   final bool filled;
+  final bool alertDialog;
 
   const NumericComponent({
     Key key,
@@ -24,10 +25,11 @@ class NumericComponent extends StatefulWidget {
     this.halfScreen = false,
     this.textInputAction = TextInputAction.next,
     this.onEditingComplete,
-    this.initialValue = "1",
+    this.initialValue = "",
     this.hintText = "Enter value...",
     this.unit = "",
     this.filled = true,
+    this.alertDialog = false,
   }) : super(key: key);
 
   @override
@@ -46,6 +48,7 @@ class _NumericComponentState extends State<NumericComponent> {
   String _hintText;
   String _unit;
   bool _filled;
+  bool _alertDialog;
 
   void initComponents() {
     _label = widget.label;
@@ -59,13 +62,14 @@ class _NumericComponentState extends State<NumericComponent> {
     _hintText = widget.hintText;
     _unit = widget.unit;
     _filled = widget.filled;
+    _alertDialog = widget.alertDialog;
   }
 
   @override
   Widget build(BuildContext context) {
     initComponents();
     return Container(
-      height: 90,
+      height: 95,
       width: _halfScreen ? 100 : 140,
       alignment: Alignment.centerLeft,
       child: Column(
@@ -74,15 +78,17 @@ class _NumericComponentState extends State<NumericComponent> {
           Text(
             _label,
             style: TextStyle(
-              color: _filled ? Colors.white : Colors.black87,
+              color: _filled
+                  ? _alertDialog ? Colors.black : defaultColor
+                  : Colors.black87,
             ),
           ),
           TextFormField(
-            initialValue: _initialValue,
+            initialValue: _initialValue ?? '',
             textInputAction: _action,
             onEditingComplete: _onEditingComplete,
             style: TextStyle(
-              color: Colors.white,
+              color: defaultColor,
               fontSize: 20,
             ),
             validator: (value) {
@@ -105,34 +111,28 @@ class _NumericComponentState extends State<NumericComponent> {
             ],
             decoration: new InputDecoration(
               suffixText: _unit,
-              suffixStyle: TextStyle(
-                color: Colors.white60,
-                fontSize: 15,
-              ),
+              suffixStyle: hintStyle,
               contentPadding: EdgeInsets.symmetric(horizontal: 7, vertical: 19),
               errorText: _errorText,
-              errorStyle: TextStyle(fontSize: 12, height: 0.3),
+              errorStyle: TextStyle(fontSize: 12, height: 0.8),
               hintText: _hintText,
-              hintStyle: TextStyle(
-                color: Colors.white60,
-                fontSize: 15,
-              ),
+              hintStyle: hintStyle,
               errorBorder: new OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red),
+                borderSide: BorderSide(color: errorColor),
                 borderRadius: const BorderRadius.all(
                   const Radius.circular(10),
                 ),
               ),
               border: new OutlineInputBorder(
                 borderSide: _borderSide
-                    ? BorderSide(color: Colors.red)
+                    ? BorderSide(color: errorColor)
                     : BorderSide.none,
                 borderRadius: const BorderRadius.all(
                   const Radius.circular(10),
                 ),
               ),
               filled: true,
-              fillColor: appTextFieldsColor,
+              fillColor: backgroundColor,
             ),
           ),
         ],

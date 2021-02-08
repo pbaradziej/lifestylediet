@@ -21,6 +21,7 @@ class AddBloc extends Bloc<AddEvent, AddState> {
     } else if (event is SearchFood) {
       yield* _mapSearchFood(event);
     } else if (event is AddReturn) {
+      yield AddLoadingState();
       yield AddReturnState();
     } else if (event is AddProduct) {
       yield* _mapAddProduct(event);
@@ -67,7 +68,6 @@ class AddBloc extends Bloc<AddEvent, AddState> {
   }
 
   Stream<AddState> _mapDatabaseProductList(DatabaseProductList event) async* {
-    yield AddLoadingState();
     List<DatabaseProduct> _productsList;
     DatabaseLocalRepository databaseLocalRepository =
         new DatabaseLocalRepository(uid: uid);

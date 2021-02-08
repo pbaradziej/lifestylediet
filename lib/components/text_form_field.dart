@@ -17,6 +17,7 @@ class TextFormFieldComponent extends StatefulWidget {
   final bool enabled;
   final int minCharacters;
   final String minCharactersMessage;
+  final bool searchField;
 
   const TextFormFieldComponent({
     Key key,
@@ -35,6 +36,7 @@ class TextFormFieldComponent extends StatefulWidget {
     this.enabled = true,
     this.minCharacters = 0,
     this.minCharactersMessage = "",
+    this.searchField = false,
   }) : super(key: key);
 
   @override
@@ -57,6 +59,7 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
   bool _enabled;
   int _minCharacters;
   String _minCharactersMessage;
+  bool _searchField;
 
   void initComponents() {
     _label = widget.label;
@@ -74,19 +77,21 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
     _enabled = widget.enabled;
     _minCharacters = widget.minCharacters;
     _minCharactersMessage = widget.minCharactersMessage;
+    _searchField = widget.searchField;
   }
 
   @override
   Widget build(BuildContext context) {
     initComponents();
     return Container(
-      height: 90,
-      width: _halfScreen ? 140 : 260,
+      height: _searchField ? 72 : 90,
+      width: _halfScreen ? 140 : _searchField ? double.infinity : 260,
       alignment: Alignment.centerLeft,
+      padding: EdgeInsets.all(_searchField ? 5.0 : 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_label, style: TextStyle(color: Colors.white)),
+          _label != "" ? Text(_label, style: labelStyle) : SizedBox(height: 0),
           TextFormField(
             enabled: _enabled,
             obscureText: _obscureText,
@@ -98,7 +103,7 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
             },
             textInputAction: _action,
             onEditingComplete: _onEditingComplete,
-            style: TextStyle(color: Colors.white, fontSize: 15),
+            style: _searchField ? searchTextStyle : textStyle,
             validator: (value) {
               if (value.isEmpty) {
                 _errorText = 'Please enter some text';
@@ -115,12 +120,12 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
             decoration: new InputDecoration(
               prefixIcon: _prefixIcon,
               suffixIcon: _suffixIcon,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 15, vertical: 22),
+              contentPadding: EdgeInsets.symmetric(
+                  horizontal: 15, vertical: _searchField ? 21 : 22),
               errorText: _errorText,
-              errorStyle: TextStyle(fontSize: 12, height: 0.3),
+              errorStyle: errorStyle,
               hintText: _hintText,
-              hintStyle: TextStyle(color: Colors.white60, fontSize: 15),
+              hintStyle: _searchField ? searchHintStyle : hintStyle,
               enabledBorder: new OutlineInputBorder(
                 borderSide: BorderSide.none,
                 borderRadius: const BorderRadius.all(
@@ -128,7 +133,7 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
                 ),
               ),
               errorBorder: new OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red),
+                borderSide: BorderSide(color: errorColor),
                 borderRadius: const BorderRadius.all(
                   const Radius.circular(10),
                 ),
@@ -141,14 +146,16 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
               ),
               border: new OutlineInputBorder(
                 borderSide: _borderSide
-                    ? BorderSide(color: Colors.red)
-                    : BorderSide.none,
+                    ? BorderSide(color: errorColor)
+                    : _searchField
+                        ? BorderSide(color: defaultBorderColor)
+                        : BorderSide.none,
                 borderRadius: const BorderRadius.all(
                   const Radius.circular(10),
                 ),
               ),
               filled: true,
-              fillColor: appTextFieldsColor,
+              fillColor: _searchField ? searchLupe : backgroundColor,
             ),
           ),
         ],

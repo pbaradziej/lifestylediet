@@ -84,11 +84,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Widget _appBar(BuildContext context) {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: backgroundColor,
       leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.white,
+            color: defaultColor,
           ),
           onPressed: () {
             setState(() {
@@ -130,7 +130,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       },
       child: Text(
         "Zapisz",
-        style: TextStyle(color: Colors.white),
+        style: labelStyle,
       ),
     );
   }
@@ -148,7 +148,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           },
           child: Text(
             "Usuń",
-            style: TextStyle(color: Colors.white),
+            style: labelStyle,
           ),
         ),
         FlatButton(
@@ -159,7 +159,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           },
           child: Text(
             "Edytuj",
-            style: TextStyle(color: Colors.white),
+            style: labelStyle,
           ),
         ),
       ],
@@ -177,7 +177,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       },
       child: Text(
         "Zapisz",
-        style: TextStyle(color: Colors.white),
+        style: labelStyle,
       ),
     );
   }
@@ -187,7 +187,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       height: 150,
       child: Container(
         width: double.infinity,
-        color: Colors.orangeAccent,
+        color: backgroundColor,
         alignment: Alignment.bottomLeft,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -317,7 +317,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderSide: isEditable
-                    ? BorderSide(color: Colors.black45)
+                    ? BorderSide(color: defaultBorderColor)
                     : BorderSide.none,
               ),
             ),
@@ -367,7 +367,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           side: BorderSide(
             width: 1.0,
             style: BorderStyle.solid,
-            color: Colors.black45,
+            color: defaultBorderColor,
           ),
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
         ),

@@ -61,7 +61,7 @@ class _MealScreenState extends State<MealScreen> {
         _dateFormat.format(DateTime.now().subtract(Duration(days: 7)));
     String strDate = _dateFormat.format(DateTime.now());
     return Card(
-      color: Colors.white,
+      color: defaultColor,
       child: ListTile(
         leading: _dataIconButton(strLastDate, "sub", Icons.arrow_back),
         trailing: _dataIconButton(strDate, "add", Icons.arrow_forward),
@@ -87,9 +87,9 @@ class _MealScreenState extends State<MealScreen> {
 
   Widget _dataIconButton(String strDate, String action, IconData icon) {
     return IconButton(
-      splashColor: _currentDate == strDate ? Colors.white : Color(0x66C8C8C8),
+      splashColor: _currentDate == strDate ? defaultColor : Color(0x66C8C8C8),
       highlightColor:
-          _currentDate == strDate ? Colors.white : Color(0x66C8C8C8),
+          _currentDate == strDate ? defaultColor : Color(0x66C8C8C8),
       color: _currentDate == strDate ? Colors.grey[300] : Colors.grey[500],
       icon: Icon(icon),
       onPressed: () {
@@ -247,9 +247,10 @@ class _MealScreenState extends State<MealScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _nutritionText(
-            'protein\nleft', _nutrition.protein.toString(), textStyle),
-        _nutritionText('carbs\nleft', _nutrition.carbs.toString(), textStyle),
-        _nutritionText('fats\nleft', _nutrition.fats.toString(), textStyle),
+            'protein\nleft', _nutrition.protein.toString(), mealTextStyle),
+        _nutritionText(
+            'carbs\nleft', _nutrition.carbs.toString(), mealTextStyle),
+        _nutritionText('fats\nleft', _nutrition.fats.toString(), mealTextStyle),
       ],
     );
   }

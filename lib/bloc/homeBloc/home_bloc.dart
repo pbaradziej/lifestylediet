@@ -18,6 +18,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   String _currentDate;
   List<Meal> _mealList = [];
   NutrimentsData _nutrimentsData;
+  List<RecipeMeal> _recipes;
+  RecipeRepository recipeRepository = new RecipeRepository();
 
   HomeBloc(this.uid, this._currentDate);
 
@@ -32,6 +34,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   PersonalData get personalData => _personalData;
 
   NutrimentsData get nutrimentsData => _nutrimentsData;
+
+  List<RecipeMeal> get recipes => _recipes;
 
   @override
   HomeState get initialState => HomeLoadingState();
@@ -54,6 +58,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapChangePlan(event);
     } else if (event is UpdateProfileData) {
       yield* _mapUpdateProfileData(event);
+    } else if (event is SearchRecipes) {
+      yield* _mapRecipeList(event);
+    } else if (event is AddRecipeProduct) {
+      yield* _mapAddRecipeProduct(event);
     }
   }
 
@@ -69,6 +77,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _nutrimentsData = utils.getNutrimentsData(_productList);
     await _mealLists(_productList);
     _createMealList();
+    _recipes = await recipeRepository.getRandomRecipes();
     yield HomeLoadedState();
   }
 
@@ -138,6 +147,62 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _personalData = event.personalData;
     await _databaseUserRepository.updateProfileData(event.personalData);
     yield HomeLoadedState();
+  }
+
+  Stream<HomeState> _mapRecipeList(SearchRecipes event) async* {
+    List<RecipeMeal> recipeList =
+        await recipeRepository.getRecipes(event.search);
+    _recipes = recipeList;
+    yield HomeLoadedState();
+  }
+
+  Stream<HomeState> _mapAddRecipeProduct(AddRecipeProduct event) async* {
+    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
+    String strDate = dateFormat.format(DateTime.now());
+    DatabaseProduct product = new DatabaseProduct(
+        '',
+        strDate,
+        event.meal,
+        double.parse(event.amount),
+        event.recipe.recipeInformation.image,
+        event.recipe.recipeInformation.title,
+        'serving',
+        '',
+        _getNutriments(event));
+
+    _productList.add(product);
+    await DatabaseRepository(uid: uid).addProduct(
+        meal: event.meal,
+        currentDate: strDate,
+        product: product,
+        amount: double.parse(event.amount),
+        value: 'serving');
+
+    yield HomeLoadedState();
+  }
+
+  Nutriments _getNutriments(AddRecipeProduct event) {
+    return new Nutriments(
+        0,
+        double.parse(event.recipe.recipeNutrition.calories),
+        0,
+        double.parse(event.recipe.recipeNutrition.carbs.replaceAll('g', '')),
+        0,
+        0,
+        0,
+        0,
+        0,
+        double.parse(event.recipe.recipeNutrition.protein.replaceAll('g', '')),
+        0,
+        double.parse(event.recipe.recipeNutrition.fat.replaceAll('g', '')),
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0);
   }
 
   void _createMealList() {

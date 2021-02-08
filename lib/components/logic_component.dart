@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class LogicComponent extends StatefulWidget {
   final String label;
@@ -49,11 +50,11 @@ class _LogicComponentState extends State<LogicComponent> {
                 Theme(
                   data: ThemeData(
                       unselectedWidgetColor:
-                          state.hasError ? Colors.red : Colors.white),
+                          state.hasError ? errorColor : defaultColor),
                   child: Checkbox(
                     value: _controller.text == 'true',
                     checkColor: Colors.green,
-                    activeColor: Colors.white,
+                    activeColor: defaultColor,
                     onChanged: (bool value) {
                       setState(() {
                         state.reset();
@@ -67,7 +68,7 @@ class _LogicComponentState extends State<LogicComponent> {
                   style: TextStyle(
                     color: state.hasError
                         ? Theme.of(context).errorColor
-                        : Colors.white,
+                        : defaultColor,
                     fontSize: 12,
                   ),
                 )

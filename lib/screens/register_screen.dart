@@ -84,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(height: 20),
                   signUp(state),
                   SizedBox(height: 10),
-                  Text("- OR -", style: TextStyle(color: Colors.white70)),
+                  Text("- OR -", style: loginMenuHintStyle),
                   SizedBox(height: 20),
                   login(),
                   SizedBox(height: 20),
@@ -117,7 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       onEditingComplete: () => node.nextFocus(),
       prefixIcon: Icon(
         Icons.mail,
-        color: Colors.white60,
+        color: iconTrailingColors,
       ),
     );
   }
@@ -131,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       minCharacters: 6,
       minCharactersMessage: "Enter a password 6+ chars long",
       suffixIcon: IconButton(
-        color: Colors.white60,
+        color: iconTrailingColors,
         onPressed: () {
           setState(() {
             _hidePassword = !_hidePassword;
@@ -143,7 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       prefixIcon: Icon(
         Icons.vpn_key,
-        color: Colors.white60,
+        color: iconTrailingColors,
       ),
       hintText: "Enter Password",
       borderSide: state is RegisterResult,
@@ -186,7 +186,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             TextSpan(
               text: "Return to",
-              style: TextStyle(color: Colors.white70),
+              style: loginMenuHintStyle,
             ),
             TextSpan(text: " Login")
           ],

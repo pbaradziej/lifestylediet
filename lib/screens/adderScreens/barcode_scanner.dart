@@ -25,10 +25,6 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
 
   @override
   Widget build(BuildContext context) {
-    return _barcodeScanner();
-  }
-
-  Widget _barcodeScanner() {
     return GestureDetector(
       onTap: () {
         _scanner();
@@ -73,8 +69,10 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
     } catch (Exception) {}
     if (product != null) {
       _detailsNavigator(product);
-    } else {
+    } else if (_barcode != '-1') {
       _snackBar();
+    } else {
+      _snackBarBarcodeCanceled();
     }
   }
 
@@ -83,7 +81,6 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           "#ff6666", "Cancel", true, ScanMode.BARCODE);
-      print(barcodeScanRes);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
@@ -116,6 +113,11 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
           content: Text('Product not found!'),
         ));
     });
+    _addBloc.add(InitialScreen());
+    return Container();
+  }
+
+  Widget _snackBarBarcodeCanceled() {
     _addBloc.add(InitialScreen());
     return Container();
   }

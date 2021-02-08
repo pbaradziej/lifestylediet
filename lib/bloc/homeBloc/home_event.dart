@@ -68,3 +68,20 @@ class DeleteProduct extends HomeEvent {
   @override
   List<Object> get props => [id, index];
 }
+
+class SearchRecipes extends HomeEvent {
+  final String search;
+
+  SearchRecipes(this.search);
+
+  @override
+  List<Object> get props => [search];
+}
+
+class AddRecipeProduct extends HomeEvent {
+  final Recipe recipe;
+  final String amount;
+  final String meal;
+
+  AddRecipeProduct(this.recipe, this.amount, this.meal);
+}

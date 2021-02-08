@@ -7,7 +7,7 @@ Widget loadingScreen() {
       height: 200,
       width: 200,
       child: CircularProgressIndicator(
-        backgroundColor: Colors.white,
+        backgroundColor: defaultColor,
         valueColor: new AlwaysStoppedAnimation<Color>(Colors.orange),
         strokeWidth: 5,
       ),
@@ -23,7 +23,7 @@ Widget loadingScreenMainScreen() {
         height: 200,
         width: 200,
         child: CircularProgressIndicator(
-          backgroundColor: Colors.white,
+          backgroundColor: defaultColor,
           valueColor: new AlwaysStoppedAnimation<Color>(Colors.orange),
           strokeWidth: 5,
         ),

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lifestylediet/models/models.dart';
 
 abstract class HomeState extends Equatable {
   @override
@@ -21,3 +22,12 @@ class HomeAddingState extends HomeState {
 }
 
 class HomeLogoutState extends HomeState {}
+
+class RecipeListState extends HomeState {
+  final List<RecipeMeal> recipes;
+
+  RecipeListState(this.recipes);
+
+  @override
+  List<Object> get props => [recipes];
+}

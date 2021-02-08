@@ -47,13 +47,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _homeScreen() {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         backgroundColor: Colors.grey[300],
         appBar: _appBar(),
         body: TabBarView(
           children: [
             MealScreen(),
+            RecipeScreen(),
             ChartScreen(),
             ProfileScreen(),
           ],
@@ -71,11 +72,12 @@ class _HomeScreenState extends State<HomeScreen> {
       bottom: TabBar(
         tabs: [
           Tab(icon: Icon(Icons.home)),
+          Tab(icon: Icon(Icons.receipt)),
           Tab(icon: Icon(Icons.show_chart)),
           Tab(icon: Icon(Icons.account_circle)),
         ],
       ),
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: backgroundColor,
     );
   }
 }

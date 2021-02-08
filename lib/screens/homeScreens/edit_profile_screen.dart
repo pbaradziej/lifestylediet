@@ -23,6 +23,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController _activityController;
   TextEditingController _weightController;
   TextEditingController _heightController;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -53,34 +54,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             },
             child: ListView(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 20),
-                    Text('Edit Personal Info', style: titleStyle),
-                    SizedBox(height: 15),
-                    _firstNameField(node),
-                    _lastNameField(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _birthdayDateComponent(),
-                        _sexDropdownButton(),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _weightField(node),
-                        _heightField(),
-                      ],
-                    ),
-                    _activityDropdownButton(),
-                    SizedBox(height: 10),
-                    _saveButton(),
-                    SizedBox(height: 20),
-                  ],
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 20),
+                      Text('Edit Personal Info', style: titleStyle),
+                      SizedBox(height: 15),
+                      _firstNameField(node),
+                      _lastNameField(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _birthdayDateComponent(),
+                          _sexDropdownButton(),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _weightField(node),
+                          _heightField(),
+                        ],
+                      ),
+                      _activityDropdownButton(),
+                      SizedBox(height: 10),
+                      _saveButton(),
+                      SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -162,22 +166,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _saveButton() {
     return RaisedButtonComponent(
-      label: "Save",
-      onPressed: () {
-        PersonalData personalData = new PersonalData(
-          _sexController.text,
-          _weightController.text,
-          _heightController.text,
-          _dateController.text,
-          _firstNameController.text,
-          _lastNameController.text,
-          _activityController.text,
-          _personalData.goal,
-        );
-        _homeBloc.add(UpdateProfileData(personalData: personalData));
-        setState(() {});
-        Navigator.of(context).pop();
-      },
-    );
+        label: "Save",
+        onPressed: () {
+          if (_formKey.currentState.validate()) {
+            PersonalData personalData = new PersonalData(
+              _sexController.text,
+              _weightController.text,
+              _heightController.text,
+              _dateController.text,
+              _firstNameController.text,
+              _lastNameController.text,
+              _activityController.text,
+              _personalData.goal,
+            );
+            _homeBloc.add(UpdateProfileData(personalData: personalData));
+            setState(() {});
+            Navigator.of(context).pop();
+          }
+        });
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lifestylediet/bloc/addBloc/bloc.dart';
 import 'package:lifestylediet/screens/screens.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class AddScreen extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: defaultColor,
       child: WillPopScope(
         onWillPop: () => _onWillPop(),
         child: NotificationListener<OverscrollIndicatorNotification>(
@@ -41,7 +42,7 @@ class _AddScreenState extends State<AddScreen> {
                   } else if (state is ProductNotFoundState) {
                     return _snackBar();
                   } else if (state is DatabaseProductsState) {
-                    return DatabaseListScreen(state: state);
+                    return DatabaseListScreen(products: state.products);
                   } else if (state is AddLoadingState) {
                     return loadingScreen();
                   } else {
@@ -63,11 +64,11 @@ class _AddScreenState extends State<AddScreen> {
   Widget _appBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: backgroundColor,
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back,
-          color: Colors.white,
+          color: defaultColor,
         ),
         onPressed: () => _addBloc.add(AddReturn()),
       ),
@@ -102,7 +103,7 @@ class _AddScreenState extends State<AddScreen> {
     return Container();
   }
 
-  Widget loadingScreen() {
+  Widget loadingScreenFlex() {
     return Flexible(
       child: ListView(
         shrinkWrap: true,
