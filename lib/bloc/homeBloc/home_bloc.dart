@@ -71,7 +71,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         DatabaseUserRepository(uid: uid);
     DatabaseRepository _databaseRepository = DatabaseRepository(uid: uid);
     _personalData = await _databaseUserRepository.getUserPersonalData();
-    _productList = await _databaseRepository.getUserData();
+    _productList = await _databaseRepository.getProducts();
     _weightProgressList = await _databaseUserRepository.getUserWeightData();
     Utils utils = new Utils();
     _nutrimentsData = utils.getNutrimentsData(_productList);
@@ -131,7 +131,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     yield HomeLoadingState();
     dispose();
     DatabaseRepository _databaseRepository = DatabaseRepository(uid: uid);
-    _productList = await _databaseRepository.getUserData();
+    _productList = await _databaseRepository.getProducts();
     int index = _productList.indexWhere((product) => product.id == event.id);
     _productList[index].value = event.value;
     _currentDate = _productList[index].date;

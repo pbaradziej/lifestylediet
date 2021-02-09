@@ -6,7 +6,6 @@ import 'bloc.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   UserRepository _repository = UserRepository();
-  String _uidPD;
   String _email;
   String _password;
   PersonalData _personalData;
@@ -55,11 +54,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     _personalData.activity = personalData.activity;
     _personalData.goal = personalData.goal;
     if (result) {
-      _uidPD = _repository.uid + "PD";
       DatabaseUserRepository _databaseRepository =
-          DatabaseUserRepository(uid: _uidPD);
+          DatabaseUserRepository(uid: _repository.uid);
       _databaseRepository.addUserPersonalData(personalData: _personalData);
-      _databaseRepository.setUid(_repository.uid);
       _databaseRepository.addUserWeight(weight: _personalData.weight);
       await _repository.logout();
       yield ReturnLogin();

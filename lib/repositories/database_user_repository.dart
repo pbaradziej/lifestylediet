@@ -9,9 +9,9 @@ class DatabaseUserRepository {
 
   Future addUserPersonalData({PersonalData personalData}) async {
     final CollectionReference personal =
-        FirebaseFirestore.instance.collection(uid);
+        FirebaseFirestore.instance.collection('PersonalData');
 
-    return await personal.doc('PersonalData').set({
+    return await personal.doc(uid).set({
       'sex': personalData.sex,
       'weight': personalData.weight,
       'height': personalData.height,
@@ -28,16 +28,20 @@ class DatabaseUserRepository {
     String strDate = dateFormat.format(DateTime.now());
 
     final CollectionReference weightData =
-        FirebaseFirestore.instance.collection(uid + "WT");
+        FirebaseFirestore.instance.collection('Weight');
 
     final CollectionReference personalDatabaseUpdate =
-        FirebaseFirestore.instance.collection(uid + "PD");
+        FirebaseFirestore.instance.collection('PersonalData');
 
-    await personalDatabaseUpdate.doc('PersonalData').update({
+    await personalDatabaseUpdate.doc(uid).update({
       'weight': weight,
     });
 
-    return await weightData.doc(strDate).set({
+    return await weightData
+        .doc(uid)
+        .collection('personalWeight')
+        .doc(strDate)
+        .set({
       'weight': weight,
       'date': strDate,
     });
@@ -45,18 +49,18 @@ class DatabaseUserRepository {
 
   Future updatePlan(String goal) async {
     final CollectionReference mealData =
-        FirebaseFirestore.instance.collection(uid + "PD");
+        FirebaseFirestore.instance.collection('PersonalData');
 
-    return await mealData.doc('PersonalData').update({
+    return await mealData.doc(uid).update({
       'goal': goal,
     });
   }
 
   Future updateProfileData(PersonalData personalData) async {
-    final CollectionReference mealData =
-        FirebaseFirestore.instance.collection(uid + "PD");
+    final CollectionReference personalDatabase =
+        FirebaseFirestore.instance.collection('PersonalData');
 
-    return await mealData.doc('PersonalData').update({
+    return await personalDatabase.doc(uid).update({
       'sex': personalData.sex,
       'weight': personalData.weight,
       'height': personalData.height,
@@ -68,36 +72,32 @@ class DatabaseUserRepository {
   }
 
   Future getUserPersonalData() async {
-    String uidPD = uid + "PD";
     final CollectionReference personalDatabase =
-        FirebaseFirestore.instance.collection(uidPD);
+        FirebaseFirestore.instance.collection('PersonalData');
     PersonalData personalData;
 
-    await personalDatabase.get().then((querySnapshot) {
-      querySnapshot.docs.forEach((result) {
-        personalData = PersonalData.fromJson(result.data());
-      });
+    await personalDatabase.doc(uid).get().then((result) {
+      personalData = PersonalData.fromJson(result.data());
     });
     return personalData;
   }
 
   Future getUserWeightData() async {
-    String uidWT = uid + "WT";
     final CollectionReference personalDatabase =
-        FirebaseFirestore.instance.collection(uidWT);
+        FirebaseFirestore.instance.collection('Weight');
     List<WeightProgress> weightProgressList = [];
     WeightProgress weightProgress;
 
-    await personalDatabase.get().then((querySnapshot) {
+    await personalDatabase
+        .doc(uid)
+        .collection('personalWeight')
+        .get()
+        .then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         weightProgress = WeightProgress.fromJson(result.data());
         weightProgressList.add(weightProgress);
       });
     });
     return weightProgressList;
-  }
-
-  setUid(String uid) {
-    this.uid = uid;
   }
 }
