@@ -319,12 +319,17 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(extendedIngredients.name, style: defaultProfileTextStyle),
+          Text(
+            extendedIngredients.name,
+            style: defaultProfileTextStyle,
+            softWrap: true,
+          ),
           Text(
             extendedIngredients.amount.toStringAsFixed(1).toString() +
                 ' ' +
                 extendedIngredients.unit,
             style: defaultProfileTextStyle,
+            softWrap: true,
           ),
         ],
       ),
