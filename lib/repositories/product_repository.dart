@@ -20,12 +20,8 @@ class ProductRepository {
     final body = await _productProvider.getProductData(search);
     Map<String, dynamic> productMap = jsonDecode(body);
     List products = productMap["foods"];
-    List<DatabaseProduct> databaseProductList = new List<DatabaseProduct>();
-    for (var product in products) {
-      DatabaseProduct databaseProduct = _getDatabaseProduct(product);
-      databaseProductList.add(databaseProduct);
-    }
-    return databaseProductList;
+    var stream = new Stream.fromIterable(products);
+    return await stream.map((product) => _getDatabaseProduct(product)).toList();
   }
 
   DatabaseProduct _getDatabaseProduct(final product) {

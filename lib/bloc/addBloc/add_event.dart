@@ -6,10 +6,10 @@ abstract class AddEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class SearchFood extends AddEvent {
+class SearchProduct extends AddEvent {
   final String search;
 
-  SearchFood(this.search);
+  SearchProduct(this.search);
 
   @override
   List<Object> get props => [search];

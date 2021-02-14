@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
+import 'package:lifestylediet/bloc/authBloc/bloc.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class PersonalDataScreen extends StatefulWidget {
-  final RegisterBloc bloc;
+  final AuthBloc bloc;
 
   const PersonalDataScreen({Key key, this.bloc}) : super(key: key);
 
@@ -20,7 +20,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   TextEditingController _dateController = TextEditingController();
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
-  RegisterBloc _bloc;
+  AuthBloc _bloc;
   final _formKey = GlobalKey<FormState>();
 
   @override

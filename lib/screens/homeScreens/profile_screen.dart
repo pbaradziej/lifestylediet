@@ -185,24 +185,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget summaryNutritionCard() {
-    return Card(
-      elevation: 2,
-      child: Container(
-        height: 600,
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            summaryHeadLine("Średnie spożycie kaloryczne"),
-            SizedBox(height: 15),
-            pieCaloriesChart(),
-            personalBodyStatistics(),
-            SizedBox(height: 20),
-          ],
+    if (_nutrimentsData.calories.toString() != "NaN") {
+      return Card(
+        elevation: 2,
+        child: Container(
+          height: 600,
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              summaryHeadLine("Średnie spożycie kaloryczne"),
+              SizedBox(height: 15),
+              pieCaloriesChart(),
+              personalBodyStatistics(),
+              SizedBox(height: 20),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return SizedBox();
+    }
   }
 
   Widget pieCaloriesChart() {

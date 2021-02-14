@@ -17,12 +17,11 @@ class AddBloc extends Bloc<AddEvent, AddState> {
   @override
   Stream<AddState> mapEventToState(AddEvent event) async* {
     if (event is InitialScreen) {
-      yield AddLoadedState();
-    } else if (event is SearchFood) {
-      yield* _mapSearchFood(event);
+      yield* _mapInitialScreen(event);
+    } else if (event is SearchProduct) {
+      yield* _mapSearchProduct(event);
     } else if (event is AddReturn) {
-      yield AddLoadingState();
-      yield AddReturnState();
+      yield* _mapReturn(event);
     } else if (event is AddProduct) {
       yield* _mapAddProduct(event);
     } else if (event is AddProductList) {
@@ -32,11 +31,13 @@ class AddBloc extends Bloc<AddEvent, AddState> {
     }
   }
 
-  Stream<AddState> _mapSearchFood(SearchFood event) async* {
+  Stream<AddState> _mapInitialScreen(InitialScreen event) async* {
+    yield AddLoadedState();
+  }
+
+  Stream<AddState> _mapSearchProduct(SearchProduct event) async* {
     yield AddLoadingState();
-
     await Future.delayed(Duration(seconds: 1));
-
     yield AddLoadedState();
   }
 
@@ -73,5 +74,10 @@ class AddBloc extends Bloc<AddEvent, AddState> {
         new DatabaseLocalRepository(uid: uid);
     _productsList = await databaseLocalRepository.getDatabaseData();
     yield DatabaseProductsState(_productsList);
+  }
+
+  Stream<AddState> _mapReturn(AddReturn event) async* {
+    yield AddLoadingState();
+    yield AddReturnState();
   }
 }

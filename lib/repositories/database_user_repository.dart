@@ -77,7 +77,11 @@ class DatabaseUserRepository {
     PersonalData personalData;
 
     await personalDatabase.doc(uid).get().then((result) {
-      personalData = PersonalData.fromJson(result.data());
+      if(result.data() != null) {
+        personalData = PersonalData.fromJson(result.data());
+      } else {
+        return null;
+      }
     });
     return personalData;
   }

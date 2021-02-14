@@ -18,6 +18,7 @@ class TextFormFieldComponent extends StatefulWidget {
   final int minCharacters;
   final String minCharactersMessage;
   final bool searchField;
+  final Function onChangedParameter;
 
   const TextFormFieldComponent({
     Key key,
@@ -37,6 +38,7 @@ class TextFormFieldComponent extends StatefulWidget {
     this.minCharacters = 0,
     this.minCharactersMessage = "",
     this.searchField = false,
+    this.onChangedParameter,
   }) : super(key: key);
 
   @override
@@ -60,6 +62,7 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
   int _minCharacters;
   String _minCharactersMessage;
   bool _searchField;
+  Function _onChangedParameter;
 
   void initComponents() {
     _label = widget.label;
@@ -78,6 +81,7 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
     _minCharacters = widget.minCharacters;
     _minCharactersMessage = widget.minCharactersMessage;
     _searchField = widget.searchField;
+    _onChangedParameter = widget.onChangedParameter;
   }
 
   @override
@@ -99,6 +103,7 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
             controller: _controller,
             onChanged: (_) {
               _errorText = null;
+              _onChangedParameter();
               setState(() {});
             },
             textInputAction: _action,
@@ -127,7 +132,9 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
               hintText: _hintText,
               hintStyle: _searchField ? searchHintStyle : hintStyle,
               enabledBorder: new OutlineInputBorder(
-                borderSide: BorderSide.none,
+                borderSide: _searchField
+                    ? BorderSide(color: defaultBorderColor)
+                    : BorderSide.none,
                 borderRadius: const BorderRadius.all(
                   const Radius.circular(10),
                 ),
@@ -139,7 +146,9 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
                 ),
               ),
               focusedBorder: new OutlineInputBorder(
-                borderSide: BorderSide.none,
+                borderSide: _searchField
+                    ? BorderSide(color: Colors.lightBlueAccent)
+                    : BorderSide.none,
                 borderRadius: const BorderRadius.all(
                   const Radius.circular(10),
                 ),

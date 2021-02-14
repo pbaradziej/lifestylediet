@@ -4,6 +4,8 @@ import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
+import 'repositories/repositories.dart';
+
 void main() => runApp(MaterialApp(home: FireBase()));
 
 class FireBase extends StatefulWidget {

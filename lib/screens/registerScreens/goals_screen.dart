@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
+import 'package:lifestylediet/bloc/authBloc/bloc.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class GoalsScreen extends StatefulWidget {
-  final RegisterBloc bloc;
+  final AuthBloc bloc;
 
   const GoalsScreen({Key key, this.bloc}) : super(key: key);
 
@@ -20,7 +20,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
       TextEditingController(text: "Utrzymać wagę");
   TextEditingController _weightController = TextEditingController(text: "");
   TextEditingController _heightController = TextEditingController(text: "");
-  RegisterBloc _bloc;
+  AuthBloc _bloc;
   final _formKey = GlobalKey<FormState>();
 
   @override

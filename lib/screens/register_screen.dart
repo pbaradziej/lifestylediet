@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lifestylediet/bloc/registerBloc/bloc.dart';
+import 'package:lifestylediet/bloc/authBloc/bloc.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class RegisterScreen extends StatefulWidget {
+  final AuthBloc bloc;
+
+  const RegisterScreen({Key key, this.bloc}) : super(key: key);
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -14,106 +16,75 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _acceptedConditions = true;
   bool _hidePassword = true;
-  RegisterBloc _bloc;
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _checkboxController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  AuthBloc _bloc;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  initState() {
+  void initState() {
     super.initState();
-    _bloc = BlocProvider.of<RegisterBloc>(context);
-    load();
-  }
-
-  load() {
-    _bloc.add(RegisterLoad());
+    _bloc = widget.bloc;
   }
 
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: appTheme(),
-      child: BlocBuilder<RegisterBloc, RegisterState>(
-        builder: (content, state) {
-          if (state is RegisterLoading) {
-            return loadingScreen();
-          } else if (state is RegisterLoaded) {
-            return registerBuilder(state, node);
-          } else if (state is ReturnLogin) {
-            return LoginScreen();
-          } else if (state is RegisterResult) {
-            return _registerResult(state, node);
-          } else if (state is PersonalDataResult) {
-            return GoalsScreen(bloc: _bloc);
-          } else {
-            return loadingScreen();
-          }
-        },
-      ),
-    );
-  }
-
-  Widget registerBuilder(state, FocusScopeNode node) {
-    return Center(
-      child: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (OverscrollIndicatorNotification overscroll) {
-          overscroll.disallowGlow();
-        },
-        child: ListView(
-          children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 20),
-                  Center(
-                    child: Text('Sign Up', style: titleStyle),
+    return Scaffold(
+      key: _scaffoldKey,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: appTheme(),
+        child: Center(
+          child: NotificationListener<OverscrollIndicatorNotification>(
+            onNotification: (OverscrollIndicatorNotification overscroll) {
+              overscroll.disallowGlow();
+            },
+            child: ListView(
+              children: [
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 20),
+                      Center(
+                        child: Text('Sign Up', style: titleStyle),
+                      ),
+                      SizedBox(height: 30),
+                      loginTF(node),
+                      SizedBox(height: 20),
+                      passwordTF(),
+                      SizedBox(height: 10),
+                      acceptConditions(),
+                      SizedBox(height: 20),
+                      signUp(),
+                      SizedBox(height: 10),
+                      Text("- OR -", style: loginMenuHintStyle),
+                      SizedBox(height: 20),
+                      login(),
+                      SizedBox(height: 20),
+                    ],
                   ),
-                  SizedBox(height: 30),
-                  loginTF(node, state),
-                  SizedBox(height: 20),
-                  passwordTF(state),
-                  SizedBox(height: 10),
-                  acceptConditions(),
-                  SizedBox(height: 20),
-                  signUp(state),
-                  SizedBox(height: 10),
-                  Text("- OR -", style: loginMenuHintStyle),
-                  SizedBox(height: 20),
-                  login(),
-                  SizedBox(height: 20),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  _registerResult(RegisterResult state, node) {
-    if (state.result) {
-      return PersonalDataScreen(bloc: _bloc);
-    } else {
-      return registerBuilder(state, node);
-    }
-  }
-
-  Widget loginTF(FocusScopeNode node, state) {
+  Widget loginTF(FocusScopeNode node) {
     return TextFormFieldComponent(
       label: "Email",
       controller: _emailController,
       hintText: "Enter Email",
       minCharacters: 3,
       minCharactersMessage: "Enter an email 3+ chars long",
-      borderSide: state is RegisterResult,
-      errorText: state is RegisterResult ? 'invalid email' : null,
       onEditingComplete: () => node.nextFocus(),
       prefixIcon: Icon(
         Icons.mail,
@@ -122,7 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget passwordTF(state) {
+  Widget passwordTF() {
     return TextFormFieldComponent(
       label: "Password",
       controller: _passwordController,
@@ -146,7 +117,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         color: iconTrailingColors,
       ),
       hintText: "Enter Password",
-      borderSide: state is RegisterResult,
     );
   }
 
@@ -158,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget signUp(state) {
+  Widget signUp() {
     return RaisedButtonComponent(
       label: "Sign Up",
       onPressed: () {
@@ -168,8 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _emailController.text?.trim(),
               _passwordController.text,
             );
-            Register _register = Register(user: _user);
-            _bloc.add(_register);
+            _bloc.add(Register(user: _user, scaffoldKey: _scaffoldKey));
           }
         });
       },
@@ -179,7 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget login() {
     return GestureDetector(
       onTap: () {
-        _bloc.add(Return());
+        Navigator.pop(context);
       },
       child: RichText(
         text: TextSpan(

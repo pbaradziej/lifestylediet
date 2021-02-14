@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
-import 'package:lifestylediet/bloc/loginBloc/bloc.dart';
+import 'package:lifestylediet/bloc/authBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
@@ -16,13 +16,13 @@ class _MealScreenState extends State<MealScreen> {
   List<Meal> _meals;
   Nutrition _nutrition;
   HomeBloc _homeBloc;
-  LoginBloc _loginBloc;
+  AuthBloc _loginBloc;
   String _currentDate;
   Utils _utils;
 
   @override
   void initState() {
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _loginBloc = BlocProvider.of<AuthBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
     _currentDate = _homeBloc.currentDate;
     _meals = _homeBloc.mealList;
