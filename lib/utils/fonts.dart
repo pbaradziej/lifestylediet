@@ -40,7 +40,7 @@ TextStyle get titleStyle => GoogleFonts.aleo(
 TextStyle get titleDateStyle =>
     GoogleFonts.aleo(fontSize: 25, color: Colors.grey[700]);
 
-TextStyle get redProfileTextStyle => TextStyle(fontSize: 16, color: Colors.red);
+TextStyle get orangeProfileTextStyle => TextStyle(fontSize: 16, color: Colors.orangeAccent);
 
 TextStyle get greenProfileTextStyle =>
     TextStyle(fontSize: 16, color: Colors.green);

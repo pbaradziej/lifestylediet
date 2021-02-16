@@ -110,7 +110,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
         widget.addBloc.add(AddReturn());
       },
       child: Text(
-        "Zapisz",
+        "Save",
         style: labelStyle,
       ),
     );

@@ -53,7 +53,7 @@ class _ChartScreenState extends State<ChartScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _summaryHeadLine("Wykres Wagi"),
+            _summaryHeadLine("Weight chart"),
             SizedBox(height: 20),
             _weightLineChart(),
             SizedBox(height: 20),
@@ -70,8 +70,9 @@ class _ChartScreenState extends State<ChartScreen> {
       children: [
         NumericComponent(
           controller: _weightController,
-          label: "Waga",
+          label: "Weight",
           halfScreen: true,
+          hintText: "Add weight...",
           unit: "kg",
           filled: false,
           textInputAction: TextInputAction.done,
@@ -79,7 +80,7 @@ class _ChartScreenState extends State<ChartScreen> {
         Container(
           width: 150,
           child: RaisedButtonComponent(
-            label: "Dodaj Wagę",
+            label: "Add weight",
             onPressed: () async {
               if (_weightController.text.isNotEmpty) {
                 _homeBloc.add(AddWeight(_weightController.text));
@@ -114,7 +115,7 @@ class _ChartScreenState extends State<ChartScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _summaryHeadLine("Wykres BMI"),
+            _summaryHeadLine("BMI chart"),
             SizedBox(height: 20),
             _bmiLineChart(),
           ],

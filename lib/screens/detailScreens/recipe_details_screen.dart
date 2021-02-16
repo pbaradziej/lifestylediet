@@ -77,7 +77,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         //Navigator.pop(context);
       },
       child: Text(
-        "Dodaj Produkt",
+        "Add product",
         style: labelStyle,
       ),
     );
@@ -88,7 +88,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Dodaj produkt"),
+          title: Text("Add product"),
           content: SingleChildScrollView(
             child: Container(
               child: Column(
@@ -107,10 +107,10 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Anuluj'),
+                  child: Text('Cancel'),
                 ),
                 FlatButton(
-                    child: Text('Zapisz'),
+                    child: Text('Save'),
                     onPressed: () {
                       _homeBloc.add(AddRecipeProduct(
                         _recipe,

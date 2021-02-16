@@ -15,9 +15,9 @@ class GoalsScreen extends StatefulWidget {
 
 class _GoalsScreenState extends State<GoalsScreen> {
   TextEditingController _activityController =
-      TextEditingController(text: "Tryb życia średnia aktywność");
+      TextEditingController(text: "Medium");
   TextEditingController _goalsController =
-      TextEditingController(text: "Utrzymać wagę");
+      TextEditingController(text: "Keep weight");
   TextEditingController _weightController = TextEditingController(text: "");
   TextEditingController _heightController = TextEditingController(text: "");
   AuthBloc _bloc;
@@ -58,7 +58,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 20),
-          Text('Goals', style: titleStyle),
+          Text("Goals", style: titleStyle),
           SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -79,20 +79,16 @@ class _GoalsScreenState extends State<GoalsScreen> {
   Widget _activityDropdownButton() {
     return DropdownComponent(
       controller: _activityController,
-      label: "Poziom aktywności",
-      values: [
-        "Tryb życia siedzący",
-        "Tryb życia średnia aktywność",
-        "Tryb życia wysoka aktywność"
-      ],
+      label: "Activity level",
+      values: ["Low", "Medium", "High"],
     );
   }
 
   Widget _goalsDropdownButton() {
     return DropdownComponent(
       controller: _goalsController,
-      label: "Cel",
-      values: ["Schudnąć", "Utrzymać wagę", "Przytyć"],
+      label: "Goal",
+      values: ["Lose weight", "Keep weight", "Gain weight"],
     );
   }
 

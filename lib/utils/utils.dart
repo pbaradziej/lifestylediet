@@ -79,11 +79,11 @@ class Utils {
 
   double _getPalParameter(PersonalData personalData) {
     switch (personalData.activity) {
-      case "Tryb życia siedzący":
+      case "Low":
         return 1.5;
-      case "Tryb życia średnia aktywność":
+      case "Medium":
         return 1.8;
-      case "Tryb życia wysoka aktywność":
+      case "High":
         return 2.2;
       default:
         return 1.8;
@@ -92,11 +92,11 @@ class Utils {
 
   double _getPhysicalParameter(PersonalData personalData) {
     switch (personalData.goal) {
-      case "Schudnąć":
+      case "Lose weight":
         return 0.9;
-      case "Utrzymać wagę":
+      case "Keep weight":
         return 1.0;
-      case "Przytyć":
+      case "Gain weight":
         return 1.1;
       default:
         return 1.0;

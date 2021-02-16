@@ -15,6 +15,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<DatabaseProduct> _supperList = [];
   List<WeightProgress> _weightProgressList = [];
   PersonalData _personalData;
+  bool _dailyWeightUpdated;
   String _currentDate;
   List<Meal> _mealList = [];
   NutrimentsData _nutrimentsData;
@@ -28,6 +29,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   String get currentDate => _currentDate;
 
   List<Meal> get mealList => _mealList;
+
+  bool get dailyWeightUpdated => _dailyWeightUpdated;
+
+  set dailyWeightUpdated(bool dailyWeightUpdated) {
+    this._dailyWeightUpdated = dailyWeightUpdated;
+  }
 
   List<WeightProgress> get weightProgressList => _weightProgressList;
 
@@ -73,6 +80,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _personalData = await _databaseUserRepository.getUserPersonalData();
     _productList = await _databaseRepository.getProducts();
     _weightProgressList = await _databaseUserRepository.getUserWeightData();
+    _checkWeight(_weightProgressList);
     Utils utils = new Utils();
     _nutrimentsData = utils.getNutrimentsData(_productList);
     await _mealLists(_productList);
@@ -169,8 +177,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         'serving',
         '',
         _getNutriments(event));
-
-    _productList.add(product);
+    _mealProduct(product);
+    _createMealList();
     await DatabaseRepository(uid: uid).addProduct(
         meal: event.meal,
         currentDate: strDate,
@@ -179,6 +187,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         value: 'serving');
 
     yield HomeLoadedState();
+  }
+
+  void _checkWeight(List<WeightProgress> weightList) {
+    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
+    String strDate = dateFormat.format(DateTime.now());
+    _dailyWeightUpdated =
+        weightList.map((weight) => weight.date).contains(strDate);
   }
 
   Nutriments _getNutriments(AddRecipeProduct event) {
@@ -210,6 +225,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Meal dinner = new Meal("Dinner", false, _dinnerList);
     Meal supper = new Meal("Supper", false, _supperList);
     _mealList = [breakfast, dinner, supper];
+  }
+
+  _mealProduct(DatabaseProduct product) {
+    switch (product.meal) {
+      case 'Breakfast':
+        _breakfastList.add(product);
+        break;
+      case 'Dinner':
+        _dinnerList.add(product);
+        break;
+      case 'Supper':
+        _supperList.add(product);
+        break;
+    }
   }
 
   _mealLists(List<DatabaseProduct> productList) {

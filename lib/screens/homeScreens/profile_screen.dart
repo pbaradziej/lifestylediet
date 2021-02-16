@@ -76,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20.0, bottom: 10),
           child: Text(
-            "Witaj",
+            "Hello",
             style: Theme.of(context).textTheme.title,
           ),
         ),
@@ -132,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future alertDialog(BuildContext context) {
-    List<String> plans = ["Schudnąć", "Utrzymać wagę", "Przytyć"];
+    List<String> plans = ["Lose weight", "Keep weight", "Gain weight"];
     return showDialog(
         context: context,
         builder: (context) {
@@ -175,7 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            summaryHeadLine("Podsumowanie"),
+            summaryHeadLine("Summary"),
             personalData(),
             SizedBox(height: 15),
           ],
@@ -195,7 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              summaryHeadLine("Średnie spożycie kaloryczne"),
+              summaryHeadLine("Average caloric intake"),
               SizedBox(height: 15),
               pieCaloriesChart(),
               personalBodyStatistics(),
@@ -240,12 +240,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          summaryRow("Waga", "${_personalData.weight} kg"),
-          summaryRow("Wzrost", "${_personalData.height} cm"),
-          summaryRow("Płeć", "${_personalData.sex}"),
-          summaryRow("Data urodzenia", "${_personalData.date}"),
-          summaryRow("Aktywność fizyczna", "${_personalData.activity}"),
-          summaryRow("Cel", "${_personalData.goal}"),
+          summaryRow("Weight", "${_personalData.weight} kg"),
+          summaryRow("Height", "${_personalData.height} cm"),
+          summaryRow("Sex", "${_personalData.sex}"),
+          summaryRow("Birth date", "${_personalData.date}"),
+          summaryRow("Activity level", "${_personalData.activity}"),
+          summaryRow("Goal", "${_personalData.goal}"),
           summaryRow("BMI", "${bmi.toStringAsFixed(2).toString()}"),
           checkBMI(bmi),
         ],
@@ -256,19 +256,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget checkBMI(double bmi) {
     if (bmi >= 25) {
       return Text(
-          "Nadwaga. Masa ciała jest zbyt wysoka. Rozważ konsultację lekarską i modyfikację stylu życia.",
+          "Your BMI is slightly to high. Keep up a good work and you will get to your goal in no time.",
           softWrap: true,
-          style: redProfileTextStyle);
+          style: orangeProfileTextStyle);
     } else if (bmi < 25 && bmi > 18.5) {
       return Text(
-          "Masa ciała jest prawidłowa. Dbaj o bogatą w warzywa i owoce dietę oraz codzienną dawkę sportu.",
+          "Your BMI is correct. Keep up a good work, you are doing great.",
           softWrap: true,
           style: greenProfileTextStyle);
     } else {
       return Text(
-          "Wygłodzenie. Masa ciała jest zbyt niska. Skontaktuj się ze swoim lekarzem, który przeprowadzi wywiad medyczny.",
+          "Your BMI is slightly to low. Keep up a good work and you will get to your goal in no time.",
           softWrap: true,
-          style: redProfileTextStyle);
+          style: orangeProfileTextStyle);
     }
   }
 

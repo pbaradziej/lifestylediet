@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/bloc/authBloc/bloc.dart';
+import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
@@ -19,6 +19,7 @@ class _MealScreenState extends State<MealScreen> {
   AuthBloc _loginBloc;
   String _currentDate;
   Utils _utils;
+  bool _dailyWeightUpdated = false;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _MealScreenState extends State<MealScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _dailyWeightUpdated = _homeBloc.dailyWeightUpdated;
     PersonalData personalData = _homeBloc.personalData;
     _nutrition = _utils.getNutrition(personalData);
     _getNutritionWithCurrentDate();
@@ -42,17 +44,49 @@ class _MealScreenState extends State<MealScreen> {
       child: ListView(
         padding: EdgeInsets.only(top: 0),
         children: [
-          calories(),
+          _calories(),
+          _addWeightPopUp(),
           _dateCard(),
           SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.only(bottom: 15),
-              child: mealPanelList(),
+              child: _mealPanelList(),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _addWeightPopUp() {
+    return !_dailyWeightUpdated
+        ? Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            color: Colors.lightBlueAccent[200],
+            child: GestureDetector(
+              onTap: () {
+                DefaultTabController.of(context).animateTo(2);
+              },
+              child: ListTile(
+                trailing: IconButton(
+                  icon: Icon(Icons.close),
+                  color: Colors.grey[600],
+                  onPressed: () {
+                    _homeBloc.dailyWeightUpdated = true;
+                    setState(() {});
+                  },
+                ),
+                title: Text(
+                  "Add your daily weight",
+                  textAlign: TextAlign.center,
+                  style: mealTextStyle,
+                ),
+              ),
+            ),
+          )
+        : SizedBox();
   }
 
   Widget _dateCard() {
@@ -93,12 +127,12 @@ class _MealScreenState extends State<MealScreen> {
       color: _currentDate == strDate ? Colors.grey[300] : Colors.grey[500],
       icon: Icon(icon),
       onPressed: () {
-        swipeData(strDate, action);
+        _swipeData(strDate, action);
       },
     );
   }
 
-  void swipeData(String strDate, String action) {
+  void _swipeData(String strDate, String action) {
     if (_currentDate != strDate) {
       setState(() {
         DateTime newDate;
@@ -119,7 +153,7 @@ class _MealScreenState extends State<MealScreen> {
     }
   }
 
-  ExpansionPanelList mealPanelList() {
+  ExpansionPanelList _mealPanelList() {
     return ExpansionPanelList(
       expansionCallback: (int index, bool isExpanded) {
         setState(() {
@@ -151,45 +185,49 @@ class _MealScreenState extends State<MealScreen> {
   Widget _mealPanel(Meal meal) {
     return Column(
       children: [
-        listBuilder(meal.mealList),
-        FlatButton(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text: "ADD ${meal.name.toUpperCase()} ",
-                  style: defaultTextStyle,
-                ),
-              ),
-              Icon(Icons.add),
-            ],
-          ),
-          onPressed: () {
-            _homeBloc.add(AddProductScreen(meal.name, _currentDate));
-            _homeBloc.dispose();
-          },
-        ),
+        _listBuilder(meal.mealList),
+        _addMeal(meal.name),
       ],
     );
   }
 
-  Widget listBuilder(List<DatabaseProduct> mealList) {
+  Widget _addMeal(String meal) {
+    return FlatButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              text: "ADD ${meal.toUpperCase()} ",
+              style: defaultTextStyle,
+            ),
+          ),
+          Icon(Icons.add),
+        ],
+      ),
+      onPressed: () {
+        _homeBloc.add(AddProductScreen(meal, _currentDate));
+        _homeBloc.dispose();
+      },
+    );
+  }
+
+  Widget _listBuilder(List<DatabaseProduct> mealList) {
     List<DatabaseProduct> currentMealList =
-        getProductsWithCurrentDate(mealList);
+        _getProductsWithCurrentDate(mealList);
     return ListView.builder(
       padding: EdgeInsets.only(top: 0),
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: currentMealList.length,
       itemBuilder: (context, index) {
-        return showFood(currentMealList, index);
+        return _showFood(currentMealList, index);
       },
     );
   }
 
-  List<DatabaseProduct> getProductsWithCurrentDate(
+  List<DatabaseProduct> _getProductsWithCurrentDate(
       List<DatabaseProduct> mealList) {
     List<DatabaseProduct> currentMealList = [];
     for (DatabaseProduct product in mealList) {
@@ -201,7 +239,7 @@ class _MealScreenState extends State<MealScreen> {
     return currentMealList;
   }
 
-  Widget calories() {
+  Widget _calories() {
     return Container(
       width: 350,
       height: 220,
@@ -209,15 +247,15 @@ class _MealScreenState extends State<MealScreen> {
       decoration: menuTheme(),
       child: Column(
         children: [
-          kcalRow(),
+          _kcalRow(),
           SizedBox(height: 14),
-          nutritionRow(),
+          _nutritionRow(),
         ],
       ),
     );
   }
 
-  Widget kcalRow() {
+  Widget _kcalRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -242,7 +280,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget nutritionRow() {
+  Widget _nutritionRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -270,12 +308,12 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget showFood(List<DatabaseProduct> mealList, int index) {
+  Widget _showFood(List<DatabaseProduct> mealList, int index) {
     final product = mealList[index];
     final nutriments = product.nutriments;
 
     return ListTile(
-      subtitle: subtitleListTile(product, nutriments),
+      subtitle: _subtitleListTile(product, nutriments),
       title: Text(product.name ?? ""),
       trailing: _deleteButton(product),
       onTap: () => Navigator.push(
@@ -309,7 +347,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
+  Widget _subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
     Utils utils = new Utils();
     return RichText(
       text: TextSpan(

@@ -133,12 +133,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _activityDropdownButton() {
     return DropdownComponent(
       controller: _activityController,
-      label: "Poziom aktywności",
-      values: [
-        "Tryb życia siedzący",
-        "Tryb życia średnia aktywność",
-        "Tryb życia wysoka aktywność"
-      ],
+      label: "Activity level",
+      values: ["Low", "Medium", "High"],
     );
   }
 

@@ -129,7 +129,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         widget.addBloc.add(AddReturn());
       },
       child: Text(
-        "Zapisz",
+        "Save",
         style: labelStyle,
       ),
     );
@@ -147,7 +147,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             Navigator.pop(context);
           },
           child: Text(
-            "Usuń",
+            "Delete",
             style: labelStyle,
           ),
         ),
@@ -158,7 +158,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             });
           },
           child: Text(
-            "Edytuj",
+            "Edit",
             style: labelStyle,
           ),
         ),
@@ -176,7 +176,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         Navigator.pop(context);
       },
       child: Text(
-        "Zapisz",
+        "Save",
         style: labelStyle,
       ),
     );
