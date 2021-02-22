@@ -15,9 +15,9 @@ class GoalsScreen extends StatefulWidget {
 
 class _GoalsScreenState extends State<GoalsScreen> {
   TextEditingController _activityController =
-      TextEditingController(text: "Medium");
+      TextEditingController(text: i18n.activityNormal);
   TextEditingController _goalsController =
-      TextEditingController(text: "Keep weight");
+      TextEditingController(text: i18n.keepWeight);
   TextEditingController _weightController = TextEditingController(text: "");
   TextEditingController _heightController = TextEditingController(text: "");
   AuthBloc _bloc;
@@ -80,7 +80,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
     return DropdownComponent(
       controller: _activityController,
       label: "Activity level",
-      values: ["Low", "Medium", "High"],
+      values: [i18n.activityLow, i18n.activityNormal, i18n.activityHigh],
     );
   }
 
@@ -88,7 +88,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
     return DropdownComponent(
       controller: _goalsController,
       label: "Goal",
-      values: ["Lose weight", "Keep weight", "Gain weight"],
+      values: [i18n.loseWeight, i18n.keepWeight, i18n.gainWeight],
     );
   }
 
@@ -117,17 +117,14 @@ class _GoalsScreenState extends State<GoalsScreen> {
       label: "Done",
       onPressed: () {
         if (_formKey.currentState.validate()) {
-          PersonalData personalData = new PersonalData(
-            "",
-            _weightController.text,
-            _heightController.text,
-            "",
-            "",
-            "",
-            _activityController.text,
-            _goalsController.text,
-          );
-          _bloc.add(GoalsEvent(personalData: personalData));
+          PersonalData personalData = _bloc.personalData;
+          personalData.setWeight(_weightController.text);
+          personalData.setHeight(_heightController.text);
+          personalData.setActivity(_activityController.text);
+          personalData.setGoal(_goalsController.text);
+          personalData.setImagePath("");
+
+          _bloc.add(GoalsEvent());
         }
       },
     );

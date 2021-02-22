@@ -1,17 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:lifestylediet/bloc/authBloc/bloc.dart';
 import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/repositories/repositories.dart';
 import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
 class LoginScreen extends StatefulWidget {
+  final scaffoldKey;
+
+  const LoginScreen({Key key, this.scaffoldKey}) : super(key: key);
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -24,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _checkboxController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool registerPopped = false;
   bool verifyEmail = false;
   String uid = "";
@@ -33,88 +33,10 @@ class _LoginScreenState extends State<LoginScreen> {
   initState() {
     super.initState();
     _bloc = BlocProvider.of<AuthBloc>(context);
-    _loadLogin();
-    _portraitModeOnly();
-  }
-
-  void _portraitModeOnly() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-  }
-
-  _loadLogin() {
-    _bloc.add(LoginLoad());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: appTheme(),
-        child: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (BuildContext context, snapshot) {
-            return _getFutureBuilder(snapshot);
-          },
-        ),
-      ),
-    );
-  }
-
-  _getFutureBuilder(snapshot) {
-    return FutureBuilder(
-      future: _getPersonalData(),
-      builder: (_, snap) {
-        if (!snapshot.hasData) {
-          return _getBlocBuilder();
-        } else {
-          return _userIsLogged(snapshot, snap);
-        }
-      },
-    );
-  }
-
-  _userIsLogged(snapshot, snap) {
-    if (snapshot.data.emailVerified) {
-      return _userHasVerifiedEmail(snapshot, snap);
-    } else {
-      return _getBlocBuilder();
-    }
-  }
-
-  _userHasVerifiedEmail(snapshot, snap) {
-    uid = snapshot.data.uid;
-    if (snap.hasData) {
-      return _userHasPersonalData(snapshot, snap);
-    } else {
-      return loadingScreen();
-    }
-  }
-
-  _userHasPersonalData(snapshot, snap) {
-    if (snap.data.sex != "") {
-      DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
-      String strDate = dateFormat.format(DateTime.now());
-      return HomeProvider(uid: snapshot.data.uid, currentDate: strDate);
-    } else {
-      return _getBlocBuilder();
-    }
-  }
-
-  _getPersonalData() async {
-    DatabaseUserRepository _databaseUserRepository =
-        DatabaseUserRepository(uid: uid);
-    PersonalData _personalData =
-        await _databaseUserRepository.getUserPersonalData();
-    return _personalData ?? new PersonalData("", "", "", "", "", "", "", "");
-  }
-
-  Widget _getBlocBuilder() {
     final node = FocusScope.of(context);
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (content, state) {
@@ -124,21 +46,15 @@ class _LoginScreenState extends State<LoginScreen> {
           _rememberMeController();
           return HomeProvider(uid: state.uid, currentDate: state.currentDate);
         } else if (state is LoginLoaded) {
-          return loginScreen(state, node);
+          return _loginScreen(state, node);
         } else if (state is RegisterSuccess) {
-          if (!registerPopped) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pop(context);
-            });
-            registerPopped = true;
-          }
-          return _snackBar(state.message, _scaffoldKey);
+          return _registerSuccess(state);
         } else if (state is LoginFailure) {
-          return loginScreen(state, node);
+          return _loginScreen(state, node);
         } else if (state is ConfirmEmail) {
           return _snackBar(state.message, state.scaffoldKey);
         } else if (state is VerifyEmail) {
-          return _snackBar(state.message, _scaffoldKey);
+          return _snackBar(state.message, widget.scaffoldKey);
         } else if (state is RegisterState) {
           return _snackBar(state.message, state.scaffoldKey);
         } else if (state is PersonalDataState) {
@@ -152,7 +68,17 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget loginScreen(state, FocusScopeNode node) {
+  Widget _registerSuccess(state) {
+    if (!registerPopped) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pop(context);
+      });
+      registerPopped = true;
+    }
+    return _snackBar(state.message, widget.scaffoldKey);
+  }
+
+  Widget _loginScreen(state, FocusScopeNode node) {
     return Center(
       child: NotificationListener<OverscrollIndicatorNotification>(
         onNotification: (OverscrollIndicatorNotification overscroll) {
@@ -168,21 +94,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 20),
                   Text('Lifestyle Diet', style: titleStyle),
                   SizedBox(height: 30),
-                  loginTF(state, node),
+                  _loginTF(state, node),
                   SizedBox(height: 20),
-                  passwordTF(state, node),
+                  _passwordTF(state, node),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       rememberMe(),
-                      forgotPassword(),
+                      _forgotPassword(),
                     ],
                   ),
-                  login(),
+                  _login(),
                   SizedBox(height: 10),
                   Text("- OR -", style: loginMenuHintStyle),
                   SizedBox(height: 20),
-                  signUp(),
+                  _signUp(),
                   SizedBox(height: 20),
                 ],
               ),
@@ -193,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget loginTF(state, FocusScopeNode node) {
+  Widget _loginTF(state, FocusScopeNode node) {
     return TextFormFieldComponent(
       label: "Email",
       controller: _emailController,
@@ -210,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget passwordTF(state, FocusScopeNode node) {
+  Widget _passwordTF(state, FocusScopeNode node) {
     return TextFormFieldComponent(
       label: "Password",
       controller: _passwordController,
@@ -250,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget forgotPassword() {
+  Widget _forgotPassword() {
     return Container(
       padding: const EdgeInsets.only(right: 14),
       child: FlatButton(
@@ -299,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.clear();
   }
 
-  Widget signUp() {
+  Widget _signUp() {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -321,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget login() {
+  Widget _login() {
     return RaisedButtonComponent(
       label: "Login",
       onPressed: () {

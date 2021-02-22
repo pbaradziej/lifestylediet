@@ -1,63 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/repositories/repositories.dart';
-import 'package:uuid/uuid.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class DatabaseRepository {
   String uid;
   DatabaseLocalRepository _databaseLocalRepository;
+  Utils utils = new Utils();
 
   DatabaseRepository({this.uid});
 
-  Future addProduct({
-    String meal,
-    DatabaseProduct product,
-    double amount,
-    String value,
-    String currentDate,
-  }) async {
-    String uuid = Uuid().v4().toString();
+  Future addProduct({DatabaseProduct product}) async {
     final CollectionReference mealData =
         FirebaseFirestore.instance.collection('UserProducts');
     _databaseLocalRepository = new DatabaseLocalRepository(uid: uid);
+    Map<String, dynamic> productMap = utils.setProduct(product);
     await _databaseLocalRepository.addDatabaseProduct(product: product);
 
     return await mealData
         .doc(uid)
         .collection('PersonalProducts')
-        .doc(uuid)
-        .set({
-      'id': uuid,
-      'date': currentDate,
-      'meal': meal,
-      'name': product.name,
-      'image': product.image,
-      'amount': amount,
-      'value': value,
-      'servingUnit': product.servingUnit,
-      'nutriments': {
-        'caloriesPer100g': product.nutriments.caloriesPer100g,
-        'caloriesPerServing': product.nutriments.caloriesPerServing,
-        'carbs': product.nutriments.carbs,
-        'carbsPerServing': product.nutriments.carbsPerServing,
-        'fiber': product.nutriments.fiber,
-        'fiberPerServing': product.nutriments.fiberPerServing,
-        'sugars': product.nutriments.sugars,
-        'sugarsPerServing': product.nutriments.sugarsPerServing,
-        'protein': product.nutriments.protein,
-        'proteinPerServing': product.nutriments.proteinPerServing,
-        'fats': product.nutriments.fats,
-        'fatsPerServing': product.nutriments.fatsPerServing,
-        'saturatedFats': product.nutriments.saturatedFats,
-        'saturatedFatsPerServing': product.nutriments.saturatedFatsPerServing,
-        'cholesterol': product.nutriments.cholesterol,
-        'cholesterolPerServing': product.nutriments.cholesterolPerServing,
-        'sodium': product.nutriments.sodium,
-        'sodiumPerServing': product.nutriments.sodiumPerServing,
-        'potassium': product.nutriments.potassium,
-        'potassiumPerServing': product.nutriments.potassiumPerServing,
-      }
-    });
+        .doc(productMap["id"])
+        .set(productMap);
   }
 
   Future updateProduct(DatabaseProduct databaseProduct) async {

@@ -38,14 +38,13 @@ class UserRepository {
   }
 
   resetPassword(String email) async {
-
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } catch (Exception) {}
   }
 
   verifyEmail() async {
-      await _auth.currentUser.sendEmailVerification();
+    await _auth.currentUser.sendEmailVerification();
   }
 
   logout() async {

@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
       if (state is HomeLogoutState) {
-        return LoginScreen();
+        return AuthScreen();
       } else if (state is HomeLoadingState) {
         return loadingScreenMainScreen();
       } else if (state is HomeLoadedState) {

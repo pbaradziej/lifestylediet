@@ -1,12 +1,15 @@
+import 'dart:io';
+
 class PersonalData {
-  final String sex;
+  String sex;
   String weight;
   String height;
-  final String date;
-  final String firstName;
-  final String lastName;
+  String date;
+  String firstName;
+  String lastName;
   String activity;
   String goal;
+  String imagePath;
 
   PersonalData(
     this.sex,
@@ -17,6 +20,7 @@ class PersonalData {
     this.lastName,
     this.activity,
     this.goal,
+    this.imagePath,
   );
 
   factory PersonalData.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,43 @@ class PersonalData {
       json['lastName'] as String,
       json['activity'] as String,
       json['goal'] as String,
+      json['imagePath'] as String,
     );
+  }
+
+  void setGoal(String value) {
+    goal = value;
+  }
+
+  void setActivity(String value) {
+    activity = value;
+  }
+
+  void setLastName(String value) {
+    lastName = value;
+  }
+
+  void setFirstName(String value) {
+    firstName = value;
+  }
+
+  void setDate(String value) {
+    date = value;
+  }
+
+  void setHeight(String value) {
+    height = value;
+  }
+
+  void setWeight(String value) {
+    weight = value;
+  }
+
+  void setSex(String value) {
+    sex = value;
+  }
+
+  void setImagePath(String value) {
+    imagePath = value;
   }
 }

@@ -84,4 +84,16 @@ class AddRecipeProduct extends HomeEvent {
   final String meal;
 
   AddRecipeProduct(this.recipe, this.amount, this.meal);
+
+  @override
+  List<Object> get props => [recipe, amount, meal];
+}
+
+class SaveImage extends HomeEvent {
+  final String imagePath;
+
+  SaveImage(this.imagePath);
+
+  @override
+  List<Object> get props => [imagePath];
 }

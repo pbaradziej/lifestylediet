@@ -118,21 +118,13 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       label: "Next",
       onPressed: () {
         if (_formKey.currentState.validate()) {
-          PersonalData personalData = new PersonalData(
-            _sexController.text,
-            "",
-            "",
-            _dateController.text,
-            _firstNameController.text,
-            _lastNameController.text,
-            "",
-            "",
-          );
-          _bloc.add(
-            PersonalDataEvent(
-              personalData: personalData,
-            ),
-          );
+          PersonalData personalData = _bloc.personalData;
+          personalData.setSex(_sexController.text);
+          personalData.setDate(_dateController.text);
+          personalData.setFirstName(_firstNameController.text);
+          personalData.setLastName(_lastNameController.text);
+
+          _bloc.add(PersonalDataEvent());
         }
       },
     );

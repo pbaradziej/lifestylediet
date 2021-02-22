@@ -3,7 +3,7 @@ import 'dart:async';
 
 class ProductProvider {
   static const String NutritionixAppID = "383e26e4";
-  static const String NutritionixAppKey = "efbeed5ddee5cd9f15afc47f4e5238c5";
+  static const String NutritionixAppKey = "5e3e48a2c63e8ca97a85881cbe1766ad";
   static const Map<String, String> HEADERS = {
     'x-app-id': NutritionixAppID,
     'x-app-key': NutritionixAppKey,

@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class RecipeProvider {
   final String SPOONACULAR_URL = "api.spoonacular.com";
-  static const String API_KEY = "df9b380178e64f5c94568eaa1ec3f317";
+  static const String API_KEY = "0168d7219d5d4c53bc343f9e0e967977";
 
   Future getRecipes(String name) async {
     Map<String, String> parameters = {
@@ -30,20 +30,12 @@ class RecipeProvider {
     }
   }
 
-  Future getRandomRecipes() async {
-    Map<String, String> parameters = {
-      'number': '5',
-      'apiKey': API_KEY,
-    };
-    Uri uri = Uri.https(
-      SPOONACULAR_URL,
-      '/recipes/random',
-      parameters,
-    );
+  Future getInitialRecipes() async {
+    Map<String, String> parameters = {'number': '5', 'apiKey': API_KEY};
+    Uri uri = Uri.https(SPOONACULAR_URL, '/recipes/random', parameters);
     Map<String, String> headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.contentTypeHeader: 'application/json'
     };
-
     http.Response response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
@@ -56,17 +48,13 @@ class RecipeProvider {
   Future getRecipeInformation(int id) async {
     Map<String, String> parameters = {
       'includeNutrition': 'false',
-      'apiKey': API_KEY,
+      'apiKey': API_KEY
     };
-    Uri uri = Uri.https(
-      SPOONACULAR_URL,
-      '/recipes/$id/information',
-      parameters,
-    );
+    Uri uri =
+        Uri.https(SPOONACULAR_URL, '/recipes/$id/information', parameters);
     Map<String, String> headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.contentTypeHeader: 'application/json'
     };
-
     http.Response response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
@@ -77,18 +65,12 @@ class RecipeProvider {
   }
 
   Future getRecipeNutrition(int id) async {
-    Map<String, String> parameters = {
-      'apiKey': API_KEY,
-    };
+    Map<String, String> parameters = {'apiKey': API_KEY};
     Uri uri = Uri.https(
-      SPOONACULAR_URL,
-      '/recipes/$id/nutritionWidget.json',
-      parameters,
-    );
+        SPOONACULAR_URL, '/recipes/$id/nutritionWidget.json', parameters);
     Map<String, String> headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.contentTypeHeader: 'application/json'
     };
-
     http.Response response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
@@ -99,18 +81,12 @@ class RecipeProvider {
   }
 
   Future getRecipeInstruction(int id) async {
-    Map<String, String> parameters = {
-      'apiKey': API_KEY,
-    };
+    Map<String, String> parameters = {'apiKey': API_KEY};
     Uri uri = Uri.https(
-      SPOONACULAR_URL,
-      '/recipes/$id/analyzedInstructions',
-      parameters,
-    );
+        SPOONACULAR_URL, '/recipes/$id/analyzedInstructions', parameters);
     Map<String, String> headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.contentTypeHeader: 'application/json'
     };
-
     http.Response response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {

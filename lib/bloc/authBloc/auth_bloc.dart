@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/repositories/repositories.dart';
+import 'package:lifestylediet/utils/i18n.dart';
 
 import 'bloc.dart';
 
@@ -9,8 +10,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   UserRepository _repository = UserRepository();
   String _uid;
   String _currentDate;
-  PersonalData _personalData;
+  PersonalData personalData;
   Users _user;
+  DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
+  String strDate;
 
   String get uid => _uid;
 
@@ -54,12 +57,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Stream<AuthState> _loginSuccessful() async* {
     _uid = _repository.uid;
-    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
-    String strDate = dateFormat.format(DateTime.now());
+    strDate = dateFormat.format(DateTime.now());
     DatabaseUserRepository _databaseUserRepository =
         DatabaseUserRepository(uid: uid);
-    _personalData = await _databaseUserRepository.getUserPersonalData();
-    if (_personalData != null) {
+    personalData = await _databaseUserRepository.getUserPersonalData();
+    if (personalData != null) {
       yield LoginSuccess(_uid, strDate);
     } else {
       yield* _createNewProfile();
@@ -70,53 +72,40 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (_repository.emailVerified) {
       yield PersonalDataState();
     } else {
-      yield VerifyEmail("Please verify your email");
+      yield VerifyEmail(i18n.verifyEmail);
     }
   }
 
   Stream<AuthState> _mapPersonalDataState(PersonalDataEvent event) async* {
-    _personalData = event.personalData;
     yield PersonalDataResult();
   }
 
   Stream<AuthState> _mapResetPasswordState(ResetPassword event) async* {
-    String message = "Check your email to reset password";
     try {
       await _repository.resetPassword(event.email);
+      yield ConfirmEmail(i18n.resetPasswordSuccess, event.scaffoldKey);
     } catch (Exception) {
-      message = "Failed to send reset password to email";
+      yield ConfirmEmail(i18n.resetPasswordFailure, event.scaffoldKey);
     }
-
-    yield ConfirmEmail(message, event.scaffoldKey);
   }
 
   Stream<AuthState> _mapRegisterState(Register event) async* {
-    String message = "";
     _user = event.user;
     bool result = await _repository.register(getUser(event));
     if (result) {
-      message = "Registered successfully, Please verify your email";
       await _repository.verifyEmail();
-      yield RegisterSuccess(message);
+      yield RegisterSuccess(i18n.registerSuccess);
     } else {
-      message = "Email is already in use";
-      yield RegisterState(message, event.scaffoldKey);
+      yield RegisterState(i18n.registerFailure, event.scaffoldKey);
     }
   }
 
   Stream<AuthState> _mapGoalsResultState(GoalsEvent event) async* {
-    PersonalData personalData = event.personalData;
-    _personalData.weight = personalData.weight;
-    _personalData.height = personalData.height;
-    _personalData.activity = personalData.activity;
-    _personalData.goal = personalData.goal;
     await _repository.login(_user);
     DatabaseUserRepository _databaseRepository =
         DatabaseUserRepository(uid: _repository.uid);
-    await _databaseRepository.addUserPersonalData(personalData: _personalData);
-    await _databaseRepository.addUserWeight(weight: _personalData.weight);
-    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
-    String strDate = dateFormat.format(DateTime.now());
+    await _databaseRepository.addUserPersonalData(personalData: personalData);
+    strDate = dateFormat.format(DateTime.now());
 
     yield LoginSuccess(uid, strDate);
   }

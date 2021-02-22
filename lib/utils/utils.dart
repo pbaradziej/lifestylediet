@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:uuid/uuid.dart';
 
 class Utils {
   Nutrition kcalAmount(DatabaseProduct product, Nutrition nutrition) {
@@ -79,11 +81,11 @@ class Utils {
 
   double _getPalParameter(PersonalData personalData) {
     switch (personalData.activity) {
-      case "Low":
+      case i18n.activityLow:
         return 1.5;
-      case "Medium":
+      case i18n.activityNormal:
         return 1.8;
-      case "High":
+      case i18n.activityHigh:
         return 2.2;
       default:
         return 1.8;
@@ -92,11 +94,11 @@ class Utils {
 
   double _getPhysicalParameter(PersonalData personalData) {
     switch (personalData.goal) {
-      case "Lose weight":
+      case i18n.loseWeight:
         return 0.9;
-      case "Keep weight":
+      case i18n.keepWeight:
         return 1.0;
-      case "Gain weight":
+      case i18n.gainWeight:
         return 1.1;
       default:
         return 1.0;
@@ -202,5 +204,69 @@ class Utils {
     }
 
     return nutrimentDataList;
+  }
+
+  DatabaseProduct setProductValues(DatabaseProduct product,
+      String currentDate, String meal, double amount, String value) {
+    String uuid = Uuid().v4().toString();
+    product.setId(uuid);
+    product.setDate(currentDate);
+    product.setMeal(meal);
+    product.setAmount(amount);
+    product.setValue(value);
+
+    return product;
+  }
+
+  Map<String, dynamic> setProduct(DatabaseProduct product) {
+    Map<String, dynamic> productMap = {
+      'id': product.id,
+      'date': product.date,
+      'meal': product.meal,
+      'name': product.name,
+      'image': product.image,
+      'amount': product.amount,
+      'value': product.value,
+      'servingUnit': product.servingUnit,
+      'nutriments': {
+        'caloriesPer100g': product.nutriments.caloriesPer100g,
+        'caloriesPerServing': product.nutriments.caloriesPerServing,
+        'carbs': product.nutriments.carbs,
+        'carbsPerServing': product.nutriments.carbsPerServing,
+        'fiber': product.nutriments.fiber,
+        'fiberPerServing': product.nutriments.fiberPerServing,
+        'sugars': product.nutriments.sugars,
+        'sugarsPerServing': product.nutriments.sugarsPerServing,
+        'protein': product.nutriments.protein,
+        'proteinPerServing': product.nutriments.proteinPerServing,
+        'fats': product.nutriments.fats,
+        'fatsPerServing': product.nutriments.fatsPerServing,
+        'saturatedFats': product.nutriments.saturatedFats,
+        'saturatedFatsPerServing': product.nutriments.saturatedFatsPerServing,
+        'cholesterol': product.nutriments.cholesterol,
+        'cholesterolPerServing': product.nutriments.cholesterolPerServing,
+        'sodium': product.nutriments.sodium,
+        'sodiumPerServing': product.nutriments.sodiumPerServing,
+        'potassium': product.nutriments.potassium,
+        'potassiumPerServing': product.nutriments.potassiumPerServing,
+      }
+    };
+
+    return productMap;
+  }
+
+  Map<String, dynamic> setPersonalData(PersonalData personalData) {
+    Map<String, dynamic> personalDataMap = {
+      'sex': personalData.sex,
+      'weight': personalData.weight,
+      'height': personalData.height,
+      'date': personalData.date,
+      'firstName': personalData.firstName,
+      'lastName': personalData.lastName,
+      'activity': personalData.activity,
+      'goal': personalData.goal,
+    };
+
+    return personalDataMap;
   }
 }

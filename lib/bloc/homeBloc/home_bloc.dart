@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/repositories/repositories.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:uuid/uuid.dart';
 
 import 'bloc.dart';
 
@@ -20,9 +21,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<Meal> _mealList = [];
   NutrimentsData _nutrimentsData;
   List<RecipeMeal> _recipes;
-  RecipeRepository recipeRepository = new RecipeRepository();
+  DateFormat _dateFormat = new DateFormat("yyyy-MM-dd");
+  String _strDate;
+  Utils utils = new Utils();
 
   HomeBloc(this.uid, this._currentDate);
+
+  DatabaseUserRepository _databaseUserRepository;
+  DatabaseRepository _databaseRepository;
+  RecipeRepository _recipeRepository;
+  UserRepository _repository;
 
   String get meal => _meal;
 
@@ -69,29 +77,44 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapRecipeList(event);
     } else if (event is AddRecipeProduct) {
       yield* _mapAddRecipeProduct(event);
+    } else if(event is SaveImage) {
+      yield* _mapSaveImage(event);
     }
   }
 
   Stream<HomeState> _mapHomeLoad(HomeLoad event) async* {
     yield HomeLoadingState();
-    DatabaseUserRepository _databaseUserRepository =
-        DatabaseUserRepository(uid: uid);
-    DatabaseRepository _databaseRepository = DatabaseRepository(uid: uid);
+
+    yield* _initializeUserData();
+    yield* _initializeProductData();
+    yield* _initializeRecipeData();
+
+    yield HomeLoadedState();
+  }
+
+  Stream<HomeState> _initializeUserData() async* {
+    _databaseUserRepository = DatabaseUserRepository(uid: uid);
     _personalData = await _databaseUserRepository.getUserPersonalData();
-    _productList = await _databaseRepository.getProducts();
     _weightProgressList = await _databaseUserRepository.getUserWeightData();
     _checkWeight(_weightProgressList);
-    Utils utils = new Utils();
+  }
+
+  Stream<HomeState> _initializeProductData() async* {
+    _databaseRepository = DatabaseRepository(uid: uid);
+    _productList = await _databaseRepository.getProducts();
     _nutrimentsData = utils.getNutrimentsData(_productList);
     await _mealLists(_productList);
     _createMealList();
-    _recipes = await recipeRepository.getRandomRecipes();
-    yield HomeLoadedState();
+  }
+
+  Stream<HomeState> _initializeRecipeData() async* {
+    _recipeRepository = new RecipeRepository();
+    _recipes = await _recipeRepository.getInitialRecipes();
   }
 
   Stream<HomeState> _mapHomeLogout(Logout event) async* {
     yield HomeLoadingState();
-    UserRepository _repository = UserRepository();
+    _repository = UserRepository();
     await _repository.logout();
     yield HomeLogoutState();
   }
@@ -103,13 +126,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _mapAddWeight(AddWeight event) async* {
-    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
-    String strDate = dateFormat.format(DateTime.now());
+    _strDate = _dateFormat.format(DateTime.now());
     _weightProgressList.removeWhere(
-      (element) => strDate == element.date && event.weight != element.weight,
+      (element) => _strDate == element.date && event.weight != element.weight,
     );
     _personalData.weight = event.weight;
-    _weightProgressList.add(WeightProgress(event.weight, strDate));
+    _weightProgressList.add(WeightProgress(event.weight, _strDate));
     DatabaseUserRepository _databaseUserRepository =
         new DatabaseUserRepository(uid: uid);
     await _databaseUserRepository.addUserWeight(weight: event.weight);
@@ -118,8 +140,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _mapChangePlan(ChangePlan event) async* {
-    DatabaseUserRepository _databaseUserRepository =
-        new DatabaseUserRepository(uid: uid);
     await _databaseUserRepository.updatePlan(event.plan);
     yield HomeLoadedState();
   }
@@ -127,7 +147,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _mapDeleteProduct(DeleteProduct event) async* {
     yield HomeLoadingState();
     dispose();
-    DatabaseRepository _databaseRepository = DatabaseRepository(uid: uid);
     int index = _productList.indexWhere((product) => product.id == event.id);
     _databaseRepository.deleteProduct(_productList[index]);
     _productList.removeAt(index);
@@ -138,7 +157,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _mapUpdateProduct(UpdateProduct event) async* {
     yield HomeLoadingState();
     dispose();
-    DatabaseRepository _databaseRepository = DatabaseRepository(uid: uid);
     _productList = await _databaseRepository.getProducts();
     int index = _productList.indexWhere((product) => product.id == event.id);
     _productList[index].value = event.value;
@@ -150,26 +168,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _mapUpdateProfileData(UpdateProfileData event) async* {
-    DatabaseUserRepository _databaseUserRepository =
-        new DatabaseUserRepository(uid: uid);
     _personalData = event.personalData;
     await _databaseUserRepository.updateProfileData(event.personalData);
     yield HomeLoadedState();
   }
 
   Stream<HomeState> _mapRecipeList(SearchRecipes event) async* {
-    List<RecipeMeal> recipeList =
-        await recipeRepository.getRecipes(event.search);
-    _recipes = recipeList;
+    _recipes = await _recipeRepository.getRecipes(event.search);
+    yield HomeLoadedState();
+  }
+
+  Stream<HomeState> _mapSaveImage(SaveImage event) async* {
+    await _databaseUserRepository.updateImage(event.imagePath);
     yield HomeLoadedState();
   }
 
   Stream<HomeState> _mapAddRecipeProduct(AddRecipeProduct event) async* {
-    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
-    String strDate = dateFormat.format(DateTime.now());
+    _strDate = _dateFormat.format(DateTime.now());
+    String uuid = Uuid().v4().toString();
     DatabaseProduct product = new DatabaseProduct(
-        '',
-        strDate,
+        uuid,
+        _strDate,
         event.meal,
         double.parse(event.amount),
         event.recipe.recipeInformation.image,
@@ -179,21 +198,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _getNutriments(event));
     _mealProduct(product);
     _createMealList();
-    await DatabaseRepository(uid: uid).addProduct(
-        meal: event.meal,
-        currentDate: strDate,
-        product: product,
-        amount: double.parse(event.amount),
-        value: 'serving');
+
+    await DatabaseRepository(uid: uid).addProduct(product: product);
 
     yield HomeLoadedState();
   }
 
   void _checkWeight(List<WeightProgress> weightList) {
-    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
-    String strDate = dateFormat.format(DateTime.now());
+    _strDate = _dateFormat.format(DateTime.now());
     _dailyWeightUpdated =
-        weightList.map((weight) => weight.date).contains(strDate);
+        weightList.map((weight) => weight.date).contains(_strDate);
   }
 
   Nutriments _getNutriments(AddRecipeProduct event) {

@@ -41,22 +41,6 @@ class ResetPassword extends AuthEvent {
   List<Object> get props => [email, scaffoldKey];
 }
 
-class PersonalDataEvent extends AuthEvent {
-  final PersonalData personalData;
+class PersonalDataEvent extends AuthEvent {}
 
-  PersonalDataEvent({
-    this.personalData,
-  });
-
-  @override
-  List<Object> get props => [personalData];
-}
-
-class GoalsEvent extends AuthEvent {
-  final PersonalData personalData;
-
-  GoalsEvent({this.personalData});
-
-  @override
-  List<Object> get props => [personalData];
-}
+class GoalsEvent extends AuthEvent {}

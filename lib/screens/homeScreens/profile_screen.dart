@@ -1,12 +1,15 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lifestylediet/bloc/homeBloc/bloc.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:lifestylediet/utils/i18n.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -17,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   HomeBloc _homeBloc;
   PersonalData _personalData;
   NutrimentsData _nutrimentsData;
+  ImagePicker _imagePicker = new ImagePicker();
 
   @override
   initState() {
@@ -34,9 +38,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           width: double.infinity,
           child: Column(
             children: [
-              profileData(),
-              summaryPersonalData(),
-              summaryNutritionCard(),
+              _profileData(),
+              _summaryPersonalData(),
+              _summaryNutritionCard(),
             ],
           ),
         ),
@@ -44,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget profileData() {
+  Widget _profileData() {
     return Card(
       elevation: 2,
       child: Padding(
@@ -53,50 +57,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Flexible(flex: 2, child: circleAvatar()),
-            Flexible(flex: 3, child: nameSign()),
-            Flexible(flex: 1, child: settingsButton()),
+            Flexible(flex: 2, child: _circleAvatar()),
+            Flexible(flex: 3, child: _nameSign()),
+            Flexible(flex: 1, child: _settingsButton()),
           ],
         ),
       ),
     );
   }
 
-  Widget circleAvatar() {
+  Widget _circleAvatar() {
+    File image;
+    if(_personalData.imagePath != "") {
+      image = File(_personalData.imagePath);
+    }
     return CircleAvatar(
       backgroundColor: Colors.grey,
       radius: 50.0,
-      child: Text("P"),
+      child: _personalData.imagePath != ""
+          ? ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: Image.file(
+          image,
+          width: 100,
+          height: 100,
+          fit: BoxFit.fitHeight,
+        ),
+      )
+          : Text(_personalData.firstName[0]),
     );
   }
 
-  Widget nameSign() {
+  Widget _nameSign() {
     return Column(
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.only(top: 20.0, bottom: 10),
           child: Text(
             "Hello",
-            style: Theme.of(context).textTheme.title,
+            style: Theme.of(context).textTheme.headline6,
           ),
         ),
         Text(
           _personalData.firstName + " " + _personalData.lastName,
-          style: Theme.of(context).textTheme.subhead,
+          style: Theme.of(context).textTheme.subtitle1,
         ),
       ],
     );
   }
 
-  Widget settingsButton() {
+  Widget _settingsButton() {
     return PopupMenuButton<Settings>(
       onSelected: (Settings result) {
-        settingsMenu(result);
+        _settingsMenu(result);
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Settings>>[
         const PopupMenuItem<Settings>(
           value: Settings.changePlan,
           child: Text('Change Plan'),
+        ),
+        const PopupMenuItem<Settings>(
+          value: Settings.addProfilePicture,
+          child: Text('Add profile picture'),
         ),
         const PopupMenuItem<Settings>(
           value: Settings.changeProfileData,
@@ -111,11 +133,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ignore: missing_return
-  settingsMenu(Settings result) {
+  _settingsMenu(Settings result) {
     switch (result) {
       case Settings.changePlan:
-        return alertDialog(context);
+        return _alertDialog(context);
+        break;
+      case Settings.addProfilePicture:
+        return _showPicker(context);
         break;
       case Settings.changeProfileData:
         return Navigator.push(
@@ -131,42 +155,97 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future alertDialog(BuildContext context) {
-    List<String> plans = ["Lose weight", "Keep weight", "Gain weight"];
+  Future _alertDialog(BuildContext context) {
+    List<String> plans = [i18n.loseWeight, i18n.keepWeight, i18n.gainWeight];
     return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Select Plan"),
+          content: SingleChildScrollView(
+            child: Container(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: plans
+                    .map((e) => RadioListTile(
+                          title: Text(e),
+                          value: e,
+                          groupValue: _personalData.goal,
+                          selected: _personalData.goal == e,
+                          onChanged: (value) {
+                            if (value != _personalData.goal) {
+                              _personalData.goal = value;
+                              _homeBloc.add(ChangePlan(_personalData.goal));
+                              setState(() {});
+                              Navigator.of(context).pop();
+                            }
+                          },
+                        ))
+                    .toList(),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
         context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Select Plan"),
-            content: SingleChildScrollView(
-              child: Container(
-                width: double.infinity,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: plans
-                      .map((e) => RadioListTile(
-                            title: Text(e),
-                            value: e,
-                            groupValue: _personalData.goal,
-                            selected: _personalData.goal == e,
-                            onChanged: (value) {
-                              if (value != _personalData.goal) {
-                                _personalData.goal = value;
-                                _homeBloc.add(ChangePlan(_personalData.goal));
-                                setState(() {});
-                                Navigator.of(context).pop();
-                              }
-                            },
-                          ))
-                      .toList(),
-                ),
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () async {
+                        await _imgFromGallery();
+                        Navigator.of(context).pop();
+                        setState(() {});
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () async {
+                      await _imgFromCamera();
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    },
+                  ),
+                ],
               ),
             ),
           );
         });
   }
 
-  Widget summaryPersonalData() {
+  _imgFromCamera() async {
+    PickedFile image = await _imagePicker.getImage(
+        source: ImageSource.camera, imageQuality: 50);
+
+    setState(() async {
+      _personalData.setImagePath(image.path);
+    });
+
+    _homeBloc.add(SaveImage(_personalData.imagePath));
+  }
+
+  _imgFromGallery() async {
+    PickedFile image = await _imagePicker.getImage(
+        source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      _personalData.setImagePath(image.path);
+    });
+
+    _homeBloc.add(SaveImage(_personalData.imagePath));
+  }
+
+  Widget _summaryPersonalData() {
     return Card(
       elevation: 2,
       child: Container(
@@ -175,8 +254,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            summaryHeadLine("Summary"),
-            personalData(),
+            _summaryHeadLine("Summary"),
+            _personalDataCard(),
             SizedBox(height: 15),
           ],
         ),
@@ -184,7 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget summaryNutritionCard() {
+  Widget _summaryNutritionCard() {
     if (_nutrimentsData.calories.toString() != "NaN") {
       return Card(
         elevation: 2,
@@ -195,10 +274,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              summaryHeadLine("Average caloric intake"),
+              _summaryHeadLine("Average caloric intake"),
               SizedBox(height: 15),
-              pieCaloriesChart(),
-              personalBodyStatistics(),
+              _pieCaloriesChart(),
+              _personalBodyStatistics(),
               SizedBox(height: 20),
             ],
           ),
@@ -209,7 +288,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Widget pieCaloriesChart() {
+  Widget _pieCaloriesChart() {
     return Expanded(
       child: new charts.PieChart(
         _getSeriesData(),
@@ -225,14 +304,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget summaryHeadLine(String name) {
+  Widget _summaryHeadLine(String name) {
     return Padding(
       padding: const EdgeInsets.only(left: 18, top: 10.0),
       child: Text(name, style: subTitleAddScreenStyle),
     );
   }
 
-  Widget personalData() {
+  Widget _personalDataCard() {
     double bmi = double.parse(_personalData.weight) /
         pow(double.parse(_personalData.height) / 100, 2);
     return Padding(
@@ -240,63 +319,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          summaryRow("Weight", "${_personalData.weight} kg"),
-          summaryRow("Height", "${_personalData.height} cm"),
-          summaryRow("Sex", "${_personalData.sex}"),
-          summaryRow("Birth date", "${_personalData.date}"),
-          summaryRow("Activity level", "${_personalData.activity}"),
-          summaryRow("Goal", "${_personalData.goal}"),
-          summaryRow("BMI", "${bmi.toStringAsFixed(2).toString()}"),
-          checkBMI(bmi),
+          _summaryRow("Weight", "${_personalData.weight} kg"),
+          _summaryRow("Height", "${_personalData.height} cm"),
+          _summaryRow("Sex", "${_personalData.sex}"),
+          _summaryRow("Birth date", "${_personalData.date}"),
+          _summaryRow("Activity level", "${_personalData.activity}"),
+          _summaryRow("Goal", "${_personalData.goal}"),
+          _summaryRow("BMI", "${bmi.toStringAsFixed(2).toString()}"),
+          _checkBMI(bmi),
         ],
       ),
     );
   }
 
-  Widget checkBMI(double bmi) {
+  Widget _checkBMI(double bmi) {
     if (bmi >= 25) {
-      return Text(
-          "Your BMI is slightly to high. Keep up a good work and you will get to your goal in no time.",
-          softWrap: true,
-          style: orangeProfileTextStyle);
+      return Text(i18n.highBMI, softWrap: true, style: orangeProfileTextStyle);
     } else if (bmi < 25 && bmi > 18.5) {
-      return Text(
-          "Your BMI is correct. Keep up a good work, you are doing great.",
-          softWrap: true,
-          style: greenProfileTextStyle);
+      return Text(i18n.normalBMI, softWrap: true, style: greenProfileTextStyle);
     } else {
-      return Text(
-          "Your BMI is slightly to low. Keep up a good work and you will get to your goal in no time.",
-          softWrap: true,
-          style: orangeProfileTextStyle);
+      return Text(i18n.lowBMI, softWrap: true, style: orangeProfileTextStyle);
     }
   }
 
-  Widget personalBodyStatistics() {
+  Widget _personalBodyStatistics() {
     return Padding(
       padding: const EdgeInsets.only(top: 8, left: 26, right: 26),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          summaryCaloriesRow("Kcal", _nutrimentsData.calories),
-          summaryCaloriesRow("Protein", _nutrimentsData.protein),
-          summaryCaloriesRow("Carbs", _nutrimentsData.carbs, padding: 0),
-          summaryCaloriesRow("Fiber", _nutrimentsData.fiber,
+          _summaryCaloriesRow("Kcal", _nutrimentsData.calories),
+          _summaryCaloriesRow("Protein", _nutrimentsData.protein),
+          _summaryCaloriesRow("Carbs", _nutrimentsData.carbs, padding: 0),
+          _summaryCaloriesRow("Fiber", _nutrimentsData.fiber,
               style: TextStyle(), padding: 0),
-          summaryCaloriesRow("Sugars", _nutrimentsData.sugars,
+          _summaryCaloriesRow("Sugars", _nutrimentsData.sugars,
               style: TextStyle()),
-          summaryCaloriesRow("Fats", _nutrimentsData.fats, padding: 0),
-          summaryCaloriesRow("Saturated fats", _nutrimentsData.saturatedFats,
+          _summaryCaloriesRow("Fats", _nutrimentsData.fats, padding: 0),
+          _summaryCaloriesRow("Saturated fats", _nutrimentsData.saturatedFats,
               style: TextStyle()),
-          summaryCaloriesRow("Cholesterol", _nutrimentsData.cholesterol),
-          summaryCaloriesRow("Sodium", _nutrimentsData.sodium),
-          summaryCaloriesRow("Potassium", _nutrimentsData.potassium),
+          _summaryCaloriesRow("Cholesterol", _nutrimentsData.cholesterol),
+          _summaryCaloriesRow("Sodium", _nutrimentsData.sodium),
+          _summaryCaloriesRow("Potassium", _nutrimentsData.potassium),
         ],
       ),
     );
   }
 
-  Widget summaryRow(
+  Widget _summaryRow(
     String name,
     String value, {
     TextStyle style,
@@ -329,7 +399,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget summaryCaloriesRow(
+  Widget _summaryCaloriesRow(
     String name,
     double value, {
     TextStyle style,
@@ -388,4 +458,4 @@ class KcalData {
   KcalData(this.nutrition, this.value);
 }
 
-enum Settings { changeProfileData, changePlan, logout }
+enum Settings { changeProfileData, addProfilePicture, changePlan, logout }

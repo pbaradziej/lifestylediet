@@ -134,7 +134,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return DropdownComponent(
       controller: _activityController,
       label: "Activity level",
-      values: ["Low", "Medium", "High"],
+      values: [i18n.activityLow, i18n.activityNormal, i18n.activityHigh],
     );
   }
 
@@ -174,6 +174,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _lastNameController.text,
               _activityController.text,
               _personalData.goal,
+              _personalData.imagePath,
             );
             _homeBloc.add(UpdateProfileData(personalData: personalData));
             setState(() {});

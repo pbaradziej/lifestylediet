@@ -1,26 +1,22 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:lifestylediet/models/models.dart';
+import 'package:lifestylediet/utils/common_utils.dart';
 
 class DatabaseUserRepository {
   String uid;
+  Utils utils = new Utils();
 
   DatabaseUserRepository({this.uid});
 
   Future addUserPersonalData({PersonalData personalData}) async {
     final CollectionReference personal =
         FirebaseFirestore.instance.collection('PersonalData');
+    await addUserWeight(weight: personalData.weight);
+    Map<String, dynamic> personalDataMap = utils.setPersonalData(personalData);
 
-    return await personal.doc(uid).set({
-      'sex': personalData.sex,
-      'weight': personalData.weight,
-      'height': personalData.height,
-      'date': personalData.date,
-      'firstName': personalData.firstName,
-      'lastName': personalData.lastName,
-      'activity': personalData.activity,
-      'goal': personalData.goal,
-    });
+    return await personal.doc(uid).set(personalDataMap);
   }
 
   Future addUserWeight({String weight}) async {
@@ -33,42 +29,28 @@ class DatabaseUserRepository {
     final CollectionReference personalDatabaseUpdate =
         FirebaseFirestore.instance.collection('PersonalData');
 
-    await personalDatabaseUpdate.doc(uid).update({
-      'weight': weight,
-    });
+    await personalDatabaseUpdate.doc(uid).update({'weight': weight});
 
     return await weightData
         .doc(uid)
         .collection('personalWeight')
         .doc(strDate)
-        .set({
-      'weight': weight,
-      'date': strDate,
-    });
+        .set({'weight': weight, 'date': strDate});
   }
 
   Future updatePlan(String goal) async {
     final CollectionReference mealData =
         FirebaseFirestore.instance.collection('PersonalData');
 
-    return await mealData.doc(uid).update({
-      'goal': goal,
-    });
+    return await mealData.doc(uid).update({'goal': goal});
   }
 
   Future updateProfileData(PersonalData personalData) async {
     final CollectionReference personalDatabase =
         FirebaseFirestore.instance.collection('PersonalData');
+    Map<String, dynamic> personalDataMap = utils.setPersonalData(personalData);
 
-    return await personalDatabase.doc(uid).update({
-      'sex': personalData.sex,
-      'weight': personalData.weight,
-      'height': personalData.height,
-      'date': personalData.date,
-      'firstName': personalData.firstName,
-      'lastName': personalData.lastName,
-      'activity': personalData.activity,
-    });
+    return await personalDatabase.doc(uid).update(personalDataMap);
   }
 
   Future getUserPersonalData() async {
@@ -77,13 +59,20 @@ class DatabaseUserRepository {
     PersonalData personalData;
 
     await personalDatabase.doc(uid).get().then((result) {
-      if(result.data() != null) {
+      if (result.data() != null) {
         personalData = PersonalData.fromJson(result.data());
       } else {
         return null;
       }
     });
     return personalData;
+  }
+
+  Future updateImage(String imagePath) async {
+    final CollectionReference mealData =
+    FirebaseFirestore.instance.collection('PersonalData');
+
+    return await mealData.doc(uid).update({'imagePath': imagePath});
   }
 
   Future getUserWeightData() async {

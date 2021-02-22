@@ -59,34 +59,36 @@ class _MealScreenState extends State<MealScreen> {
   }
 
   Widget _addWeightPopUp() {
-    return !_dailyWeightUpdated
-        ? Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            color: Colors.lightBlueAccent[200],
-            child: GestureDetector(
-              onTap: () {
-                DefaultTabController.of(context).animateTo(2);
-              },
-              child: ListTile(
-                trailing: IconButton(
-                  icon: Icon(Icons.close),
-                  color: Colors.grey[600],
-                  onPressed: () {
-                    _homeBloc.dailyWeightUpdated = true;
-                    setState(() {});
-                  },
-                ),
-                title: Text(
-                  "Add your daily weight",
-                  textAlign: TextAlign.center,
-                  style: mealTextStyle,
-                ),
-              ),
-            ),
-          )
-        : SizedBox();
+    return !_dailyWeightUpdated ? _weightPopUp() : SizedBox();
+  }
+
+  Widget _weightPopUp() {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      color: Colors.lightBlueAccent[200],
+      child: GestureDetector(
+        onTap: () {
+          DefaultTabController.of(context).animateTo(2);
+        },
+        child: ListTile(
+          trailing: IconButton(
+            icon: Icon(Icons.close),
+            color: Colors.grey[600],
+            onPressed: () {
+              _homeBloc.dailyWeightUpdated = true;
+              setState(() {});
+            },
+          ),
+          title: Text(
+            "Add your daily weight",
+            textAlign: TextAlign.center,
+            style: mealTextStyle,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _dateCard() {
@@ -109,7 +111,6 @@ class _MealScreenState extends State<MealScreen> {
   }
 
   void _getNutritionWithCurrentDate() {
-    Utils _utils = new Utils();
     for (Meal meal in _meals) {
       for (DatabaseProduct product in meal.mealList) {
         if (_currentDate == product.date) {
@@ -120,11 +121,11 @@ class _MealScreenState extends State<MealScreen> {
   }
 
   Widget _dataIconButton(String strDate, String action, IconData icon) {
+    bool isCurrentDate = _currentDate == strDate;
     return IconButton(
-      splashColor: _currentDate == strDate ? defaultColor : Color(0x66C8C8C8),
-      highlightColor:
-          _currentDate == strDate ? defaultColor : Color(0x66C8C8C8),
-      color: _currentDate == strDate ? Colors.grey[300] : Colors.grey[500],
+      splashColor: isCurrentDate ? defaultColor : Color(0x66C8C8C8),
+      highlightColor: isCurrentDate ? defaultColor : Color(0x66C8C8C8),
+      color: isCurrentDate ? Colors.grey[300] : Colors.grey[500],
       icon: Icon(icon),
       onPressed: () {
         _swipeData(strDate, action);
@@ -348,31 +349,30 @@ class _MealScreenState extends State<MealScreen> {
   }
 
   Widget _subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
-    Utils utils = new Utils();
     return RichText(
       text: TextSpan(
         style: DefaultTextStyle.of(context).style,
         children: <TextSpan>[
           TextSpan(
-              text: "kcal: ${utils.amountOfNutriments(
+              text: "kcal: ${_utils.amountOfNutriments(
             nutriments.caloriesPer100g,
             nutriments.caloriesPerServing,
             product,
           )}"),
           TextSpan(
-              text: " protein: ${utils.amountOfNutriments(
+              text: " protein: ${_utils.amountOfNutriments(
             nutriments.protein,
             nutriments.proteinPerServing,
             product,
           )}"),
           TextSpan(
-              text: " carbs: ${utils.amountOfNutriments(
+              text: " carbs: ${_utils.amountOfNutriments(
             nutriments.carbs,
             nutriments.carbsPerServing,
             product,
           )}"),
           TextSpan(
-              text: " fats: ${utils.amountOfNutriments(
+              text: " fats: ${_utils.amountOfNutriments(
             nutriments.fats,
             nutriments.fatsPerServing,
             product,

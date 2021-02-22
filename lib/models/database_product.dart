@@ -1,7 +1,7 @@
 class DatabaseProduct {
-  final String id;
-  final String date;
-  final String meal;
+  String id;
+  String date;
+  String meal;
   final String image;
   final String name;
   final Nutriments nutriments;
@@ -26,6 +26,26 @@ class DatabaseProduct {
       json['servingUnit'] as String,
       Nutriments.fromJson(json['nutriments']),
     );
+  }
+
+  void setId(String id) {
+    this.id = id;
+  }
+
+  void setDate(String date) {
+    this.date = date;
+  }
+
+  void setMeal(String meal) {
+    this.meal = meal;
+  }
+
+  void setAmount(double amount) {
+    this.amount = amount;
+  }
+
+  void setValue(String value) {
+    this.value = value;
   }
 }
 

@@ -4,7 +4,8 @@ import 'package:lifestylediet/blocProviders/bloc_providers.dart';
 import 'package:lifestylediet/screens/screens.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
 
-void main() => runApp(MaterialApp(home: FireBase()));
+void main() =>
+    runApp(MaterialApp(debugShowCheckedModeBanner: false, home: FireBase()));
 
 class FireBase extends StatefulWidget {
   @override
@@ -50,6 +51,6 @@ class _FireBaseState extends State<FireBase> {
           child: loadingScreen());
     }
 
-    return LoginProvider();
+    return AuthProvider();
   }
 }
