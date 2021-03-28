@@ -3,6 +3,7 @@ import 'package:lifestylediet/bloc/authBloc/bloc.dart';
 import 'package:lifestylediet/components/components.dart';
 import 'package:lifestylediet/models/models.dart';
 import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:lifestylediet/screens/screens.dart';
 
 class RegisterScreen extends StatefulWidget {
   final AuthBloc bloc;
@@ -38,12 +39,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         height: double.infinity,
         width: double.infinity,
         decoration: appTheme(),
-        child: Center(
-          child: NotificationListener<OverscrollIndicatorNotification>(
-            onNotification: (OverscrollIndicatorNotification overscroll) {
-              overscroll.disallowGlow();
-            },
+        child: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (OverscrollIndicatorNotification overscroll) {
+            overscroll.disallowGlow();
+          },
+          child: Center(
             child: ListView(
+              shrinkWrap: true,
               children: [
                 Form(
                   key: _formKey,
@@ -123,8 +125,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget acceptConditions() {
     return LogicComponent(
       label: "Accept Conditions",
+      navigate: () => _navigateTermsOfConditions(),
       controller: _checkboxController,
       validationEnabled: _acceptedConditions,
+    );
+  }
+
+  _navigateTermsOfConditions() {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TermsOfConditions(),
+      ),
     );
   }
 

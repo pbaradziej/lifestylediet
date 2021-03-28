@@ -68,22 +68,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _circleAvatar() {
     File image;
-    if(_personalData.imagePath != "") {
+    if (_personalData.imagePath != null && _personalData.imagePath != "") {
       image = File(_personalData.imagePath);
     }
     return CircleAvatar(
       backgroundColor: Colors.grey,
       radius: 50.0,
-      child: _personalData.imagePath != ""
+      child: _personalData.imagePath != null && _personalData.imagePath != ""
           ? ClipRRect(
-        borderRadius: BorderRadius.circular(50),
-        child: Image.file(
-          image,
-          width: 100,
-          height: 100,
-          fit: BoxFit.fitHeight,
-        ),
-      )
+              borderRadius: BorderRadius.circular(50),
+              child: Image.file(
+                image,
+                width: 100,
+                height: 100,
+                fit: BoxFit.fitHeight,
+              ),
+            )
           : Text(_personalData.firstName[0]),
     );
   }
@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20.0, bottom: 10),
           child: Text(
-            "Hello",
+            "Hello,",
             style: Theme.of(context).textTheme.headline6,
           ),
         ),

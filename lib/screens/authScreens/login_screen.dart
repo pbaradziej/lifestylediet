@@ -79,12 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _loginScreen(state, FocusScopeNode node) {
-    return Center(
-      child: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (OverscrollIndicatorNotification overscroll) {
-          overscroll.disallowGlow();
-        },
+    return NotificationListener<OverscrollIndicatorNotification>(
+      onNotification: (OverscrollIndicatorNotification overscroll) {
+        overscroll.disallowGlow();
+      },
+      child: Center(
         child: ListView(
+          shrinkWrap: true,
           children: [
             Form(
               key: _formKey,
@@ -155,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       errorText: state is LoginFailure ? 'Invalid password' : null,
       minCharacters: 6,
-      minCharactersMessage: "Enter an email 6+ chars long",
+      minCharactersMessage: "Enter a password 6+ chars long",
       suffixIcon: IconButton(
         color: iconTrailingColors,
         onPressed: () {

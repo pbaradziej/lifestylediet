@@ -5,12 +5,14 @@ class LogicComponent extends StatefulWidget {
   final String label;
   final bool validationEnabled;
   final TextEditingController controller;
+  final Function navigate;
 
   const LogicComponent({
     Key key,
     this.label = "",
     this.validationEnabled = false,
     this.controller,
+    this.navigate,
   }) : super(key: key);
 
   @override
@@ -21,11 +23,13 @@ class _LogicComponentState extends State<LogicComponent> {
   String _label;
   bool _validationEnabled;
   TextEditingController _controller;
+  Function _navigate;
 
   void initComponents() {
     _label = widget.label;
     _validationEnabled = widget.validationEnabled;
     _controller = widget.controller;
+    _navigate = widget.navigate;
   }
 
   @override
@@ -63,13 +67,16 @@ class _LogicComponentState extends State<LogicComponent> {
                     },
                   ),
                 ),
-                Text(
-                  state.errorText ?? _label,
-                  style: TextStyle(
-                    color: state.hasError
-                        ? Theme.of(context).errorColor
-                        : defaultColor,
-                    fontSize: 12,
+                GestureDetector(
+                  onTap: _navigate,
+                  child: Text(
+                    state.errorText ?? _label,
+                    style: TextStyle(
+                      color: state.hasError
+                          ? Theme.of(context).errorColor
+                          : defaultColor,
+                      fontSize: 12,
+                    ),
                   ),
                 )
               ],

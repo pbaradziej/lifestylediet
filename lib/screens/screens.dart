@@ -8,6 +8,7 @@ export 'authScreens/goals_screen.dart';
 export 'authScreens/login_screen.dart';
 export 'authScreens/personal_data_screen.dart';
 export 'authScreens/register_screen.dart';
+export 'authScreens/terms_of_conditions.dart';
 export 'detailScreens/details_screen.dart';
 export 'detailScreens/multi_details_screen.dart';
 export 'detailScreens/recipe_details_screen.dart';

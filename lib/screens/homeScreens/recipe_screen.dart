@@ -32,19 +32,25 @@ class _RecipeScreenState extends State<RecipeScreen> {
     return Column(
       children: [
         _searchField(),
-        Expanded(
-          child: ListView.builder(
-            physics: ClampingScrollPhysics(),
-            padding: const EdgeInsets.all(0),
-            shrinkWrap: true,
-            itemCount: _recipes.length,
-            itemBuilder: (context, index) {
-              return _showRecipes(_recipes, index);
-            },
-          ),
-        ),
+        _getRecipeList(),
       ],
     );
+  }
+
+  Widget _getRecipeList() {
+    return _recipes != null
+        ? Expanded(
+            child: ListView.builder(
+              physics: ClampingScrollPhysics(),
+              padding: const EdgeInsets.all(0),
+              shrinkWrap: true,
+              itemCount: _recipes.length,
+              itemBuilder: (context, index) {
+                return _showRecipes(_recipes, index);
+              },
+            ),
+          )
+        : Container();
   }
 
   Widget _searchField() {

@@ -26,13 +26,13 @@ class _MealScreenState extends State<MealScreen> {
     _loginBloc = BlocProvider.of<AuthBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
     _currentDate = _homeBloc.currentDate;
-    _meals = _homeBloc.mealList;
     _utils = new Utils();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    _meals = _homeBloc.mealList;
     _dailyWeightUpdated = _homeBloc.dailyWeightUpdated;
     PersonalData personalData = _homeBloc.personalData;
     _nutrition = _utils.getNutrition(personalData);
