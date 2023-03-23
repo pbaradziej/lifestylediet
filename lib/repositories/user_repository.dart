@@ -1,57 +1,55 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lifestylediet/models/models.dart';
 
 class UserRepository {
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  User _user;
+  final FirebaseAuth _auth;
 
-  register(Users users) async {
-    UserCredential result;
+  UserRepository() : _auth = FirebaseAuth.instance;
+
+  Future<bool> register({
+    required String email,
+    required String password,
+  }) async {
     try {
-      result = await _auth.createUserWithEmailAndPassword(
-        email: users.email,
-        password: users.password,
+      await _auth.createUserWithEmailAndPassword(
+        //TODO obsłużyć pełna rejestracje
+        email: email,
+        password: password,
       );
-    } catch (PlatformException) {}
-    if (result != null) {
       return true;
-    } else {
+    } catch (_) {
       return false;
     }
   }
 
-  login(Users users) async {
-    UserCredential result;
+  Future<User?> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       _auth.idTokenChanges();
-      result = await _auth.signInWithEmailAndPassword(
-        email: users.email,
-        password: users.password,
+      final UserCredential result = await _auth.signInWithEmailAndPassword(
+        //TODO obsłużyć pełne logowanie
+        email: email,
+        password: password,
       );
-      _user = result.user;
-    } catch (PlatformException) {}
-    if (result != null) {
-      return true;
-    } else {
-      return false;
+      return result.user;
+    } catch (_) {
+      return null;
     }
   }
 
-  resetPassword(String email) async {
+  Future<void> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
-    } catch (Exception) {}
+    } catch (_) {}
   }
 
-  verifyEmail() async {
-    await _auth.currentUser.sendEmailVerification();
+  Future<void> verifyEmail() async {
+    final User? currentUser = _auth.currentUser;
+    await currentUser?.sendEmailVerification();
   }
 
-  logout() async {
-    return await _auth.signOut();
+  Future<void> logout() async {
+    await _auth.signOut();
   }
-
-  String get uid => _user.uid;
-
-  bool get emailVerified => _user.emailVerified;
 }

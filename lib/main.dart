@@ -1,11 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/blocProviders/bloc_providers.dart';
-import 'package:lifestylediet/screens/screens.dart';
-import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lifestylediet/cubits/auth/auth_cubit.dart';
+import 'package:lifestylediet/screens/auth/auth_screen.dart';
+import 'package:lifestylediet/screens/loading_screens.dart';
+import 'package:lifestylediet/utils/theme.dart';
 
-void main() =>
-    runApp(MaterialApp(debugShowCheckedModeBanner: false, home: FireBase()));
+void main() {
+  return runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FireBase(),
+    ),
+  );
+}
 
 class FireBase extends StatefulWidget {
   @override
@@ -13,44 +21,60 @@ class FireBase extends StatefulWidget {
 }
 
 class _FireBaseState extends State<FireBase> {
-  bool _initialized = false;
-  bool _error = false;
+  bool initialized = false;
+  bool error = false;
 
   void initializeFlutterFire() async {
     try {
       await Firebase.initializeApp();
       setState(() {
-        _initialized = true;
+        initialized = true;
       });
     } catch (e) {
       setState(() {
-        _error = true;
+        error = true;
       });
     }
   }
 
   @override
   void initState() {
-    initializeFlutterFire();
     super.initState();
+    initializeFlutterFire();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error) {
-      return Container(
-        child: Text("Failed to connect to database"),
-      );
+    if (error) {
+      return errorScreen();
     }
 
-    if (!_initialized) {
-      return Container(
-          height: double.infinity,
-          width: double.infinity,
-          decoration: appTheme(),
-          child: loadingScreen());
+    if (!initialized) {
+      return loadingScreenWidget();
     }
 
-    return AuthProvider();
+    return authScreen();
+  }
+
+  Widget errorScreen() {
+    return const SizedBox(
+      child: Text('Failed to connect to database'),
+    );
+  }
+
+  Widget loadingScreenWidget() {
+    return Container(
+      height: double.infinity,
+      width: double.infinity,
+      decoration: appTheme(),
+      child: loadingScreen(),
+    );
+  }
+
+  Widget authScreen() {
+    return BlocProvider<AuthCubit>(
+      create: (BuildContext content) => AuthCubit(),
+      child: AuthScreen(),
+    );
   }
 }

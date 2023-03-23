@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:lifestylediet/utils/palette.dart';
+import 'package:lifestylediet/utils/theme.dart';
 
 Widget loadingScreen() {
   return Center(
-    child: Container(
+    child: SizedBox(
       height: 200,
       width: 200,
       child: CircularProgressIndicator(
         backgroundColor: defaultColor,
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.orange),
+        valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
         strokeWidth: 5,
       ),
     ),
@@ -16,15 +17,15 @@ Widget loadingScreen() {
 }
 
 Widget loadingScreenMainScreen() {
-  return Container(
+  return DecoratedBox(
     decoration: appTheme(),
     child: Center(
-      child: Container(
+      child: SizedBox(
         height: 200,
         width: 200,
         child: CircularProgressIndicator(
           backgroundColor: defaultColor,
-          valueColor: new AlwaysStoppedAnimation<Color>(Colors.orange),
+          valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
           strokeWidth: 5,
         ),
       ),

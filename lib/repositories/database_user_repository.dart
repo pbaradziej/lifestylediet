@@ -1,96 +1,127 @@
-import 'dart:io';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:lifestylediet/models/personal_data.dart';
+import 'package:lifestylediet/models/weight_progress.dart';
+import 'package:lifestylediet/shared_repositories/user_credentials_provider.dart';
 
 class DatabaseUserRepository {
-  String uid;
-  Utils utils = new Utils();
+  final String? uid;
+  final UserCredentialsProvider _userCredentialsProvider;
 
-  DatabaseUserRepository({this.uid});
+  DatabaseUserRepository({
+    this.uid,
+  }) : _userCredentialsProvider = UserCredentialsProvider();
 
-  Future addUserPersonalData({PersonalData personalData}) async {
-    final CollectionReference personal =
-        FirebaseFirestore.instance.collection('PersonalData');
+  Future<void> addUserPersonalData({required PersonalData personalData}) async {
     await addUserWeight(weight: personalData.weight);
-    Map<String, dynamic> personalDataMap = utils.setPersonalData(personalData);
-
-    return await personal.doc(uid).set(personalDataMap);
+    await _addPersonalData(personalData);
   }
 
-  Future addUserWeight({String weight}) async {
-    DateFormat dateFormat = new DateFormat("yyyy-MM-dd");
-    String strDate = dateFormat.format(DateTime.now());
-
-    final CollectionReference weightData =
-        FirebaseFirestore.instance.collection('Weight');
-
-    final CollectionReference personalDatabaseUpdate =
-        FirebaseFirestore.instance.collection('PersonalData');
-
-    await personalDatabaseUpdate.doc(uid).update({'weight': weight});
-
-    return await weightData
-        .doc(uid)
-        .collection('personalWeight')
-        .doc(strDate)
-        .set({'weight': weight, 'date': strDate});
+  Future<void> addUserWeight({required String weight}) async {
+    await _updatePersonalData(weight);
+    await _setPersonalWeight(weight);
   }
 
-  Future updatePlan(String goal) async {
-    final CollectionReference mealData =
-        FirebaseFirestore.instance.collection('PersonalData');
-
-    return await mealData.doc(uid).update({'goal': goal});
+  Future<void> updateProfileData(PersonalData personalData) async {
+    final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
+    final Map<String, Object?> mappedPersonalData = personalData.toMap();
+    await personalDataDocument.update(mappedPersonalData);
   }
 
-  Future updateProfileData(PersonalData personalData) async {
-    final CollectionReference personalDatabase =
-        FirebaseFirestore.instance.collection('PersonalData');
-    Map<String, dynamic> personalDataMap = utils.setPersonalData(personalData);
-
-    return await personalDatabase.doc(uid).update(personalDataMap);
+  Future<void> updatePlan(String goal) async {
+    final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
+    await personalDataDocument.update(<String, Object>{'goal': goal});
   }
 
-  Future getUserPersonalData() async {
-    final CollectionReference personalDatabase =
-        FirebaseFirestore.instance.collection('PersonalData');
-    PersonalData personalData;
+  Future<PersonalData> getUserPersonalData() async {
+    final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
+    final Future<DocumentSnapshot<Map<String, Object?>>> personalData = personalDataDocument.get();
 
-    await personalDatabase.doc(uid).get().then((result) {
-      if (result.data() != null) {
-        personalData = PersonalData.fromJson(result.data());
-      } else {
-        return null;
-      }
+    return personalData.then(_getPersonalData);
+  }
+
+  Future<void> updateImage(String imagePath) async {
+    final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
+    await personalDataDocument.update(<String, Object>{'imagePath': imagePath});
+  }
+
+  Future<List<WeightProgress>> getUserWeightData() async {
+    final CollectionReference<Map<String, Object?>> personalWeightCollection = await _getPersonalWeightCollection();
+    final Future<QuerySnapshot<Map<String, Object?>>> personalWeight = personalWeightCollection.get();
+
+    return personalWeight.then(_getWeightProgress);
+  }
+
+  Future<void> _updatePersonalData(String weight) async {
+    final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
+    await personalDataDocument.update(<String, Object>{'weight': weight});
+  }
+
+  Future<void> _setPersonalWeight(String weight) async {
+    final String date = _getDateNow();
+    final DocumentReference<Map<String, Object?>> personalWeightDocument = await _getPersonalDataDocument(date);
+    await personalWeightDocument.set(<String, Object>{
+      'weight': weight,
+      'date': date,
     });
-    return personalData;
   }
 
-  Future updateImage(String imagePath) async {
-    final CollectionReference mealData =
-    FirebaseFirestore.instance.collection('PersonalData');
+  String _getDateNow() {
+    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+    final DateTime dateTime = DateTime.now();
 
-    return await mealData.doc(uid).update({'imagePath': imagePath});
+    return dateFormat.format(dateTime);
   }
 
-  Future getUserWeightData() async {
-    final CollectionReference personalDatabase =
-        FirebaseFirestore.instance.collection('Weight');
-    List<WeightProgress> weightProgressList = [];
-    WeightProgress weightProgress;
+  Future<DocumentReference<Map<String, Object?>>> _getPersonalDataDocument(String date) async {
+    final CollectionReference<Map<String, Object?>> personalWeightCollection = await _getPersonalWeightCollection();
+    return personalWeightCollection.doc(date);
+  }
 
-    await personalDatabase
-        .doc(uid)
-        .collection('personalWeight')
-        .get()
-        .then((querySnapshot) {
-      querySnapshot.docs.forEach((result) {
-        weightProgress = WeightProgress.fromJson(result.data());
-        weightProgressList.add(weightProgress);
-      });
-    });
+  Future<void> _addPersonalData(PersonalData personalData) async {
+    final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
+    final Map<String, Object?> mappedPersonalData = personalData.toMap();
+    await personalDataDocument.set(mappedPersonalData);
+  }
+
+  FutureOr<PersonalData> _getPersonalData(DocumentSnapshot<Object?> result) {
+    final Map<String, Object?>? data = result.data() as Map<String, Object?>?;
+    if (data != null) {
+      return PersonalData.fromJson(data);
+    }
+
+    return PersonalData();
+  }
+
+  Future<CollectionReference<Map<String, Object?>>> _getPersonalWeightCollection() async {
+    final DocumentReference<Map<String, Object?>> weightDocument = await _getDocument('Weight');
+    return weightDocument.collection('personalWeight');
+  }
+
+  Future<DocumentReference<Map<String, Object?>>> _getDocument(String collection) async {
+    final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    final CollectionReference<Map<String, Object?>> collectionReference = firebaseFirestore.collection(collection);
+    final String userUid = await _getUid();
+
+    return collectionReference.doc(userUid);
+  }
+
+  Future<String> _getUid() async {
+    final String userUid = await _userCredentialsProvider.readUid();
+    return uid ?? userUid;
+  }
+
+  FutureOr<List<WeightProgress>> _getWeightProgress(QuerySnapshot<Map<String, Object?>> personalWeight) {
+    final List<WeightProgress> weightProgressList = <WeightProgress>[];
+    final List<QueryDocumentSnapshot<Map<String, Object?>>> personalWeightDocs = personalWeight.docs;
+    for (final QueryDocumentSnapshot<Map<String, Object?>> weight in personalWeightDocs) {
+      final Map<String, Object?> weightData = weight.data();
+      final WeightProgress weightProgress = WeightProgress.fromJson(weightData);
+      weightProgressList.add(weightProgress);
+    }
+
     return weightProgressList;
   }
 }
