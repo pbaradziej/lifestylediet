@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lifestylediet/bloc/addBloc/bloc.dart';
+import 'package:lifestylediet/cubits/product/product_cubit.dart';
 
 class DatabaseProducts extends StatefulWidget {
   @override
@@ -8,31 +8,29 @@ class DatabaseProducts extends StatefulWidget {
 }
 
 class _DatabaseProductsState extends State<DatabaseProducts> {
-  AddBloc _addBloc;
+  late ProductCubit productCubit;
 
   @override
   void initState() {
-    _addBloc = BlocProvider.of<AddBloc>(context);
     super.initState();
+    productCubit = context.read();
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        _addBloc.add(DatabaseProductList());
-      },
-      child: Container(
+      onTap: productCubit.listProducts,
+      child: SizedBox(
         height: 170,
         child: Card(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
+            children: <Widget>[
               Row(
-                children: [
-                  SizedBox(width: 8),
+                children: <Widget>[
+                  const SizedBox(width: 8),
                   IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.list,
                       size: 120,
                       color: Colors.orange,
@@ -41,8 +39,8 @@ class _DatabaseProductsState extends State<DatabaseProducts> {
                   ),
                 ],
               ),
-              SizedBox(height: 50),
-              Text(
+              const SizedBox(height: 50),
+              const Text(
                 'Get from database',
                 style: TextStyle(fontSize: 19),
                 textAlign: TextAlign.center,

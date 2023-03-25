@@ -1,129 +1,135 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/providers/providers.dart';
+import 'package:lifestylediet/models/database_product.dart';
+import 'package:lifestylediet/models/nutriments.dart';
+import 'package:lifestylediet/providers/product_provider.dart';
 
 class ProductRepository {
-  ProductProvider _productProvider = ProductProvider();
+  final ProductProvider _productProvider;
 
-  Future<DatabaseProduct> getProductFromBarcode(String code) async {
-    final body = await _productProvider.getProductFromBarcode(code);
-    Map<String, dynamic> productMap = jsonDecode(body);
-    Object product = productMap["foods"][0];
-    DatabaseProduct databaseProduct = _getDatabaseProduct(product);
+  ProductRepository() : _productProvider = ProductProvider();
 
-    return databaseProduct;
+  Future<DatabaseProduct?> getProductFromBarcode(String code) async {
+    try {
+      return await getProductFromCode(code);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<DatabaseProduct> getProductFromCode(String code) async {
+    final String body = await _productProvider.getProductFromBarcode(code);
+    final Map<String, Object?> singleProduct = jsonDecode(body);
+    final List<Object> productFoods = singleProduct['foods'] as List<Object>? ?? <Object>[];
+    const int singleFood = 0;
+    final Map<String, Object> product = productFoods[singleFood] as Map<String, Object>? ?? <String, Object>{};
+
+    return _getDatabaseProduct(product);
   }
 
   Future<List<DatabaseProduct>> getSearchProducts(String search) async {
-    final body = await _productProvider.getProductData(search);
-    Map<String, dynamic> productMap = jsonDecode(body);
-    List products = productMap["foods"];
-    var stream = new Stream.fromIterable(products);
-    return await stream.map((product) => _getDatabaseProduct(product)).toList();
+    final String body = await _productProvider.getProductData(search);
+    final Map<String, Object?> singleProduct = jsonDecode(body);
+    final List<Object?> productFoods = singleProduct['foods'] as List<Object?>? ?? <Object>[];
+    final List<Map<String, Object?>> foods = List<Map<String, Object?>>.from(productFoods);
+
+    return _getDatabaseProducts(foods);
   }
 
-  DatabaseProduct _getDatabaseProduct(final product) {
-    Nutriments nutrimentsDatabase = _getNutriments(product);
-    Map photos = product["photo"];
-    return new DatabaseProduct(
-      "",
-      "",
-      "",
-      1,
-      photos["thumb"] ?? photos["highres"],
-      product["food_name"],
-      "serving",
-      _servingUnit(product),
-      nutrimentsDatabase,
+  List<DatabaseProduct> _getDatabaseProducts(List<Map<String, Object?>> products) {
+    return <DatabaseProduct>[
+      for (Map<String, Object?> product in products) _getDatabaseProduct(product),
+    ];
+  }
+
+  DatabaseProduct _getDatabaseProduct(Map<String, Object?> product) {
+    final Nutriments nutrimentsDatabase = _getNutriments(product);
+    final Map<String, Object?>? photos = product['photo'] as Map<String, Object?>?;
+
+    return DatabaseProduct(
+      amount: 1,
+      image: photos?['thumb'] as String? ?? photos?['highres'] as String? ?? '',
+      name: product['food_name'] as String? ?? '',
+      value: 'serving',
+      servingUnit: _servingUnit(product),
+      nutriments: nutrimentsDatabase,
     );
   }
 
-  String _servingUnit(final product) {
-    if (product["serving_weight_grams"] != null) {
-      return "g";
+  String _servingUnit(Map<String, Object?> product) {
+    if (product['serving_weight_grams'] != null) {
+      return 'g';
     }
 
-    return product["serving_unit"];
+    return product['serving_unit'] as String? ?? '';
   }
 
-  Nutriments _getNutriments(final product) {
-    double servingWeight = _getServing(product);
-    return new Nutriments(
-      _calculatePer100g(
-        product["nf_calories"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_calories"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_total_carbohydrate"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_total_carbohydrate"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_dietary_fiber"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_dietary_fiber"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_sugars"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_sugars"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_protein"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_protein"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_total_fat"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_total_fat"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_saturated_fat"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_saturated_fat"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_cholesterol"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_cholesterol"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_sodium"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_sodium"]?.toDouble()) ?? -1,
-      _calculatePer100g(
-        product["nf_potassium"]?.toDouble() ?? -1,
-        servingWeight,
-      ),
-      formatTo2Digits(product["nf_potassium"]?.toDouble()) ?? -1,
+  Nutriments _getNutriments(Map<String, Object?> product) {
+    final double servingWeight = _getServing(product);
+    return Nutriments(
+      caloriesPer100g: _calculatePer100g(product, 'nf_calories', servingWeight),
+      caloriesPerServing: parseValueToTwoDigitDouble(product, 'nf_calories'),
+      carbs: _calculatePer100g(product, 'nf_total_carbohydrate', servingWeight),
+      carbsPerServing: parseValueToTwoDigitDouble(product, 'nf_total_carbohydrate'),
+      fiber: _calculatePer100g(product, 'nf_dietary_fiber', servingWeight),
+      fiberPerServing: parseValueToTwoDigitDouble(product, 'nf_dietary_fiber'),
+      sugars: _calculatePer100g(product, 'nf_sugars', servingWeight),
+      sugarsPerServing: parseValueToTwoDigitDouble(product, 'nf_sugars'),
+      protein: _calculatePer100g(product, 'nf_protein', servingWeight),
+      proteinPerServing: parseValueToTwoDigitDouble(product, 'nf_protein'),
+      fats: _calculatePer100g(product, 'nf_total_fat', servingWeight),
+      fatsPerServing: parseValueToTwoDigitDouble(product, 'nf_total_fat'),
+      saturatedFats: _calculatePer100g(product, 'nf_saturated_fat', servingWeight),
+      saturatedFatsPerServing: parseValueToTwoDigitDouble(product, 'nf_saturated_fat'),
+      cholesterol: _calculatePer100g(product, 'nf_cholesterol', servingWeight),
+      cholesterolPerServing: parseValueToTwoDigitDouble(product, 'nf_cholesterol'),
+      sodium: _calculatePer100g(product, 'nf_sodium', servingWeight),
+      sodiumPerServing: parseValueToTwoDigitDouble(product, 'nf_sodium'),
+      potassium: _calculatePer100g(product, 'nf_potassium', servingWeight),
+      potassiumPerServing: parseValueToTwoDigitDouble(product, 'nf_potassium'),
     );
   }
 
-  double _getServing(final product) {
-    if (product["serving_weight_grams"] != null) {
-      return product["serving_weight_grams"]?.toDouble();
+  double _getServing(Map<String, Object?> product) {
+    if (product['serving_weight_grams'] != null) {
+      return _parseDouble(product, 'serving_weight_grams');
     }
 
-    return product["serving_qty"]?.toDouble();
+    return _parseDouble(product, 'serving_qty');
   }
 
-  double formatTo2Digits(double value) {
-    if (value == null) {
-      return -1;
+  double _calculatePer100g(Map<String, Object?> product, String key, double servingWeight) {
+    final double value = _parseDouble(product, key);
+    final double servingWeightPer100 = servingWeight / 100;
+    final double valueIn100g = value / servingWeightPer100;
+    final String valueWithDecimals = valueIn100g.toStringAsFixed(2);
+
+    return double.parse(valueWithDecimals);
+  }
+
+  double parseValueToTwoDigitDouble(Map<String, Object?> product, String key) {
+    final double value = _parseDouble(product, key);
+    final String valueWithDecimals = value.toStringAsFixed(2);
+
+    return double.parse(valueWithDecimals);
+  }
+
+  double _parseDouble(Map<String, Object?> product, String key) {
+    final Object? value = product[key];
+    if (value != null) {
+      return _getDoubleValue(value);
     }
 
-    return double.parse((value).toStringAsFixed(2));
+    return -1;
   }
 
-  double _calculatePer100g(double value, double servingWeight) {
-    double servingWeightPer100 = servingWeight / 100;
-    double valueIn100g = value / servingWeightPer100;
+  double _getDoubleValue(Object value) {
+    if (value is double) {
+      return value;
+    }
 
-    return double.parse((valueIn100g).toStringAsFixed(2));
+    final int parsedValue = value as int;
+    return parsedValue.toDouble();
   }
 }

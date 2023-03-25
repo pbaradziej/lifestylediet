@@ -1,9 +1,25 @@
-import 'models.dart';
+import 'package:lifestylediet/models/database_product.dart';
 
 class Meal {
   final String name;
-  bool isExpanded;
-  final List<DatabaseProduct> mealList;
+  final bool isExpanded;
+  final List<DatabaseProduct> meals;
 
-  Meal(this.name, this.isExpanded, this.mealList);
+  Meal({
+    required this.name,
+    required this.isExpanded,
+    required this.meals,
+  });
+
+  Meal copyWith({
+    String? name,
+    bool? isExpanded,
+    List<DatabaseProduct>? meals,
+  }) {
+    return Meal(
+      name: name ?? this.name,
+      isExpanded: isExpanded ?? this.isExpanded,
+      meals: meals ?? this.meals,
+    );
+  }
 }

@@ -1,35 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/utils/utils.dart';
+import 'package:lifestylediet/models/database_product.dart';
 
 class DatabaseLocalRepository {
-  String uid;
-  Utils utils = new Utils();
-
-  DatabaseLocalRepository({this.uid});
-
-  Future addDatabaseProduct({DatabaseProduct product}) async {
-    final CollectionReference mealData =
-        FirebaseFirestore.instance.collection("DatabaseProducts");
-    DatabaseProduct databaseProduct =
-        utils.setProductValues(product, "currentDate", "meal", 1, "serving");
-    Map<String, dynamic> productMap = utils.setProduct(databaseProduct);
-
-    return await mealData.doc(product.name).set(productMap);
+  Future<void> addDatabaseProduct({required DatabaseProduct product}) async {
+    final CollectionReference<Map<String, Object?>> mealData = _getDatabaseProductsCollection();
+    final Map<String, Object?> mappedProduct = product.toMap();
+    await mealData.doc(product.name).set(mappedProduct);
   }
 
-  Future getDatabaseData() async {
-    final CollectionReference mealData =
-        FirebaseFirestore.instance.collection("DatabaseProducts");
-    DatabaseProduct databaseProduct;
-    List<DatabaseProduct> databaseList = [];
+  Future<List<DatabaseProduct>> getDatabaseData() async {
+    final CollectionReference<Map<String, Object?>> databaseProductsCollection = _getDatabaseProductsCollection();
+    final List<DatabaseProduct> databaseList = <DatabaseProduct>[];
 
-    await mealData.get().then((querySnapshot) {
-      querySnapshot.docs.forEach((result) async {
-        databaseProduct = DatabaseProduct.fromJson(result.data());
+    final Future<QuerySnapshot<Map<String, Object?>>> databaseProducts = databaseProductsCollection.get();
+    await databaseProducts.then((QuerySnapshot<Map<String, Object?>> querySnapshot) {
+      querySnapshot.docs.forEach((QueryDocumentSnapshot<Map<String, Object?>> result) async {
+        final Map<String, Object?> data = result.data();
+        final DatabaseProduct databaseProduct = DatabaseProduct.fromJson(data);
         databaseList.add(databaseProduct);
       });
     });
+
     return databaseList;
+  }
+
+  CollectionReference<Map<String, Object?>> _getDatabaseProductsCollection() {
+    final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    return firebaseFirestore.collection('DatabaseProducts');
   }
 }

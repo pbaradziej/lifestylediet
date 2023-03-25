@@ -1,120 +1,119 @@
+import 'package:intl/intl.dart';
+import 'package:lifestylediet/models/nutriments.dart';
+
 class DatabaseProduct {
-  String id;
-  String date;
-  String meal;
+  final String id;
+  final String date;
+  final String meal;
   final String image;
   final String name;
   final Nutriments nutriments;
-  double amount;
-  String value;
-  String servingUnit;
-  bool isExpanded;
+  final double amount;
+  final String value;
+  final String servingUnit;
+  final bool isExpanded;
 
-  DatabaseProduct(this.id, this.date, this.meal, this.amount, this.image,
-      this.name, this.value, this.servingUnit, this.nutriments,
-      {this.isExpanded = true});
+  DatabaseProduct({
+    required this.amount,
+    required this.image,
+    required this.name,
+    required this.value,
+    required this.nutriments,
+    this.id = '',
+    this.date = '',
+    this.meal = '',
+    this.servingUnit = '',
+    this.isExpanded = true,
+  });
 
-  factory DatabaseProduct.fromJson(Map<String, dynamic> json) {
+  DatabaseProduct copyWith({
+    String? id,
+    String? date,
+    String? meal,
+    String? image,
+    String? name,
+    Nutriments? nutriments,
+    double? amount,
+    String? value,
+    String? servingUnit,
+    bool? isExpanded,
+  }) {
     return DatabaseProduct(
-      json['id'] as String,
-      json['date'] as String,
-      json['meal'] as String,
-      json['amount'] as double,
-      json['image'] as String,
-      json['name'] as String,
-      json['value'] as String,
-      json['servingUnit'] as String,
-      Nutriments.fromJson(json['nutriments']),
+      id: id ?? this.id,
+      date: date ?? this.date,
+      meal: meal ?? this.meal,
+      image: image ?? this.image,
+      name: name ?? this.name,
+      nutriments: nutriments ?? this.nutriments,
+      amount: amount ?? this.amount,
+      value: value ?? this.value,
+      servingUnit: servingUnit ?? this.servingUnit,
+      isExpanded: isExpanded ?? this.isExpanded,
     );
   }
 
-  void setId(String id) {
-    this.id = id;
+  factory DatabaseProduct.fromJson(Map<String, Object?> json) {
+    return DatabaseProduct(
+      id: json['id'] as String,
+      date: _getDate(json),
+      meal: json['meal'] as String,
+      amount: json['amount'] as double,
+      image: json['image'] as String,
+      name: json['name'] as String,
+      value: json['value'] as String,
+      servingUnit: json['servingUnit'] as String,
+      nutriments: Nutriments.fromJson(json['nutriments'] as Map<String, Object?>? ?? <String, Object>{}),
+    );
   }
 
-  void setDate(String date) {
-    this.date = date;
+  Map<String, Object?> toMap() {
+    return <String, Object?>{
+      'id': id,
+      'date': date,
+      'meal': meal,
+      'name': name,
+      'image': image,
+      'amount': amount,
+      'value': value,
+      'servingUnit': servingUnit,
+      'nutriments': <String, Object?>{
+        'caloriesPer100g': nutriments.caloriesPer100g,
+        'caloriesPerServing': nutriments.caloriesPerServing,
+        'carbs': nutriments.carbs,
+        'carbsPerServing': nutriments.carbsPerServing,
+        'fiber': nutriments.fiber,
+        'fiberPerServing': nutriments.fiberPerServing,
+        'sugars': nutriments.sugars,
+        'sugarsPerServing': nutriments.sugarsPerServing,
+        'protein': nutriments.protein,
+        'proteinPerServing': nutriments.proteinPerServing,
+        'fats': nutriments.fats,
+        'fatsPerServing': nutriments.fatsPerServing,
+        'saturatedFats': nutriments.saturatedFats,
+        'saturatedFatsPerServing': nutriments.saturatedFatsPerServing,
+        'cholesterol': nutriments.cholesterol,
+        'cholesterolPerServing': nutriments.cholesterolPerServing,
+        'sodium': nutriments.sodium,
+        'sodiumPerServing': nutriments.sodiumPerServing,
+        'potassium': nutriments.potassium,
+        'potassiumPerServing': nutriments.potassiumPerServing,
+      }
+    };
   }
 
-  void setMeal(String meal) {
-    this.meal = meal;
+ static String _getDate(Map<String, Object?> json) {
+    final String date = json['date'] as String;
+    if (date == 'currentDate') {
+      return _getDateNow();
+    }
+
+    return date;
   }
 
-  void setAmount(double amount) {
-    this.amount = amount;
-  }
+  static String _getDateNow() {
+    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+    final DateTime dateNow = DateTime.now();
 
-  void setValue(String value) {
-    this.value = value;
-  }
-}
-
-class Nutriments {
-  final double caloriesPer100g;
-  final double caloriesPerServing;
-  final double carbs;
-  final double carbsPerServing;
-  final double fiber;
-  final double fiberPerServing;
-  final double sugars;
-  final double sugarsPerServing;
-  final double protein;
-  final double proteinPerServing;
-  final double fats;
-  final double fatsPerServing;
-  final double saturatedFats;
-  final double saturatedFatsPerServing;
-  final double cholesterol;
-  final double cholesterolPerServing;
-  final double sodium;
-  final double sodiumPerServing;
-  final double potassium;
-  final double potassiumPerServing;
-
-  Nutriments(
-    this.caloriesPer100g,
-    this.caloriesPerServing,
-    this.carbs,
-    this.carbsPerServing,
-    this.fiber,
-    this.fiberPerServing,
-    this.sugars,
-    this.sugarsPerServing,
-    this.protein,
-    this.proteinPerServing,
-    this.fats,
-    this.fatsPerServing,
-    this.saturatedFats,
-    this.saturatedFatsPerServing,
-    this.cholesterol,
-    this.cholesterolPerServing,
-    this.sodium,
-    this.sodiumPerServing,
-    this.potassium,
-    this.potassiumPerServing,
-  );
-
-  factory Nutriments.fromJson(Map<String, dynamic> json) {
-    return Nutriments(
-        json['caloriesPer100g'] as double,
-        json['caloriesPerServing'] as double,
-        json['carbs'] as double,
-        json['carbsPerServing'] as double,
-        json['fiber'] as double,
-        json['fiberPerServing'] as double,
-        json['sugars'] as double,
-        json['sugarsPerServing'] as double,
-        json['protein'] as double,
-        json['proteinPerServing'] as double,
-        json['fats'] as double,
-        json['fatsPerServing'] as double,
-        json['saturatedFats'] as double,
-        json['saturatedFatsPerServing'] as double,
-        json['cholesterol'] as double,
-        json['cholesterolPerServing'] as double,
-        json['sodium'] as double,
-        json['sodiumPerServing'] as double,
-        json['potassium'] as double,
-        json['potassiumPerServing'] as double);
+    return dateFormat.format(dateNow);
   }
 }
