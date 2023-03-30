@@ -1,34 +1,48 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:lifestylediet/models/models.dart';
-import 'package:lifestylediet/providers/providers.dart';
+import 'package:lifestylediet/models/recipe.dart';
+import 'package:lifestylediet/models/recipe_information.dart';
+import 'package:lifestylediet/models/recipe_instruction.dart';
+import 'package:lifestylediet/models/recipe_meal.dart';
+import 'package:lifestylediet/models/recipe_nutrition.dart';
+import 'package:lifestylediet/providers/recipe_provider.dart';
 
 class RecipeRepository {
-  RecipeProvider _recipeProvider = RecipeProvider();
+  final RecipeProvider _recipeProvider;
+
+  RecipeRepository() : _recipeProvider = RecipeProvider();
 
   Future<List<RecipeMeal>> getRecipes(String name) async {
-    final body = await _recipeProvider.getRecipes(name);
-    Map<String, dynamic> recipesList = jsonDecode(body);
-    List recipes = recipesList["results"];
+    final String body = await _recipeProvider.getRecipes(name);
+    final Map<String, Object?> recipesList = jsonDecode(body);
+    final List<Object?> recipes = recipesList['results'] as List<Object?>;
+    final Iterable<RecipeMeal> recipeMeals = _getRecipeMeals(recipes);
 
-    return recipes.map((recipe) => RecipeMeal.fromJson(recipe)).toList();
+    return recipeMeals.toList();
   }
 
   Future<List<RecipeMeal>> getInitialRecipes() async {
-    final body = await _recipeProvider.getInitialRecipes();
-    Map<String, dynamic> recipesList = jsonDecode(body);
-    List recipes = recipesList["recipes"];
+    final String body = await _recipeProvider.getInitialRecipes();
+    final Map<String, Object?> recipesList = jsonDecode(body);
+    final List<Object?> recipes = recipesList['recipes'] as List<Object?>;
+    final Iterable<RecipeMeal> recipeMeals = _getRecipeMeals(recipes);
 
-    return recipes.map((recipe) => RecipeMeal.fromJson(recipe)).toList();
+    return recipeMeals.toList();
+  }
+
+  static Iterable<RecipeMeal> _getRecipeMeals(List<Object?> recipes) sync* {
+    for (final Object? recipe in recipes) {
+      yield RecipeMeal.fromJson(recipe as Map<String, Object?>);
+    }
   }
 
   Future<Recipe> getRecipe(int id) async {
-    RecipeInformation recipeInformation = await _getRecipeInformation(id);
-    RecipeNutrition recipeNutrition = await _getRecipeNutrition(id);
-    RecipeInstruction recipeInstruction = await _getRecipeInstruction(id);
+    final RecipeInformation recipeInformation = await _getRecipeInformation(id);
+    final RecipeNutrition recipeNutrition = await _getRecipeNutrition(id);
+    final RecipeInstruction recipeInstruction = await _getRecipeInstruction(id);
 
-    return new Recipe(
+    return Recipe(
       recipeInformation: recipeInformation,
       recipeNutrition: recipeNutrition,
       recipeInstruction: recipeInstruction,
@@ -36,35 +50,36 @@ class RecipeRepository {
   }
 
   Future<RecipeInformation> _getRecipeInformation(int id) async {
-    final bodyInfo = await _recipeProvider.getRecipeInformation(id);
-    Map<String, dynamic> recipeInformationJson = jsonDecode(bodyInfo);
+    final String bodyInfo = await _recipeProvider.getRecipeInformation(id);
+    final Map<String, Object?> recipeInformationJson = jsonDecode(bodyInfo);
 
     return RecipeInformation.fromJson(recipeInformationJson);
   }
 
   Future<RecipeNutrition> _getRecipeNutrition(int id) async {
-    final bodyNutrition = await _recipeProvider.getRecipeNutrition(id);
-    Map<String, dynamic> recipeNutritionJson = jsonDecode(bodyNutrition);
+    final String bodyNutrition = await _recipeProvider.getRecipeNutrition(id);
+    final Map<String, Object?> recipeNutritionJson = jsonDecode(bodyNutrition);
 
     return RecipeNutrition.fromJson(recipeNutritionJson);
   }
 
   Future<RecipeInstruction> _getRecipeInstruction(int id) async {
-    final bodyInstruction = await _recipeProvider.getRecipeInstruction(id);
+    final String bodyInstruction = await _recipeProvider.getRecipeInstruction(id);
 
     if (bodyInstruction != '[]') {
-      var decodedInformation = _unpackListJson(bodyInstruction);
+      final Map<String, Object?> decodedInformation = _unpackListJson(bodyInstruction);
       return RecipeInstruction.fromJson(decodedInformation);
     } else {
-      return RecipeInstruction.fromJson(new Map());
+      return RecipeInstruction.empty();
     }
   }
 
-  _unpackListJson(final bodyInstruction) {
-    String json = '{"instruction": ' + bodyInstruction + '}';
-    var decodedInformationMap = jsonDecode(json);
-    var decodedInstruction = decodedInformationMap['instruction'];
+  Map<String, Object?> _unpackListJson(final String bodyInstruction) {
+    final String json = '{"instruction": $bodyInstruction}';
+    final Map<String, Object?> decodedInformationMap = jsonDecode(json);
+    final List<Object> decodedInstruction = decodedInformationMap['instruction'] as List<Object>;
+    const int singleInstruction = 0;
 
-    return decodedInstruction[0];
+    return decodedInstruction[singleInstruction] as Map<String, Object?>;
   }
 }

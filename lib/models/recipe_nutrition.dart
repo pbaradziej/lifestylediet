@@ -4,7 +4,12 @@ class RecipeNutrition {
   final String fat;
   final String protein;
 
-  RecipeNutrition({this.calories, this.carbs, this.fat, this.protein});
+  RecipeNutrition({
+    required this.calories,
+    required this.carbs,
+    required this.fat,
+    required this.protein,
+  });
 
   factory RecipeNutrition.fromJson(Map<String, dynamic> json) {
     return RecipeNutrition(
