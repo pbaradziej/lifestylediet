@@ -2,15 +2,15 @@ class WeightProgress {
   final String weight;
   final String date;
 
-  WeightProgress(
-    this.weight,
-    this.date,
-  );
+  WeightProgress({
+    required this.weight,
+    required this.date,
+  });
 
   factory WeightProgress.fromJson(Map<String, dynamic> json) {
     return WeightProgress(
-      json['weight'] as String,
-      json['date'] as String,
+      weight: json['weight'] as String,
+      date: json['date'] as String,
     );
   }
 }
