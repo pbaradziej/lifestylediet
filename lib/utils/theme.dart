@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
 
 BoxDecoration appTheme() {
-  return BoxDecoration(
+  return const BoxDecoration(
     gradient: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Colors.orangeAccent, Colors.orange, Colors.deepOrange],
+      colors: <Color>[
+        Colors.orangeAccent,
+        Colors.orange,
+        Colors.deepOrange,
+      ],
     ),
   );
 }
 
 BoxDecoration menuTheme() {
-  return BoxDecoration(
+  return const BoxDecoration(
     gradient: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Colors.orangeAccent, Colors.orange, Colors.deepOrange],
+      colors: <Color>[
+        Colors.orangeAccent,
+        Colors.orange,
+        Colors.deepOrange,
+      ],
     ),
-    borderRadius: new BorderRadius.only(
+    borderRadius: BorderRadius.only(
       bottomLeft: Radius.circular(60.0),
       bottomRight: Radius.circular(60.0),
     ),
@@ -28,9 +36,11 @@ Widget datePickerTheme(Widget child) {
   return Theme(
     data: ThemeData.light().copyWith(
       primaryColor: Colors.deepOrange,
-      accentColor: Colors.orangeAccent,
-      colorScheme: ColorScheme.light(primary: Colors.orange),
-      buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+      buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+      colorScheme: const ColorScheme.light(
+        primary: Colors.orange,
+        secondary: Colors.orangeAccent,
+      ),
     ),
     child: child,
   );

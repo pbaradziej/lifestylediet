@@ -1,46 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-TextStyle get searchListStyle => TextStyle(fontSize: 11);
+TextStyle get hintStyle => const TextStyle(fontSize: 15, color: Colors.white60);
 
-TextStyle get mealTextStyle => TextStyle(fontSize: 20, color: Colors.white);
+TextStyle get searchHintStyle => const TextStyle(fontSize: 15, color: Colors.grey);
 
-TextStyle get hintStyle => TextStyle(fontSize: 15, color: Colors.white60);
+TextStyle get errorStyle => const TextStyle(fontSize: 12, height: 0.3);
 
-TextStyle get searchHintStyle => TextStyle(fontSize: 15, color: Colors.grey);
+TextStyle get textStyle => const TextStyle(fontSize: 15, color: Colors.white);
 
-TextStyle get errorStyle => TextStyle(fontSize: 12, height: 0.3);
+TextStyle get searchTextStyle => const TextStyle(fontSize: 17, color: Colors.black);
 
-TextStyle get textStyle => TextStyle(fontSize: 15, color: Colors.white);
+TextStyle get labelStyle => const TextStyle(color: Colors.white);
 
-TextStyle get searchTextStyle => TextStyle(fontSize: 17, color: Colors.black);
+TextStyle get loginMenuHintStyle => const TextStyle(color: Colors.white70);
 
-TextStyle get labelStyle => TextStyle(color: Colors.white);
+TextStyle get defaultTextStyle => const TextStyle(fontSize: 14, color: Colors.black);
 
-TextStyle get loginMenuHintStyle => TextStyle(color: Colors.white70);
+TextStyle get defaultProfileTextStyle => const TextStyle(fontSize: 17, color: Colors.black);
 
-TextStyle get defaultTextStyle => TextStyle(fontSize: 14, color: Colors.black);
+TextStyle get subTitleStyle => const TextStyle(fontSize: 25, color: Colors.white);
 
-TextStyle get defaultProfileTextStyle =>
-    TextStyle(fontSize: 17, color: Colors.black);
+TextStyle get titleAddScreenStyle => const TextStyle(fontSize: 30, color: Colors.black54);
 
-TextStyle get subTitleStyle => TextStyle(fontSize: 25, color: Colors.white);
+TextStyle get subTitleAddScreenStyle => const TextStyle(fontSize: 20, color: Colors.black);
 
-TextStyle get titleAddScreenStyle =>
-    TextStyle(fontSize: 30, color: Colors.black54);
-
-TextStyle get subTitleAddScreenStyle =>
-    TextStyle(fontSize: 20, color: Colors.black);
-
-TextStyle get titleHomeStyle => TextStyle(fontSize: 40, color: Colors.white);
+TextStyle get titleHomeStyle => const TextStyle(fontSize: 40, color: Colors.white);
 
 TextStyle get titleStyle => GoogleFonts.aleo(
-    fontWeight: FontWeight.bold, fontSize: 35, color: Colors.grey[100]);
+      fontWeight: FontWeight.bold,
+      fontSize: 35,
+      color: Colors.grey[100],
+    );
 
-TextStyle get titleDateStyle =>
-    GoogleFonts.aleo(fontSize: 25, color: Colors.grey[700]);
+TextStyle get titleDateStyle => GoogleFonts.aleo(fontSize: 25, color: Colors.grey[700]);
 
-TextStyle get orangeProfileTextStyle => TextStyle(fontSize: 16, color: Colors.orangeAccent);
+TextStyle get orangeProfileTextStyle => const TextStyle(fontSize: 16, color: Colors.orangeAccent);
 
-TextStyle get greenProfileTextStyle =>
-    TextStyle(fontSize: 16, color: Colors.green);
+TextStyle get greenProfileTextStyle => const TextStyle(fontSize: 16, color: Colors.green);
