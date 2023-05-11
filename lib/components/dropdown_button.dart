@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lifestylediet/utils/common_utils.dart';
+import 'package:lifestylediet/utils/fonts.dart';
+import 'package:lifestylediet/utils/palette.dart';
 
 class DropdownComponent extends StatefulWidget {
   final TextEditingController controller;
@@ -12,106 +13,131 @@ class DropdownComponent extends StatefulWidget {
   final bool alertDialog;
 
   const DropdownComponent({
-    Key key,
-    this.controller,
-    this.label = "",
-    this.hintText = "Enter value...",
+    required this.controller,
+    required this.values,
+    this.label = '',
+    this.hintText = 'Enter value...',
     this.borderSide = false,
-    this.errorText,
+    this.errorText = '',
     this.halfScreen = false,
-    this.values,
     this.alertDialog = false,
-  }) : super(key: key);
+  });
 
   @override
   _DropdownComponentState createState() => _DropdownComponentState();
 }
 
 class _DropdownComponentState extends State<DropdownComponent> {
-  String _label;
-  String _hintText;
-  bool _borderSide;
-  String _errorText;
-  TextEditingController _controller;
-  bool _halfScreen;
-  List<String> _values;
-  bool _alertDialog;
+  String get label => widget.label;
 
-  void initComponents() {
-    _label = widget.label;
-    _hintText = widget.hintText;
-    _borderSide = widget.borderSide;
-    _errorText = widget.errorText;
-    _controller = widget.controller;
-    _halfScreen = widget.halfScreen;
-    _values = widget.values;
-    _alertDialog = widget.alertDialog;
-  }
+  String get hintText => widget.hintText;
+
+  bool get borderSide => widget.borderSide;
+
+  String get errorText => widget.errorText;
+
+  TextEditingController get controller => widget.controller;
+
+  bool get halfScreen => widget.halfScreen;
+
+  List<String> get values => widget.values;
+
+  bool get alertDialog => widget.alertDialog;
 
   @override
   Widget build(BuildContext context) {
-    initComponents();
     return Container(
-      width: _halfScreen ? 140 : 260,
-      height: _alertDialog ? 83 : 80,
+      width: halfScreen ? 140 : 260,
+      height: alertDialog ? 83 : 80,
       alignment: Alignment.centerLeft,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _label,
-            style: _alertDialog ? TextStyle(color: Colors.black) : labelStyle,
-          ),
-          FormField<String>(
-            builder: (FormFieldState<String> state) {
-              return InputDecorator(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: backgroundColor,
-                  errorText: _errorText,
-                  errorStyle: errorStyle,
-                  hintText: _hintText,
-                  hintStyle: hintStyle,
-                  border: new OutlineInputBorder(
-                    borderSide: _borderSide
-                        ? BorderSide(color: errorColor)
-                        : BorderSide.none,
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(10),
-                    ),
-                  ),
-                ),
-                isEmpty: _controller.text == '',
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    icon: Icon(
-                      Icons.arrow_drop_down,
-                      color: iconColors,
-                    ),
-                    dropdownColor: backgroundColor,
-                    value: _controller.text,
-                    style: textStyle,
-                    isDense: true,
-                    onChanged: (String newValue) {
-                      setState(() {
-                        _controller.text = newValue;
-                        state.didChange(newValue);
-                      });
-                    },
-                    items: _values.map<DropdownMenuItem<String>>(
-                      (String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value, style: textStyle),
-                        );
-                      },
-                    ).toList(),
-                  ),
-                ),
-              );
-            },
-          ),
+        children: <Widget>[
+          dropdownLabel(),
+          dropDown(),
         ],
+      ),
+    );
+  }
+
+  Widget dropdownLabel() {
+    return Text(
+      label,
+      style: alertDialog ? const TextStyle(color: Colors.black) : labelStyle,
+    );
+  }
+
+  Widget dropDown() {
+    return FormField<String>(
+      builder: builder,
+    );
+  }
+
+  Widget builder(FormFieldState<String> state) {
+    return InputDecorator(
+      decoration: inputDecoration(),
+      isEmpty: controller.text == '',
+      child: dropdownButton(state),
+    );
+  }
+
+  InputDecoration inputDecoration() {
+    return InputDecoration(
+      filled: true,
+      fillColor: backgroundColor,
+      errorText: errorText,
+      errorStyle: errorStyle,
+      hintText: hintText,
+      hintStyle: hintStyle,
+      border: OutlineInputBorder(
+        borderSide: borderSide ? BorderSide(color: errorColor) : BorderSide.none,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(10),
+        ),
+      ),
+    );
+  }
+
+  Widget dropdownButton(FormFieldState<String> state) {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        icon: icon(),
+        dropdownColor: backgroundColor,
+        value: controller.text,
+        style: textStyle,
+        isDense: true,
+        onChanged: (String? newValue) => onChanged(newValue, state),
+        items: getItems(),
+      ),
+    );
+  }
+
+  Widget icon() {
+    return Icon(
+      Icons.arrow_drop_down,
+      color: iconColors,
+    );
+  }
+
+  void onChanged(String? newValue, FormFieldState<String> state) {
+    setState(() {
+      controller.text = newValue ?? '';
+      state.didChange(newValue);
+    });
+  }
+
+  List<DropdownMenuItem<String>> getItems() {
+    return <DropdownMenuItem<String>>[
+      for (String value in values) getDropdownMenuItem(value),
+    ];
+  }
+
+  DropdownMenuItem<String> getDropdownMenuItem(String value) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Text(
+        value,
+        style: textStyle,
       ),
     );
   }
