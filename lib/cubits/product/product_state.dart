@@ -23,10 +23,10 @@ class ProductState extends Equatable {
   }) : key = UniqueKey();
 
   ProductState copyWith({
-    ProductStatus? status,
-    List<DatabaseProduct>? products,
-    List<Meal>? meals,
-    String? message,
+    final ProductStatus? status,
+    final List<DatabaseProduct>? products,
+    final List<Meal>? meals,
+    final String? message,
   }) {
     return ProductState(
       status: status ?? this.status,

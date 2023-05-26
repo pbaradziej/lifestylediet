@@ -17,7 +17,7 @@ extension ProductAmountExtension on ProductAmount {
     }
   }
 
-  static ProductAmount fromName(String? name) {
+  static ProductAmount fromName(final String? name) {
     if (name == _serving) {
       return ProductAmount.SERVING;
     } else {

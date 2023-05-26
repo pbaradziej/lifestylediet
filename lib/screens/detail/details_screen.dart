@@ -54,11 +54,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
       body: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (OverscrollIndicatorNotification overscroll) {
+        onNotification: (final OverscrollIndicatorNotification overscroll) {
           overscroll.disallowIndicator();
           return false;
         },
@@ -93,7 +93,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     });
   }
 
-  AppBar appBar(BuildContext context) {
+  AppBar appBar(final BuildContext context) {
     return AppBar(
       elevation: 0,
       backgroundColor: backgroundColor,
@@ -141,7 +141,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
-  void onPressed() async {
+  Future<void> onPressed() async {
     final DatabaseProduct updatedProduct = getUpdatedProduct();
     await productCubit.addProduct(updatedProduct);
     routingCubit.showHomeScreen();
@@ -357,7 +357,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         style: defaultTextStyle,
         underline: const DropdownButtonHideUnderline(child: SizedBox()),
         value: dropdownValue,
-        onChanged: (String? newValue) {
+        onChanged: (final String? newValue) {
           setState(() {
             dropdownValue = newValue ?? '';
           });
@@ -392,7 +392,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
-  Widget calories(String text, double energy) {
+  Widget calories(final String text, final double energy) {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
@@ -566,7 +566,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return double.parse(perGrams.toStringAsFixed(2)).toString();
   }
 
-  Widget hideNull(String name, String value, {TextStyle? style}) {
+  Widget hideNull(final String name, final String value, {final TextStyle? style}) {
     if (value == 'null') {
       return const SizedBox();
     }

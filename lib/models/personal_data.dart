@@ -21,7 +21,7 @@ class PersonalData {
     this.imagePath = '',
   });
 
-  factory PersonalData.fromJson(Map<String, Object?> json) {
+  factory PersonalData.fromJson(final Map<String, Object?> json) {
     return PersonalData(
       sex: json['sex'] as String,
       weight: json['weight'] as String,
@@ -36,15 +36,15 @@ class PersonalData {
   }
 
   PersonalData copyWith({
-    String? sex,
-    String? weight,
-    String? height,
-    String? date,
-    String? firstName,
-    String? lastName,
-    String? activity,
-    String? goal,
-    String? imagePath,
+    final String? sex,
+    final String? weight,
+    final String? height,
+    final String? date,
+    final String? firstName,
+    final String? lastName,
+    final String? activity,
+    final String? goal,
+    final String? imagePath,
   }) {
     return PersonalData(
       sex: sex ?? this.sex,

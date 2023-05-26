@@ -32,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final FocusScopeNode node = FocusScope.of(context);
     return Scaffold(
       key: scaffoldKey,
@@ -41,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         width: double.infinity,
         decoration: appTheme(),
         child: NotificationListener<OverscrollIndicatorNotification>(
-          onNotification: (OverscrollIndicatorNotification overscroll) {
+          onNotification: (final OverscrollIndicatorNotification overscroll) {
             overscroll.disallowIndicator();
             return false;
           },
@@ -81,14 +81,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget loginField(FocusScopeNode node) {
+  Widget loginField(final FocusScopeNode node) {
     return TextFormFieldComponent(
       label: 'Email',
       controller: emailController,
       hintText: 'Enter Email',
       minCharacters: 3,
       minCharactersMessage: 'Enter an email 3+ chars long',
-      onEditingComplete: () => node.nextFocus(),
+      onEditingComplete: node.nextFocus,
       prefixIcon: Icon(
         Icons.mail,
         color: iconTrailingColors,
@@ -136,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (BuildContext context) => TermsOfConditions(),
+        builder: (final BuildContext context) => TermsOfConditions(),
       ),
     );
   }

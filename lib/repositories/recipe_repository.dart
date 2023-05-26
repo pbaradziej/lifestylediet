@@ -13,9 +13,9 @@ class RecipeRepository {
 
   RecipeRepository() : _recipeProvider = RecipeProvider();
 
-  Future<List<RecipeMeal>> getRecipes(String name) async {
+  Future<List<RecipeMeal>> getRecipes(final String name) async {
     final String body = await _recipeProvider.getRecipes(name);
-    final Map<String, Object?> recipesList = jsonDecode(body);
+    final Map<String, Object?> recipesList = jsonDecode(body) as Map<String, Object?>;
     final List<Object?> recipes = recipesList['results'] as List<Object?>;
     final Iterable<RecipeMeal> recipeMeals = _getRecipeMeals(recipes);
 
@@ -24,20 +24,20 @@ class RecipeRepository {
 
   Future<List<RecipeMeal>> getInitialRecipes() async {
     final String body = await _recipeProvider.getInitialRecipes();
-    final Map<String, Object?> recipesList = jsonDecode(body);
+    final Map<String, Object?> recipesList = jsonDecode(body) as Map<String, Object?>;
     final List<Object?> recipes = recipesList['recipes'] as List<Object?>;
     final Iterable<RecipeMeal> recipeMeals = _getRecipeMeals(recipes);
 
     return recipeMeals.toList();
   }
 
-  static Iterable<RecipeMeal> _getRecipeMeals(List<Object?> recipes) sync* {
+  static Iterable<RecipeMeal> _getRecipeMeals(final List<Object?> recipes) sync* {
     for (final Object? recipe in recipes) {
       yield RecipeMeal.fromJson(recipe as Map<String, Object?>);
     }
   }
 
-  Future<Recipe> getRecipe(int id) async {
+  Future<Recipe> getRecipe(final int id) async {
     final RecipeInformation recipeInformation = await _getRecipeInformation(id);
     final RecipeNutrition recipeNutrition = await _getRecipeNutrition(id);
     final RecipeInstruction recipeInstruction = await _getRecipeInstruction(id);
@@ -49,21 +49,21 @@ class RecipeRepository {
     );
   }
 
-  Future<RecipeInformation> _getRecipeInformation(int id) async {
+  Future<RecipeInformation> _getRecipeInformation(final int id) async {
     final String bodyInfo = await _recipeProvider.getRecipeInformation(id);
-    final Map<String, Object?> recipeInformationJson = jsonDecode(bodyInfo);
+    final Map<String, Object?> recipeInformationJson = jsonDecode(bodyInfo) as Map<String, Object?>;
 
     return RecipeInformation.fromJson(recipeInformationJson);
   }
 
-  Future<RecipeNutrition> _getRecipeNutrition(int id) async {
+  Future<RecipeNutrition> _getRecipeNutrition(final int id) async {
     final String bodyNutrition = await _recipeProvider.getRecipeNutrition(id);
-    final Map<String, Object?> recipeNutritionJson = jsonDecode(bodyNutrition);
+    final Map<String, Object?> recipeNutritionJson = jsonDecode(bodyNutrition) as Map<String, Object?>;
 
     return RecipeNutrition.fromJson(recipeNutritionJson);
   }
 
-  Future<RecipeInstruction> _getRecipeInstruction(int id) async {
+  Future<RecipeInstruction> _getRecipeInstruction(final int id) async {
     final String bodyInstruction = await _recipeProvider.getRecipeInstruction(id);
 
     if (bodyInstruction != '[]') {
@@ -76,7 +76,7 @@ class RecipeRepository {
 
   Map<String, Object?> _unpackListJson(final String bodyInstruction) {
     final String json = '{"instruction": $bodyInstruction}';
-    final Map<String, Object?> decodedInformationMap = jsonDecode(json);
+    final Map<String, Object?> decodedInformationMap = jsonDecode(json) as Map<String, Object?>;
     final List<Object> decodedInstruction = decodedInformationMap['instruction'] as List<Object>;
     const int singleInstruction = 0;
 

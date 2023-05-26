@@ -8,9 +8,9 @@ import 'package:lifestylediet/utils/uuid_utils.dart';
 
 class RecipeHelper {
   static DatabaseProduct getProductFromRecipe({
-    required Recipe recipe,
-    required String amount,
-    required String meal,
+    required final Recipe recipe,
+    required final String amount,
+    required final String meal,
   }) {
     final RecipeInformation recipeInformation = recipe.recipeInformation;
     return DatabaseProduct(
@@ -32,7 +32,7 @@ class RecipeHelper {
     return dateFormat.format(dateNow);
   }
 
-  static Nutriments _getNutriments(Recipe recipe) {
+  static Nutriments _getNutriments(final Recipe recipe) {
     final RecipeNutrition recipeNutrition = recipe.recipeNutrition;
     final String calories = recipeNutrition.calories;
     final String carbs = recipeNutrition.carbs;
@@ -47,7 +47,7 @@ class RecipeHelper {
     );
   }
 
-  static double _parseNutritionValue(String value) {
+  static double _parseNutritionValue(final String value) {
     final String parsedValue = value.replaceAll('g', '');
     return double.parse(parsedValue);
   }

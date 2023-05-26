@@ -14,23 +14,23 @@ class DatabaseUserRepository {
     this.uid,
   }) : _userCredentialsProvider = UserCredentialsProvider();
 
-  Future<void> addUserPersonalData({required PersonalData personalData}) async {
+  Future<void> addUserPersonalData({required final PersonalData personalData}) async {
     await addUserWeight(weight: personalData.weight);
     await _addPersonalData(personalData);
   }
 
-  Future<void> addUserWeight({required String weight}) async {
+  Future<void> addUserWeight({required final String weight}) async {
     await _updatePersonalData(weight);
     await _setPersonalWeight(weight);
   }
 
-  Future<void> updateProfileData(PersonalData personalData) async {
+  Future<void> updateProfileData(final PersonalData personalData) async {
     final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
     final Map<String, Object?> mappedPersonalData = personalData.toMap();
     await personalDataDocument.update(mappedPersonalData);
   }
 
-  Future<void> updatePlan(String goal) async {
+  Future<void> updatePlan(final String goal) async {
     final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
     await personalDataDocument.update(<String, Object>{'goal': goal});
   }
@@ -42,7 +42,7 @@ class DatabaseUserRepository {
     return personalData.then(_getPersonalData);
   }
 
-  Future<void> updateImage(String imagePath) async {
+  Future<void> updateImage(final String imagePath) async {
     final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
     await personalDataDocument.update(<String, Object>{'imagePath': imagePath});
   }
@@ -54,12 +54,12 @@ class DatabaseUserRepository {
     return personalWeight.then(_getWeightProgress);
   }
 
-  Future<void> _updatePersonalData(String weight) async {
+  Future<void> _updatePersonalData(final String weight) async {
     final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
     await personalDataDocument.update(<String, Object>{'weight': weight});
   }
 
-  Future<void> _setPersonalWeight(String weight) async {
+  Future<void> _setPersonalWeight(final String weight) async {
     final String date = _getDateNow();
     final DocumentReference<Map<String, Object?>> personalWeightDocument = await _getPersonalDataDocument(date);
     await personalWeightDocument.set(<String, Object>{
@@ -75,18 +75,18 @@ class DatabaseUserRepository {
     return dateFormat.format(dateTime);
   }
 
-  Future<DocumentReference<Map<String, Object?>>> _getPersonalDataDocument(String date) async {
+  Future<DocumentReference<Map<String, Object?>>> _getPersonalDataDocument(final String date) async {
     final CollectionReference<Map<String, Object?>> personalWeightCollection = await _getPersonalWeightCollection();
     return personalWeightCollection.doc(date);
   }
 
-  Future<void> _addPersonalData(PersonalData personalData) async {
+  Future<void> _addPersonalData(final PersonalData personalData) async {
     final DocumentReference<Map<String, Object?>> personalDataDocument = await _getDocument('PersonalData');
     final Map<String, Object?> mappedPersonalData = personalData.toMap();
     await personalDataDocument.set(mappedPersonalData);
   }
 
-  FutureOr<PersonalData> _getPersonalData(DocumentSnapshot<Object?> result) {
+  FutureOr<PersonalData> _getPersonalData(final DocumentSnapshot<Object?> result) {
     final Map<String, Object?>? data = result.data() as Map<String, Object?>?;
     if (data != null) {
       return PersonalData.fromJson(data);
@@ -100,7 +100,7 @@ class DatabaseUserRepository {
     return weightDocument.collection('personalWeight');
   }
 
-  Future<DocumentReference<Map<String, Object?>>> _getDocument(String collection) async {
+  Future<DocumentReference<Map<String, Object?>>> _getDocument(final String collection) async {
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     final CollectionReference<Map<String, Object?>> collectionReference = firebaseFirestore.collection(collection);
     final String userUid = await _getUid();
@@ -113,7 +113,7 @@ class DatabaseUserRepository {
     return uid ?? userUid;
   }
 
-  FutureOr<List<WeightProgress>> _getWeightProgress(QuerySnapshot<Map<String, Object?>> personalWeight) {
+  FutureOr<List<WeightProgress>> _getWeightProgress(final QuerySnapshot<Map<String, Object?>> personalWeight) {
     final List<WeightProgress> weightProgressList = <WeightProgress>[];
     final List<QueryDocumentSnapshot<Map<String, Object?>>> personalWeightDocs = personalWeight.docs;
     for (final QueryDocumentSnapshot<Map<String, Object?>> weight in personalWeightDocs) {

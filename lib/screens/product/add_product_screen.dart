@@ -41,14 +41,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final ProductState state = context.select<ProductCubit, ProductState>(getProductState);
     return ColoredBox(
       color: defaultColor,
       child: WillPopScope(
         onWillPop: onWillPop,
         child: NotificationListener<OverscrollIndicatorNotification>(
-          onNotification: (OverscrollIndicatorNotification overscroll) {
+          onNotification: (final OverscrollIndicatorNotification overscroll) {
             overscroll.disallowIndicator();
             return false;
           },
@@ -65,7 +65,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  ProductState getProductState(ProductCubit cubit) {
+  ProductState getProductState(final ProductCubit cubit) {
     return cubit.state;
   }
 
@@ -94,7 +94,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       searchField: true,
       controller: searchController,
       hintText: 'Search products...',
-      onFieldSubmitted: (_) => productCubit.searchProducts(searchController.text),
+      onFieldSubmitted: (final _) => productCubit.searchProducts(searchController.text),
       suffixIcon: IconButton(
         icon: Icon(
           Icons.search,
@@ -112,7 +112,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  Widget builder(ProductState state) {
+  Widget builder(final ProductState state) {
     final ProductStatus status = state.status;
     final List<DatabaseProduct> updatedProducts = getUpdatedProducts(state);
     if (status == ProductStatus.loading) {
@@ -130,7 +130,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     return adderCards();
   }
 
-  List<DatabaseProduct> getUpdatedProducts(ProductState state) {
+  List<DatabaseProduct> getUpdatedProducts(final ProductState state) {
     final List<DatabaseProduct> products = state.products;
     return <DatabaseProduct>[
       for(DatabaseProduct product in products) product = product.copyWith(
@@ -140,15 +140,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
     ];
   }
 
-  void showSnackBar(String message) {
+  void showSnackBar(final String message) {
     if (message.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback(
-            (_) => SnackBarBuilder.showSnackBar(context, message),
+            (final _) => SnackBarBuilder.showSnackBar(context, message),
       );
     }
   }
 
-  void getSearchProductList(List<DatabaseProduct> products) async {
+  Future<void> getSearchProductList(final List<DatabaseProduct> products) async {
     final int productsListSize = products.length;
     if (productsListSize > 1) {
       return multiDetailsNavigator(products);
@@ -157,17 +157,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  void multiDetailsNavigator(List<DatabaseProduct> products) {
+  void multiDetailsNavigator(final List<DatabaseProduct> products) {
     WidgetsBinding.instance.addPostFrameCallback(
-          (_) => navigateToMultiDetails(products),
+          (final _) => navigateToMultiDetails(products),
     );
   }
 
-  Future<void> navigateToMultiDetails(List<DatabaseProduct> products) {
+  Future<void> navigateToMultiDetails(final List<DatabaseProduct> products) {
     return Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (BuildContext _) =>
+        builder: (final BuildContext _) =>
             MultiDetailsScreenProvider(
               products: products,
               context: context,
@@ -176,17 +176,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  void detailsNavigator(DatabaseProduct product) {
+  void detailsNavigator(final DatabaseProduct product) {
     WidgetsBinding.instance.addPostFrameCallback(
-          (_) => navigateToDetails(product),
+          (final _) => navigateToDetails(product),
     );
   }
 
-  Future<void> navigateToDetails(DatabaseProduct product) {
+  Future<void> navigateToDetails(final DatabaseProduct product) {
     return Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (BuildContext _) =>
+        builder: (final BuildContext _) =>
             DetailsScreenProvider(
               product: product,
               context: context,

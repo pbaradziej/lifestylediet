@@ -42,10 +42,10 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final FocusScopeNode node = FocusScope.of(context);
     return NotificationListener<OverscrollIndicatorNotification>(
-      onNotification: (OverscrollIndicatorNotification overscroll) {
+      onNotification: (final OverscrollIndicatorNotification overscroll) {
         overscroll.disallowIndicator();
         return false;
       },
@@ -85,7 +85,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget loginField(FocusScopeNode node) {
+  Widget loginField(final FocusScopeNode node) {
     return TextFormFieldComponent(
       label: 'Email',
       controller: emailController,
@@ -94,7 +94,7 @@ class _LoginFormState extends State<LoginForm> {
       errorText: loginStatus == LoginStatus.loginError ? 'Invalid email' : '',
       minCharacters: 3,
       minCharactersMessage: 'Enter an email 3+ chars long',
-      onEditingComplete: () => node.nextFocus(),
+      onEditingComplete: node.nextFocus,
       prefixIcon: Icon(
         Icons.mail,
         color: iconTrailingColors,
@@ -102,13 +102,13 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget passwordField(FocusScopeNode node) {
+  Widget passwordField(final FocusScopeNode node) {
     return TextFormFieldComponent(
       label: 'Password',
       controller: passwordController,
       obscureText: hidePassword,
       textInputAction: TextInputAction.done,
-      onFieldSubmitted: (_) => onPressed(),
+      onFieldSubmitted: (final _) => onPressed(),
       errorText: loginStatus == LoginStatus.loginError ? 'Invalid password' : '',
       minCharacters: 6,
       minCharactersMessage: 'Enter a password 6+ chars long',
@@ -164,7 +164,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget forgotPasswordBuilder(BuildContext context) {
+  Widget forgotPasswordBuilder(final BuildContext context) {
     return BlocProvider<LoginCubit>.value(
       value: loginCubit,
       child: ForgotPasswordScreen(),

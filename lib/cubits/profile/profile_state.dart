@@ -13,16 +13,16 @@ class ProfileState extends Equatable {
 
   ProfileState({
     required this.status,
-    PersonalData? personalData,
-    NutrimentsData? nutrimentsData,
+    final PersonalData? personalData,
+    final NutrimentsData? nutrimentsData,
   })  : personalData = personalData ?? PersonalData(),
         nutrimentsData = nutrimentsData ?? NutrimentsData.empty(),
         key = UniqueKey();
 
   ProfileState copyWith({
-    ProfileStatus? status,
-    PersonalData? personalData,
-    NutrimentsData? nutrimentsData,
+    final ProfileStatus? status,
+    final PersonalData? personalData,
+    final NutrimentsData? nutrimentsData,
   }) {
     return ProfileState(
       status: status ?? this.status,

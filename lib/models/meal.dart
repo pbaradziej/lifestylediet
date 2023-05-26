@@ -12,9 +12,9 @@ class Meal {
   });
 
   Meal copyWith({
-    String? name,
-    bool? isExpanded,
-    List<DatabaseProduct>? meals,
+    final String? name,
+    final bool? isExpanded,
+    final List<DatabaseProduct>? meals,
   }) {
     return Meal(
       name: name ?? this.name,

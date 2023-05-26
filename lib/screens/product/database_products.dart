@@ -17,7 +17,7 @@ class _DatabaseProductsState extends State<DatabaseProducts> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return GestureDetector(
       onTap: productCubit.listProducts,
       child: SizedBox(

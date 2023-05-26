@@ -13,7 +13,7 @@ class ProductProvider {
   static const String URL_SEARCH_ITEM = 'https://trackapi.nutritionix.com/v2/search/item';
   static const String URL_NATURAL_SEARCH = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
 
-  Future<String> getProductFromBarcode(String code) async {
+  Future<String> getProductFromBarcode(final String code) async {
     final String url = '$URL_SEARCH_ITEM?upc=$code&x-app-id=$NUTRITIONIX_APP_ID&x-app-key=$NUTRITIONIX_APP_KEY';
     final Uri lookupUri = Uri.parse(url);
     final http.Response response = await http.get(lookupUri);
@@ -21,7 +21,7 @@ class ProductProvider {
     return _getResponse(response);
   }
 
-  Future<String> getProductData(String search) async {
+  Future<String> getProductData(final String search) async {
     final Map<String, String> body = <String, String>{
       'query': search,
       'timezone': 'US/Eastern',
@@ -32,7 +32,7 @@ class ProductProvider {
     return _getResponse(response);
   }
 
-  String _getResponse(http.Response response) {
+  String _getResponse(final http.Response response) {
     if (response.statusCode == 200) {
       return response.body;
     }

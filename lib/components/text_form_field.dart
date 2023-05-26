@@ -10,8 +10,8 @@ class TextFormFieldComponent extends StatefulWidget {
   final String errorText;
   final bool halfScreen;
   final TextInputAction textInputAction;
-  final Function(String)? onFieldSubmitted;
-  final Function()? onEditingComplete;
+  final void Function(String)? onFieldSubmitted;
+  final void Function()? onEditingComplete;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final bool obscureText;
@@ -19,7 +19,7 @@ class TextFormFieldComponent extends StatefulWidget {
   final int minCharacters;
   final String minCharactersMessage;
   final bool searchField;
-  final Function()? onChangedParameter;
+  final void Function()? onChangedParameter;
 
   const TextFormFieldComponent({
     required this.controller,
@@ -87,7 +87,7 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Container(
       height: searchField ? 84 : 90,
       width: width(),
@@ -133,13 +133,13 @@ class _TextFormFieldComponentState extends State<TextFormFieldComponent> {
     );
   }
 
-  void onChanged(String _) {
+  void onChanged(final String _) {
     errorText = null;
     if(onChangedParameter != null) onChangedParameter!();
     setState(() {});
   }
 
-  String? validator(String? value) {
+  String? validator(final String? value) {
     final String parsedValue = value ?? '';
     if (parsedValue.isEmpty) {
       return errorText = 'Please enter some text';

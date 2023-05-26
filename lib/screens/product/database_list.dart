@@ -25,21 +25,21 @@ class _DatabaseListScreenState extends State<DatabaseListScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Flexible(
       child: ListView.builder(
         physics: const ClampingScrollPhysics(),
         padding: const EdgeInsets.all(0),
         shrinkWrap: true,
         itemCount: products.length,
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: (final BuildContext context, final int index) {
           return showFood(products, index);
         },
       ),
     );
   }
 
-  Widget showFood(List<DatabaseProduct> products, int index) {
+  Widget showFood(final List<DatabaseProduct> products, final int index) {
     final DatabaseProduct product = products[index];
     final Nutriments nutriments = product.nutriments;
 
@@ -64,11 +64,11 @@ class _DatabaseListScreenState extends State<DatabaseListScreen> {
     );
   }
 
-  void detailsNavigator(DatabaseProduct product) {
+  void detailsNavigator(final DatabaseProduct product) {
     Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (BuildContext _) => DetailsScreenProvider(
+        builder: (final BuildContext _) => DetailsScreenProvider(
           product: product,
           context: context,
           isEditable: true,
@@ -78,7 +78,7 @@ class _DatabaseListScreenState extends State<DatabaseListScreen> {
     );
   }
 
-  Widget tileContent(DatabaseProduct product, Nutriments nutriments) {
+  Widget tileContent(final DatabaseProduct product, final Nutriments nutriments) {
     return Expanded(
       flex: 72,
       child: Row(
@@ -90,7 +90,7 @@ class _DatabaseListScreenState extends State<DatabaseListScreen> {
     );
   }
 
-  Widget mainContent(DatabaseProduct product, Nutriments nutriments) {
+  Widget mainContent(final DatabaseProduct product, final Nutriments nutriments) {
     return Expanded(
       flex: 75,
       child: Column(
@@ -106,7 +106,7 @@ class _DatabaseListScreenState extends State<DatabaseListScreen> {
     );
   }
 
-  Widget subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
+  Widget subtitleListTile(final DatabaseProduct product, final Nutriments nutriments) {
     final double proteinPerServing = nutriments.proteinPerServing;
     final double carbsPerServing = nutriments.carbsPerServing;
     final double fatsPerServing = nutriments.fatsPerServing;
@@ -132,7 +132,7 @@ class _DatabaseListScreenState extends State<DatabaseListScreen> {
     );
   }
 
-  Widget subContent(DatabaseProduct product, Nutriments nutriments) {
+  Widget subContent(final DatabaseProduct product, final Nutriments nutriments) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -141,7 +141,7 @@ class _DatabaseListScreenState extends State<DatabaseListScreen> {
     );
   }
 
-  Widget trailingListTile(DatabaseProduct product, Nutriments nutriments) {
+  Widget trailingListTile(final DatabaseProduct product, final Nutriments nutriments) {
     final double caloriesPerServing = nutriments.caloriesPerServing;
     final String servingUnit = product.servingUnit;
     final double caloriesPer100g = nutriments.caloriesPer100g;
@@ -160,7 +160,7 @@ class _DatabaseListScreenState extends State<DatabaseListScreen> {
     );
   }
 
-  String showValue(String name, double value) {
+  String showValue(final String name, final double value) {
     final String parsedValue = value.toString();
     if (parsedValue == 'null' || parsedValue == '-1.0') {
       return '$name?';

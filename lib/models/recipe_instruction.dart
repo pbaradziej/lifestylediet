@@ -7,7 +7,7 @@ class RecipeInstruction {
     required this.steps,
   });
 
-  factory RecipeInstruction.fromJson(Map<String, Object?> json) {
+  factory RecipeInstruction.fromJson(final Map<String, Object?> json) {
     final List<Object> steps = json['steps'] as List<Object>;
     final Iterable<RecipeStep> parsedSteps = _getSteps(steps);
 
@@ -22,7 +22,7 @@ class RecipeInstruction {
     );
   }
 
-  static Iterable<RecipeStep> _getSteps(List<Object> steps) sync* {
+  static Iterable<RecipeStep> _getSteps(final List<Object> steps) sync* {
     for (final Object step in steps) {
       yield RecipeStep.fromJson(step as Map<String, Object?>);
     }

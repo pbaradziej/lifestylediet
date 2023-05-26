@@ -18,9 +18,9 @@ class RecipeState extends Equatable {
   });
 
   RecipeState copyWith({
-    RecipeStatus? status,
-    List<RecipeMeal>? recipes,
-    Recipe? recipe,
+    final RecipeStatus? status,
+    final List<RecipeMeal>? recipes,
+    final Recipe? recipe,
   }) {
     return RecipeState(
       status: status ?? this.status,

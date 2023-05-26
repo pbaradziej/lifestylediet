@@ -21,7 +21,7 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return GestureDetector(
       onTap: scanner,
       child: SizedBox(
@@ -56,9 +56,9 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
     );
   }
 
-  void scanner() async {
+  Future<void> scanner() async {
     await scanBarcodeNormal();
-    productCubit.scanProduct(barcode);
+    await productCubit.scanProduct(barcode);
   }
 
   Future<void> scanBarcodeNormal() async {

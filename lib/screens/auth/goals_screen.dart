@@ -38,7 +38,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final FocusScopeNode node = FocusScope.of(context);
     return Container(
       height: double.infinity,
@@ -46,7 +46,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
       decoration: appTheme(),
       child: Center(
         child: NotificationListener<OverscrollIndicatorNotification>(
-          onNotification: (OverscrollIndicatorNotification overscroll) {
+          onNotification: (final OverscrollIndicatorNotification overscroll) {
             overscroll.disallowIndicator();
             return false;
           },
@@ -60,7 +60,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
     );
   }
 
-  Form goalsForm(FocusScopeNode node) {
+  Form goalsForm(final FocusScopeNode node) {
     return Form(
       key: formKey,
       child: Column(
@@ -84,13 +84,13 @@ class _GoalsScreenState extends State<GoalsScreen> {
     );
   }
 
-  Widget weightField(FocusScopeNode node) {
+  Widget weightField(final FocusScopeNode node) {
     return NumericComponent(
       controller: weightController,
       label: 'Weight',
       halfScreen: true,
       unit: 'kg',
-      onEditingComplete: () => node.nextFocus(),
+      onEditingComplete: node.nextFocus,
     );
   }
 

@@ -10,7 +10,7 @@ class TermsOfConditions extends StatefulWidget {
 
 class _TermsOfConditionsState extends State<TermsOfConditions> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Scaffold(
       appBar: appbar(),
       body: Container(
@@ -18,7 +18,7 @@ class _TermsOfConditionsState extends State<TermsOfConditions> {
         width: double.infinity,
         decoration: appTheme(),
         child: NotificationListener<OverscrollIndicatorNotification>(
-          onNotification: (OverscrollIndicatorNotification overscroll) {
+          onNotification: (final OverscrollIndicatorNotification overscroll) {
             overscroll.disallowIndicator();
             return false;
           },
@@ -101,7 +101,7 @@ class _TermsOfConditionsState extends State<TermsOfConditions> {
     );
   }
 
-  Widget termsParagraph(String title, String paragraph) {
+  Widget termsParagraph(final String title, final String paragraph) {
     return Column(
       children: <Widget>[
         const SizedBox(height: 20),

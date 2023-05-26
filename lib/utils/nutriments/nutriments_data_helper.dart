@@ -4,7 +4,7 @@ import 'package:lifestylediet/models/nutriments.dart';
 import 'package:lifestylediet/models/nutriments_data.dart';
 
 class NutrimentsDataHelper {
-  static NutrimentsData getNutrimentsDataList(List<DatabaseProduct> productList) {
+  static NutrimentsData getNutrimentsDataList(final List<DatabaseProduct> productList) {
     final List<NutrimentsData> nutrimentDataList = _getNutrimentDataList(productList);
     double calories = 0;
     double carbs = 0;
@@ -43,7 +43,7 @@ class NutrimentsDataHelper {
     );
   }
 
-  static List<NutrimentsData> _getNutrimentDataList(List<DatabaseProduct> productList) {
+  static List<NutrimentsData> _getNutrimentDataList(final List<DatabaseProduct> productList) {
     final List<NutrimentsData> nutrimentDataList = <NutrimentsData>[];
     for (int days = 0; days < 7; days++) {
       final NutrimentsData nutrimentsData = getNutrimentsData(productList, days);
@@ -54,8 +54,8 @@ class NutrimentsDataHelper {
   }
 
   static NutrimentsData getNutrimentsData(
-    List<DatabaseProduct> productList,
-    int days,
+    final List<DatabaseProduct> productList,
+    final int days,
   ) {
     double calories = 0;
     double carbs = 0;
@@ -111,7 +111,7 @@ class NutrimentsDataHelper {
     );
   }
 
-  static String _getSubtractedDate(int days) {
+  static String _getSubtractedDate(final int days) {
     final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
     final DateTime todayDate = DateTime.now();
     final Duration duration = Duration(days: days);

@@ -32,7 +32,7 @@ BoxDecoration menuTheme() {
   );
 }
 
-Widget datePickerTheme(Widget child) {
+Widget datePickerTheme(final Widget child) {
   return Theme(
     data: ThemeData.light().copyWith(
       primaryColor: Colors.deepOrange,

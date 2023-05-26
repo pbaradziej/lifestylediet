@@ -31,7 +31,7 @@ class RecipeInformation {
     required this.extendedIngredients,
   });
 
-  factory RecipeInformation.fromJson(Map<String, dynamic> json) {
+  factory RecipeInformation.fromJson(final Map<String, dynamic> json) {
     final List<Object> extendedIngredients = json['extendedIngredients'] as List<Object>;
     final Iterable<ExtendedIngredients> parsedExtendedIngredients = _getExtendedIngredients(extendedIngredients);
 
@@ -52,7 +52,7 @@ class RecipeInformation {
     );
   }
 
-  static Iterable<ExtendedIngredients> _getExtendedIngredients(List<Object> extendedIngredients) sync* {
+  static Iterable<ExtendedIngredients> _getExtendedIngredients(final List<Object> extendedIngredients) sync* {
     for (final Object ingredient in extendedIngredients) {
       yield ExtendedIngredients.fromJson(ingredient as Map<String, Object?>);
     }

@@ -9,7 +9,7 @@ class ExtendedIngredients {
     required this.unit,
   });
 
-  factory ExtendedIngredients.fromJson(Map<String, Object?> json) {
+  factory ExtendedIngredients.fromJson(final Map<String, Object?> json) {
     return ExtendedIngredients(
       name: json['name'] as String,
       amount: json['amount'] as double,

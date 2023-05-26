@@ -19,7 +19,7 @@ class DetailsScreenProvider extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return MultiBlocProvider(
       providers: providers(),
       child: DetailsScreen(

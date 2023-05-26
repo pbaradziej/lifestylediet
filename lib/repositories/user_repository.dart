@@ -6,8 +6,8 @@ class UserRepository {
   UserRepository() : _auth = FirebaseAuth.instance;
 
   Future<bool> register({
-    required String email,
-    required String password,
+    required final String email,
+    required final String password,
   }) async {
     try {
       await _auth.createUserWithEmailAndPassword(
@@ -22,8 +22,8 @@ class UserRepository {
   }
 
   Future<User?> login({
-    required String email,
-    required String password,
+    required final String email,
+    required final String password,
   }) async {
     try {
       _auth.idTokenChanges();
@@ -38,7 +38,7 @@ class UserRepository {
     }
   }
 
-  Future<void> resetPassword(String email) async {
+  Future<void> resetPassword(final String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } catch (_) {}

@@ -6,7 +6,7 @@ class RecipeProvider {
   static const String SPOONACULAR_URL = 'api.spoonacular.com';
   static const String API_KEY = '0168d7219d5d4c53bc343f9e0e967977';
 
-  Future<String> getRecipes(String name) async {
+  Future<String> getRecipes(final String name) async {
     const String url = '/recipes/complexSearch';
     final Map<String, String> parameters = <String, String>{
       'query': name,
@@ -25,7 +25,7 @@ class RecipeProvider {
     return _getResponse(url: url, parameters: parameters);
   }
 
-  Future<String> getRecipeInformation(int id) async {
+  Future<String> getRecipeInformation(final int id) async {
     final String url = '/recipes/$id/information';
     final Map<String, String> parameters = <String, String>{
       'includeNutrition': 'false',
@@ -34,19 +34,19 @@ class RecipeProvider {
     return _getResponse(url: url, parameters: parameters);
   }
 
-  Future<String> getRecipeNutrition(int id) async {
+  Future<String> getRecipeNutrition(final int id) async {
     final String url = '/recipes/$id/nutritionWidget.json';
     return _getResponse(url: url);
   }
 
-  Future<String> getRecipeInstruction(int id) async {
+  Future<String> getRecipeInstruction(final int id) async {
     final String url = '/recipes/$id/analyzedInstructions';
     return _getResponse(url: url);
   }
 
   Future<String> _getResponse({
-    required String url,
-    Map<String, String> parameters = const <String, String>{},
+    required final String url,
+    final Map<String, String> parameters = const <String, String>{},
   }) async {
     final Uri uri = _getUri(url, parameters);
     final Map<String, String> headers = _getHeaders();
@@ -58,12 +58,12 @@ class RecipeProvider {
     throw Exception('Recipe not found');
   }
 
-  Uri _getUri(String url, Map<String, String> parameters) {
+  Uri _getUri(final String url, final Map<String, String> parameters) {
     final Map<String, String> updatedParameters = _getParameters(parameters);
     return Uri.https(SPOONACULAR_URL, url, updatedParameters);
   }
 
-  Map<String, String> _getParameters(Map<String, String> parameters) {
+  Map<String, String> _getParameters(final Map<String, String> parameters) {
     final Map<String, String> defaultParameters = _getDefaultParameters();
     parameters.addAll(defaultParameters);
 

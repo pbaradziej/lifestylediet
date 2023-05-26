@@ -11,7 +11,7 @@ class NumericComponent extends StatefulWidget {
   final String errorText;
   final bool halfScreen;
   final TextInputAction textInputAction;
-  final Function()? onEditingComplete;
+  final void Function()? onEditingComplete;
   final String hintText;
   final String unit;
   final bool filled;
@@ -49,7 +49,7 @@ class _NumericComponentState extends State<NumericComponent> {
 
   TextInputAction get action => widget.textInputAction;
 
-  Function()? get onEditingComplete => widget.onEditingComplete;
+  void Function()? get onEditingComplete => widget.onEditingComplete;
 
   String get initialValue => widget.initialValue;
 
@@ -68,7 +68,7 @@ class _NumericComponentState extends State<NumericComponent> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Container(
       height: 95,
       width: halfScreen ? 100 : 140,
@@ -120,7 +120,7 @@ class _NumericComponentState extends State<NumericComponent> {
     );
   }
 
-  String? validator(String? value) {
+  String? validator(final String? value) {
     if (value?.isEmpty ?? false) {
       return errorText = 'Please enter a number';
     }

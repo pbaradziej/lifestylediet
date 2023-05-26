@@ -23,19 +23,19 @@ class AuthCubit extends Cubit<AuthState> {
     initializeAuthentication();
   }
 
-  void initializeAuthentication() async {
+  Future<void> initializeAuthentication() async {
     final PersonalData personalData = await _databaseUserRepository.getUserPersonalData();
     final String goal = personalData.goal;
     final bool canLogin = goal.isNotEmpty;
     _emitAuthState(canLogin);
   }
 
-  void logout() async {
+  Future<void> logout() async {
     await _userCredentialsProvider.clearUid();
     await _userRepository.logout();
   }
 
-  void _emitAuthState(bool canLogin) {
+  void _emitAuthState(final bool canLogin) {
     final AuthState state = AuthState(
       status: AuthStatus.authenticated,
       canLogin: canLogin,

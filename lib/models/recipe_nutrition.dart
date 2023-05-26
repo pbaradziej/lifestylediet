@@ -11,7 +11,7 @@ class RecipeNutrition {
     required this.protein,
   });
 
-  factory RecipeNutrition.fromJson(Map<String, dynamic> json) {
+  factory RecipeNutrition.fromJson(final Map<String, dynamic> json) {
     return RecipeNutrition(
       calories: json['calories'] as String,
       carbs: json['carbs'] as String,

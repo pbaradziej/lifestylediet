@@ -5,7 +5,7 @@ import 'package:lifestylediet/models/personal_data.dart';
 import 'package:lifestylediet/utils/i18n.dart';
 
 class NutrimentsHelper {
-  Nutrition kcalAmount(DatabaseProduct product, Nutrition nutrition) {
+  Nutrition kcalAmount(final DatabaseProduct product, final Nutrition nutrition) {
     final Nutriments nutriments = product.nutriments;
     nutrition.kcal += _valueOfNutriment(nutriments.caloriesPer100g, nutriments.caloriesPerServing, product);
     nutrition.protein -= _valueOfNutriment(nutriments.protein, nutriments.proteinPerServing, product);
@@ -15,7 +15,7 @@ class NutrimentsHelper {
     return nutrition;
   }
 
-  String amountOfNutriments(double value, double valuePerServing, DatabaseProduct product) {
+  String amountOfNutriments(final double value, final double valuePerServing, final DatabaseProduct product) {
     if (valuePerServing == -1) {
       return '?';
     }
@@ -26,7 +26,7 @@ class NutrimentsHelper {
     return roundedDouble.toString();
   }
 
-  Nutrition getNutrition(PersonalData personalData) {
+  Nutrition getNutrition(final PersonalData personalData) {
     final double kcalIntake = _getKcalIntake(personalData);
     final int roundedKcalIntake = kcalIntake.round();
     final double protein = (roundedKcalIntake * 0.25) / 4;
@@ -41,7 +41,7 @@ class NutrimentsHelper {
     );
   }
 
-  int _valueOfNutriment(double value, double valuePerServing, DatabaseProduct product) {
+  int _valueOfNutriment(final double value, final double valuePerServing, final DatabaseProduct product) {
     if (valuePerServing == -1) {
       return 0;
     }
@@ -50,7 +50,7 @@ class NutrimentsHelper {
     return valueOfNutriment.toInt();
   }
 
-  double _getValueOfNutriment(double valuePerServing, DatabaseProduct product, double value) {
+  double _getValueOfNutriment(final double valuePerServing, final DatabaseProduct product, final double value) {
     final String productAmount = product.value;
     if (productAmount == 'serving') {
       return valuePerServing * product.amount;
@@ -59,7 +59,7 @@ class NutrimentsHelper {
     return value * product.amount;
   }
 
-  double _getKcalIntake(PersonalData personalData) {
+  double _getKcalIntake(final PersonalData personalData) {
     final double kcalIntake = _getSexKcalIntake(personalData);
     final double palParameter = _getPalParameter(personalData);
     final double physicalParameter = _getPhysicalParameter(personalData);
@@ -67,7 +67,7 @@ class NutrimentsHelper {
     return kcalIntake * palParameter * physicalParameter;
   }
 
-  double _getSexKcalIntake(PersonalData personalData) {
+  double _getSexKcalIntake(final PersonalData personalData) {
     final double weight = double.parse(personalData.weight);
     final double height = double.parse(personalData.height);
     final double age = _getUserAge(personalData);
@@ -78,7 +78,7 @@ class NutrimentsHelper {
     return 10 * weight + 6.25 * height - 5 * age - 161;
   }
 
-  double _getUserAge(PersonalData personalData) {
+  double _getUserAge(final PersonalData personalData) {
     final int currentYear = _currentYear();
     final int userYearOfBirth = _userYearOfBirth(personalData);
     final int userAge = currentYear - userYearOfBirth;
@@ -91,14 +91,14 @@ class NutrimentsHelper {
     return dateTime.year;
   }
 
-  int _userYearOfBirth(PersonalData personalData) {
+  int _userYearOfBirth(final PersonalData personalData) {
     final String date = personalData.date;
     final DateTime parsedDate = DateTime.parse(date);
 
     return parsedDate.year;
   }
 
-  double _getPalParameter(PersonalData personalData) {
+  double _getPalParameter(final PersonalData personalData) {
     switch (personalData.activity) {
       case I18n.activityLow:
         return 1.5;
@@ -111,7 +111,7 @@ class NutrimentsHelper {
     }
   }
 
-  double _getPhysicalParameter(PersonalData personalData) {
+  double _getPhysicalParameter(final PersonalData personalData) {
     switch (personalData.goal) {
       case I18n.loseWeight:
         return 0.9;

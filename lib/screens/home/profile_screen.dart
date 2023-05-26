@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final ProfileState state = context.select<ProfileCubit, ProfileState>(getProfileState);
     personalData = state.personalData;
     nutrimentsData = state.nutrimentsData;
@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return profile();
   }
 
-  ProfileState getProfileState(ProfileCubit cubit) {
+  ProfileState getProfileState(final ProfileCubit cubit) {
     return cubit.state;
   }
 
@@ -129,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget settingsButton() {
     return PopupMenuButton<SettingsMenu>(
       onSelected: settingsMenu,
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<SettingsMenu>>[
+      itemBuilder: (final BuildContext context) => <PopupMenuEntry<SettingsMenu>>[
         const PopupMenuItem<SettingsMenu>(
           value: SettingsMenu.changePlan,
           child: Text('Change Plan'),
@@ -154,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void settingsMenu(SettingsMenu result) {
+  void settingsMenu(final SettingsMenu result) {
     switch (result) {
       case SettingsMenu.changePlan:
         alertDialog(context);
@@ -176,18 +176,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Widget builder(BuildContext context) {
+  Widget builder(final BuildContext context) {
     return BlocProvider<ProfileCubit>.value(
       value: cubit,
       child: EditProfileScreen(personalData: personalData),
     );
   }
 
-  void alertDialog(BuildContext context) {
+  void alertDialog(final BuildContext context) {
     final List<String> plans = <String>[I18n.loseWeight, I18n.keepWeight, I18n.gainWeight];
     showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (final BuildContext context) {
         return AlertDialog(
           title: const Text('Select Plan'),
           content: SingleChildScrollView(
@@ -204,7 +204,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  List<RadioListTile<String>> getPlans(List<String> plans, BuildContext context) {
+  List<RadioListTile<String>> getPlans(final List<String> plans, final BuildContext context) {
     return <RadioListTile<String>>[
       for (final String plan in plans)
         RadioListTile<String>(
@@ -212,12 +212,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           value: plan,
           groupValue: personalData.goal,
           selected: personalData.goal == plan,
-          onChanged: (String? value) => onChanged(value, context),
+          onChanged: (final String? value) => onChanged(value, context),
         )
     ];
   }
 
-  void onChanged(String? value, BuildContext context) {
+  void onChanged(final String? value, final BuildContext context) {
     if (value != personalData.goal && value != null) {
       final PersonalData updatedPersonalData = personalData.copyWith(goal: value);
       cubit.updatePersonalData(updatedPersonalData);
@@ -225,10 +225,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void showPicker(BuildContext context) {
+  void showPicker(final BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
-      builder: (BuildContext bc) {
+      builder: (final BuildContext bc) {
         return SafeArea(
           child: Container(
             child: Wrap(
@@ -269,11 +269,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await updatePersonalDataImage(source);
   }
 
-  Future<void> updatePersonalDataImage(ImageSource source) async {
+  Future<void> updatePersonalDataImage(final ImageSource source) async {
     final XFile? image = await imagePicker.pickImage(source: source, imageQuality: 50);
     final String path = image?.path ?? '';
     final PersonalData updatedPersonalData = personalData.copyWith(imagePath: path);
-    cubit.updatePersonalData(updatedPersonalData);
+    await cubit.updatePersonalData(updatedPersonalData);
   }
 
   Widget summaryPersonalData() {
@@ -336,7 +336,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget summaryHeadLine(String name) {
+  Widget summaryHeadLine(final String name) {
     return Padding(
       padding: const EdgeInsets.only(left: 18, top: 10.0),
       child: Text(name, style: subTitleAddScreenStyle),
@@ -363,7 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget checkBMI(double bmi) {
+  Widget checkBMI(final double bmi) {
     if (bmi >= 25) {
       return Text(I18n.highBMI, softWrap: true, style: orangeProfileTextStyle);
     } else if (bmi < 25 && bmi > 18.5) {
@@ -394,7 +394,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget summaryRow(String name, String value) {
+  Widget summaryRow(final String name, final String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 7),
       child: Row(
@@ -421,10 +421,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget summaryCaloriesRow(
-    String name,
-    double value, {
-    TextStyle? style,
-    double? padding,
+    final String name,
+    final double value, {
+    final TextStyle? style,
+    final double? padding,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: padding ?? 7.0),
@@ -471,9 +471,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       charts.Series<KcalData, String>(
         id: 'Nutrition',
         data: data,
-        labelAccessorFn: (KcalData row, _) => '${row.nutrition}:\n${row.value.toStringAsFixed(2).toString()}',
-        domainFn: (KcalData grades, _) => grades.nutrition,
-        measureFn: (KcalData grades, _) => (grades.value).floorToDouble(),
+        labelAccessorFn: (final KcalData row, final _) => '${row.nutrition}:\n${row.value.toStringAsFixed(2).toString()}',
+        domainFn: (final KcalData grades, final _) => grades.nutrition,
+        measureFn: (final KcalData grades, final _) => (grades.value).floorToDouble(),
       )
     ];
   }

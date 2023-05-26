@@ -13,17 +13,17 @@ class RecipeCubit extends Cubit<RecipeState> {
       : _recipeRepository = RecipeRepository(),
         super(const RecipeState(status: RecipeStatus.loading));
 
-  void initializeRecipeData() async {
+  Future<void> initializeRecipeData() async {
     final List<RecipeMeal> recipes = await _recipeRepository.getInitialRecipes();
     _emitRecipeState(recipes);
   }
 
-  void searchRecipes(String search) async {
+  Future<void> searchRecipes(final String search) async {
     final List<RecipeMeal> recipes = await _recipeRepository.getRecipes(search);
     _emitRecipeState(recipes);
   }
 
-  void showRecipeDetails(int recipeId) async {
+  Future<void> showRecipeDetails(final int recipeId) async {
     final RecipeRepository recipeRepository = RecipeRepository();
     final Recipe recipe = await recipeRepository.getRecipe(recipeId);
     final RecipeState updatedState = state.copyWith(
@@ -33,7 +33,7 @@ class RecipeCubit extends Cubit<RecipeState> {
     emit(updatedState);
   }
 
-  void _emitRecipeState(List<RecipeMeal> recipes) {
+  void _emitRecipeState(final List<RecipeMeal> recipes) {
     final RecipeState state = RecipeState(recipes: recipes, status: RecipeStatus.loaded);
     emit(state);
   }

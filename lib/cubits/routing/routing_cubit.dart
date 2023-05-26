@@ -15,7 +15,7 @@ class RoutingCubit extends Cubit<RoutingState> {
     _emitRoutingState(status: RoutingStatus.loaded);
   }
 
-  void showAdderScreen(String meal, String currentDate) {
+  void showAdderScreen(final String meal, final String currentDate) {
     _emitRoutingState(
       status: RoutingStatus.addingProduct,
       currentDate: currentDate,
@@ -24,9 +24,9 @@ class RoutingCubit extends Cubit<RoutingState> {
   }
 
   void _emitRoutingState({
-    required RoutingStatus status,
-    String currentDate = '',
-    String meal = '',
+    required final RoutingStatus status,
+    final String currentDate = '',
+    final String meal = '',
   }) {
     final RoutingState state = RoutingState(
       status: status,

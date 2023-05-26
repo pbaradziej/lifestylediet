@@ -37,11 +37,11 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
       body: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (OverscrollIndicatorNotification overscroll) {
+        onNotification: (final OverscrollIndicatorNotification overscroll) {
           overscroll.disallowIndicator();
           return false;
         },
@@ -58,7 +58,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     );
   }
 
-  AppBar appBar(BuildContext context) {
+  AppBar appBar(final BuildContext context) {
     return AppBar(
       elevation: 0,
       backgroundColor: backgroundColor,
@@ -92,7 +92,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   void alertDialog() {
     showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (final BuildContext context) {
         return AlertDialog(
           title: const Text('Add product'),
           content: SingleChildScrollView(
@@ -127,7 +127,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     );
   }
 
-  void onPressed() async {
+  Future<void> onPressed() async {
     final DatabaseProduct product = RecipeHelper.getProductFromRecipe(
       recipe: recipe,
       amount: amountController.text,
@@ -250,7 +250,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     );
   }
 
-  Widget nutriments(String text, String nutrients) {
+  Widget nutriments(final String text, final String nutrients) {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
@@ -306,13 +306,13 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       padding: const EdgeInsets.only(top: 5),
       shrinkWrap: true,
       itemCount: extendedIngredients.length,
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (final BuildContext context, final int index) {
         return showIngredients(extendedIngredients, index);
       },
     );
   }
 
-  Widget showIngredients(List<ExtendedIngredients> extendedIngredients, int index) {
+  Widget showIngredients(final List<ExtendedIngredients> extendedIngredients, final int index) {
     final ExtendedIngredients ingredient = extendedIngredients[index];
     return Padding(
       padding: const EdgeInsets.all(1.5),
@@ -359,13 +359,13 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       padding: const EdgeInsets.only(top: 5),
       shrinkWrap: true,
       itemCount: steps.length,
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (final BuildContext context, final int index) {
         return showSteps(steps, index);
       },
     );
   }
 
-  Widget showSteps(List<RecipeStep> steps, int index) {
+  Widget showSteps(final List<RecipeStep> steps, final int index) {
     final RecipeStep step = steps[index];
     return Padding(
       padding: const EdgeInsets.all(1.5),

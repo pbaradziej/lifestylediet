@@ -19,13 +19,13 @@ class ProfileCubit extends Cubit<ProfileState> {
         _databaseRepository = DatabaseRepository(),
         super(ProfileState(status: ProfileStatus.loading));
 
-  void updatePersonalData(PersonalData personalData) async {
+  Future<void> updatePersonalData(final PersonalData personalData) async {
     await _databaseUserRepository.updateProfileData(personalData);
     final ProfileState updatedState = state.copyWith(personalData: personalData);
     emit(updatedState);
   }
 
-  void initializePersonalData() async {
+  Future<void> initializePersonalData() async {
     final PersonalData personalData = await _databaseUserRepository.getUserPersonalData();
     final List<DatabaseProduct> products = await _databaseRepository.getProducts();
     final NutrimentsData nutrimentsData = NutrimentsDataHelper.getNutrimentsDataList(products);

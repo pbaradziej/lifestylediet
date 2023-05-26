@@ -14,7 +14,7 @@ class WeightCubit extends Cubit<WeightState> {
       : _databaseUserRepository = DatabaseUserRepository(),
         super(WeightState());
 
-  void initializeWeightData() async {
+  Future<void> initializeWeightData() async {
     final List<WeightProgress> weightProgress = await _databaseUserRepository.getUserWeightData();
     final PersonalData personalData = await _databaseUserRepository.getUserPersonalData();
     final WeightState state = WeightState(
@@ -24,7 +24,7 @@ class WeightCubit extends Cubit<WeightState> {
     emit(state);
   }
 
-  void addWeight(String weight) async {
+  Future<void> addWeight(final String weight) async {
     await _databaseUserRepository.addUserWeight(weight: weight);
     final List<WeightProgress> weightProgress = await _databaseUserRepository.getUserWeightData();
     final PersonalData personalData = state.personalData;

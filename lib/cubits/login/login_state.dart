@@ -20,7 +20,7 @@ class LoginState extends Equatable {
 
   LoginState({
     required this.status,
-    PersonalData? personalData,
+    final PersonalData? personalData,
     this.email = '',
     this.message = '',
   })  : personalData = personalData ?? PersonalData(),

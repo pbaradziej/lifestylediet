@@ -13,13 +13,13 @@ class MealState extends Equatable {
   MealState({
     required this.status,
     this.dailyWeightUpdated = false,
-    PersonalData? personalData,
+    final PersonalData? personalData,
   }) : personalData = personalData ?? PersonalData();
 
   MealState copyWith({
-    MealStatus? status,
-    bool? dailyWeightUpdated,
-    PersonalData? personalData,
+    final MealStatus? status,
+    final bool? dailyWeightUpdated,
+    final PersonalData? personalData,
   }) {
     return MealState(
       status: status ?? this.status,

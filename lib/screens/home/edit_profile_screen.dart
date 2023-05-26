@@ -45,7 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final FocusScopeNode node = FocusScope.of(context);
     return Scaffold(
       body: Container(
@@ -54,7 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: appTheme(),
         child: Center(
           child: NotificationListener<OverscrollIndicatorNotification>(
-            onNotification: (OverscrollIndicatorNotification overscroll) {
+            onNotification: (final OverscrollIndicatorNotification overscroll) {
               overscroll.disallowIndicator();
               return false;
             },
@@ -99,15 +99,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  TextEditingController getTextEditingController(String text) {
+  TextEditingController getTextEditingController(final String text) {
     return TextEditingController(text: text);
   }
 
-  Widget firstNameField(FocusNode node) {
+  Widget firstNameField(final FocusNode node) {
     return TextFormFieldComponent(
       controller: firstNameController,
       label: 'Firstname',
-      onEditingComplete: () => node.nextFocus(),
+      onEditingComplete: node.nextFocus,
       hintText: 'Enter Firstname...',
     );
   }
@@ -154,14 +154,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget weightField(FocusNode node) {
+  Widget weightField(final FocusNode node) {
     return NumericComponent(
       initialValue: weightController.text,
       controller: weightController,
       label: 'Weight',
       halfScreen: true,
       unit: 'kg',
-      onEditingComplete: () => node.nextFocus(),
+      onEditingComplete: node.nextFocus,
     );
   }
 

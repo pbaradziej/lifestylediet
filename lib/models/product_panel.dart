@@ -10,8 +10,8 @@ class ProductPanel {
   });
 
   ProductPanel copyWith({
-    DatabaseProduct? databaseProduct,
-    bool? isExpanded,
+    final DatabaseProduct? databaseProduct,
+    final bool? isExpanded,
   }) {
     return ProductPanel(
       databaseProduct: databaseProduct ?? this.databaseProduct,
@@ -19,7 +19,7 @@ class ProductPanel {
     );
   }
 
-  static List<ProductPanel> createProductPanels(List<DatabaseProduct> products) {
+  static List<ProductPanel> createProductPanels(final List<DatabaseProduct> products) {
     return <ProductPanel>[
       for (DatabaseProduct product in products)
         ProductPanel(

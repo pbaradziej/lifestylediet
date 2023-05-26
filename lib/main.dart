@@ -24,7 +24,7 @@ class _FireBaseState extends State<FireBase> {
   bool initialized = false;
   bool error = false;
 
-  void initializeFlutterFire() async {
+  Future<void> initializeFlutterFire() async {
     try {
       await Firebase.initializeApp();
       setState(() {
@@ -44,7 +44,7 @@ class _FireBaseState extends State<FireBase> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     if (error) {
       return errorScreen();
     }
@@ -73,7 +73,7 @@ class _FireBaseState extends State<FireBase> {
 
   Widget authScreen() {
     return BlocProvider<AuthCubit>(
-      create: (BuildContext content) => AuthCubit(),
+      create: (final BuildContext content) => AuthCubit(),
       child: AuthScreen(),
     );
   }

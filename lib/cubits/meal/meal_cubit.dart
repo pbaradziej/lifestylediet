@@ -14,7 +14,7 @@ class MealCubit extends Cubit<MealState> {
       : _databaseUserRepository = DatabaseUserRepository(),
         super(MealState(status: MealStatus.loading));
 
-  void initializeMealsData() async {
+  Future<void> initializeMealsData() async {
     final bool dailyWeightUpdated = await _wasDailyWeightUpdated();
     final PersonalData personalData = await _databaseUserRepository.getUserPersonalData();
     _emitMealState(dailyWeightUpdated, personalData);
@@ -30,7 +30,7 @@ class MealCubit extends Cubit<MealState> {
     return weightProgress.any(_containsTodayDate);
   }
 
-  bool _containsTodayDate(WeightProgress weight) {
+  bool _containsTodayDate(final WeightProgress weight) {
     final String date = weight.date;
     final String dateNow = _getTodayDate();
 
@@ -44,7 +44,7 @@ class MealCubit extends Cubit<MealState> {
     return dateFormat.format(dateTime);
   }
 
-  void _emitMealState(bool dailyWeightUpdated, PersonalData personalData) {
+  void _emitMealState(final bool dailyWeightUpdated, final PersonalData personalData) {
     final MealState state = MealState(
       status: MealStatus.loaded,
       dailyWeightUpdated: dailyWeightUpdated,

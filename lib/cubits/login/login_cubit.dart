@@ -23,7 +23,7 @@ class LoginCubit extends Cubit<LoginState> {
 
 
 
-  void initializeAuthentication() async {
+  Future<void> initializeAuthentication() async {
     final String uid = await _userCredentialsProvider.readUid();
     final bool isLoggedIn = uid.isNotEmpty;
     if (isLoggedIn) {
@@ -33,7 +33,7 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  void login(String email, String password) async {
+  Future<void> login(final String email, final String password) async {
     final User? result = await _userRepository.login(
       email: email,
       password: password,
@@ -49,7 +49,7 @@ class LoginCubit extends Cubit<LoginState> {
     _emitLoginState(status: LoginStatus.register);
   }
 
-  void register(String email, String password) async {
+  Future<void> register(final String email, final String password) async {
     final bool result = await _userRepository.register(
       email: email,
       password: password,
@@ -68,7 +68,7 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  void resetPassword(String email) async {
+  Future<void> resetPassword(final String email) async {
     await _userRepository.resetPassword(email);
     _emitLoginState(
       status: LoginStatus.loaded,
@@ -76,12 +76,12 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 
-  void authenticateData(PersonalData personalData) async {
+  Future<void> authenticateData(final PersonalData personalData) async {
     await _databaseUserRepository.addUserPersonalData(personalData: personalData);
     _emitLoginState(status: LoginStatus.authenticated);
   }
 
-  void showGoalsAuthenticationScreen(PersonalData personalData) async {
+  Future<void> showGoalsAuthenticationScreen(final PersonalData personalData) async {
     await _databaseUserRepository.addUserPersonalData(personalData: personalData);
     _emitLoginState(
       status: LoginStatus.initialGoals,
@@ -103,7 +103,7 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 
-  String _getMessage(LoginStatus status) {
+  String _getMessage(final LoginStatus status) {
     if (status == LoginStatus.notVerified) {
       return I18n.verifyEmail;
     }
@@ -111,7 +111,7 @@ class LoginCubit extends Cubit<LoginState> {
     return '';
   }
 
-  LoginStatus _getInitialLoginStatus(PersonalData personalData) {
+  LoginStatus _getInitialLoginStatus(final PersonalData personalData) {
     final String firstName = personalData.firstName;
     final String goal = personalData.goal;
 
@@ -125,10 +125,10 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void _emitLoginState({
-    required LoginStatus status,
-    String email = '',
-    String message = '',
-    PersonalData? personalData,
+    required final LoginStatus status,
+    final String email = '',
+    final String message = '',
+    final PersonalData? personalData,
   }) {
     final LoginState state = LoginState(
       status: status,

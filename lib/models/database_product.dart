@@ -27,16 +27,16 @@ class DatabaseProduct {
   });
 
   DatabaseProduct copyWith({
-    String? id,
-    String? date,
-    String? meal,
-    String? image,
-    String? name,
-    Nutriments? nutriments,
-    double? amount,
-    String? value,
-    String? servingUnit,
-    bool? isExpanded,
+    final String? id,
+    final String? date,
+    final String? meal,
+    final String? image,
+    final String? name,
+    final Nutriments? nutriments,
+    final double? amount,
+    final String? value,
+    final String? servingUnit,
+    final bool? isExpanded,
   }) {
     return DatabaseProduct(
       id: id ?? this.id,
@@ -52,7 +52,7 @@ class DatabaseProduct {
     );
   }
 
-  factory DatabaseProduct.fromJson(Map<String, Object?> json) {
+  factory DatabaseProduct.fromJson(final Map<String, Object?> json) {
     return DatabaseProduct(
       id: json['id'] as String,
       date: _getDate(json),
@@ -101,7 +101,7 @@ class DatabaseProduct {
     };
   }
 
- static String _getDate(Map<String, Object?> json) {
+ static String _getDate(final Map<String, Object?> json) {
     final String date = json['date'] as String;
     if (date == 'currentDate') {
       return _getDateNow();

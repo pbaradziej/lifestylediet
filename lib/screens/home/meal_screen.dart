@@ -49,11 +49,11 @@ class _MealScreenState extends State<MealScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return MultiBlocListener(
       listeners: listeners(),
       child: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (OverscrollIndicatorNotification overscroll) {
+        onNotification: (final OverscrollIndicatorNotification overscroll) {
           overscroll.disallowIndicator();
           return false;
         },
@@ -87,7 +87,7 @@ class _MealScreenState extends State<MealScreen> {
     ];
   }
 
-  void productListener(BuildContext context, ProductState state) {
+  void productListener(final BuildContext context, final ProductState state) {
     final ProductStatus status = state.status;
     if (status == ProductStatus.loaded) {
       meals = state.meals;
@@ -95,7 +95,7 @@ class _MealScreenState extends State<MealScreen> {
     }
   }
 
-  void mealListener(BuildContext context, MealState state) {
+  void mealListener(final BuildContext context, final MealState state) {
     final MealStatus status = state.status;
     if (status == MealStatus.loaded) {
       updateMealData(state);
@@ -103,7 +103,7 @@ class _MealScreenState extends State<MealScreen> {
     }
   }
 
-  void updateMealData(MealState state) {
+  void updateMealData(final MealState state) {
     dailyWeightUpdated = state.dailyWeightUpdated;
     final PersonalData personalData = state.personalData;
     nutrition = nutrimentsHelper.getNutrition(personalData);
@@ -173,7 +173,7 @@ class _MealScreenState extends State<MealScreen> {
     }
   }
 
-  Widget dataIconButton(String strDate, String action, IconData icon) {
+  Widget dataIconButton(final String strDate, final String action, final IconData icon) {
     final bool isCurrentDate = currentDate == strDate;
     return IconButton(
       splashColor: isCurrentDate ? defaultColor : const Color(0x66C8C8C8),
@@ -186,7 +186,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  void swipeData(String strDate, String action) {
+  void swipeData(final String strDate, final String action) {
     if (currentDate != strDate) {
       setState(() {
         DateTime newDate;
@@ -217,7 +217,7 @@ class _MealScreenState extends State<MealScreen> {
   Widget mealPanelList() {
     return ExpansionPanelList(
       key: UniqueKey(),
-      expansionCallback: (int index, bool isExpanded) {
+      expansionCallback: (final int index, final bool isExpanded) {
         setState(() {
           meals[index] = meals[index].copyWith(isExpanded: !isExpanded);
         });
@@ -232,10 +232,10 @@ class _MealScreenState extends State<MealScreen> {
     ];
   }
 
-  ExpansionPanel mealPanel(Meal meal) {
+  ExpansionPanel mealPanel(final Meal meal) {
     return ExpansionPanel(
       canTapOnHeader: true,
-      headerBuilder: (BuildContext context, bool isExpanded) {
+      headerBuilder: (final BuildContext context, final bool isExpanded) {
         return Column(
           children: <Widget>[
             ListTile(
@@ -252,7 +252,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget mealPanelBody(Meal meal) {
+  Widget mealPanelBody(final Meal meal) {
     return Column(
       children: <Widget>[
         listBuilder(meal.meals),
@@ -261,7 +261,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget addMeal(String meal) {
+  Widget addMeal(final String meal) {
     return ElevatedButton(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -282,19 +282,19 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget listBuilder(List<DatabaseProduct> mealList) {
+  Widget listBuilder(final List<DatabaseProduct> mealList) {
     final List<DatabaseProduct> currentMealList = getProductsWithCurrentDate(mealList);
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: currentMealList.length,
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (final BuildContext context, final int index) {
         return showFood(currentMealList, index);
       },
     );
   }
 
-  List<DatabaseProduct> getProductsWithCurrentDate(List<DatabaseProduct> mealList) {
+  List<DatabaseProduct> getProductsWithCurrentDate(final List<DatabaseProduct> mealList) {
     final List<DatabaseProduct> currentMealList = <DatabaseProduct>[];
     for (final DatabaseProduct product in mealList) {
       if (currentDate == product.date) {
@@ -335,7 +335,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget kcalPanel(String name, String action, TextStyle style, String value) {
+  Widget kcalPanel(final String name, final String action, final TextStyle style, final String value) {
     return Column(
       children: <Widget>[
         Text(name, style: subTitleStyle),
@@ -365,7 +365,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget nutritionText(String name, String value) {
+  Widget nutritionText(final String name, final String value) {
     return Column(
       children: <Widget>[
         Text(
@@ -387,7 +387,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget showFood(List<DatabaseProduct> mealList, int index) {
+  Widget showFood(final List<DatabaseProduct> mealList, final int index) {
     final DatabaseProduct product = mealList[index];
     final Nutriments nutriments = product.nutriments;
 
@@ -398,24 +398,24 @@ class _MealScreenState extends State<MealScreen> {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute<Widget>(
-          builder: (BuildContext _) => detailsScreen(product),
+          builder: (final BuildContext _) => detailsScreen(product),
         ),
       ).then(
-        (Widget? value) {
+        (final Widget? value) {
           setState(() {});
         },
       ),
     );
   }
 
-  Widget detailsScreen(DatabaseProduct product) {
+  Widget detailsScreen(final DatabaseProduct product) {
     return DetailsScreenProvider(
       product: product,
       context: context,
     );
   }
 
-  Widget deleteButton(DatabaseProduct product) {
+  Widget deleteButton(final DatabaseProduct product) {
     return IconButton(
       onPressed: () {
         productCubit.deleteProduct(product);
@@ -428,7 +428,7 @@ class _MealScreenState extends State<MealScreen> {
     );
   }
 
-  Widget subtitleListTile(DatabaseProduct product, Nutriments nutriments) {
+  Widget subtitleListTile(final DatabaseProduct product, final Nutriments nutriments) {
     return RichText(
       text: TextSpan(
         style: DefaultTextStyle.of(context).style,

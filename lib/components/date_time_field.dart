@@ -43,7 +43,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -68,7 +68,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
     );
   }
 
-  Widget builder(FormFieldState<String> state) {
+  Widget builder(final FormFieldState<String> state) {
     return Column(
       children: <Widget>[
         dateTimeField(state),
@@ -77,7 +77,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
     );
   }
 
-  String? validator(String? value) {
+  String? validator(final String? value) {
     if (controller.text.isEmpty) {
       return 'Please enter a date';
     } else {
@@ -85,7 +85,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
     }
   }
 
-  Widget dateTimeField(FormFieldState<String> state) {
+  Widget dateTimeField(final FormFieldState<String> state) {
     return GestureDetector(
       onTap: () => selectDate(state),
       child: AbsorbPointer(
@@ -151,7 +151,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
     );
   }
 
-  Widget errorText(FormFieldState<String> state) {
+  Widget errorText(final FormFieldState<String> state) {
     return Text(
       state.errorText ?? '',
       style: TextStyle(
@@ -161,7 +161,7 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
     );
   }
 
-  void selectDate(FormFieldState<String> state) async {
+  Future<void> selectDate(final FormFieldState<String> state) async {
     final DateTime? pickedDateTime = await showDatePicker(
       context: context,
       initialDate: selectedDate,
@@ -175,13 +175,13 @@ class _DateTimeFieldComponentState extends State<DateTimeFieldComponent> {
     }
   }
 
-  Widget datePickerBuilder(BuildContext context, Widget? child) {
+  Widget datePickerBuilder(final BuildContext context, final Widget? child) {
     return datePickerTheme(
       child ?? const SizedBox(),
     );
   }
 
-  void updateDateTime(FormFieldState<String> state, DateTime pickedDateTime) {
+  void updateDateTime(final FormFieldState<String> state, final DateTime pickedDateTime) {
     state.reset();
     selectedDate = pickedDateTime;
     final DateFormat dateFormat = DateFormat('yyyy-MM-dd');

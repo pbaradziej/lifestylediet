@@ -31,7 +31,7 @@ class _ChartScreenState extends State<ChartScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final WeightState state = context.select<WeightCubit, WeightState>(getWeightState);
     weightProgress = state.weightProgress;
     personalData = state.personalData;
@@ -50,7 +50,7 @@ class _ChartScreenState extends State<ChartScreen> {
     );
   }
 
-  WeightState getWeightState(WeightCubit cubit) {
+  WeightState getWeightState(final WeightCubit cubit) {
     return cubit.state;
   }
 
@@ -89,9 +89,9 @@ class _ChartScreenState extends State<ChartScreen> {
       charts.Series<WeightProgress, DateTime>(
         id: 'Weight progress',
         data: weightProgress,
-        domainFn: (WeightProgress series, _) => DateTime.parse(series.date),
-        measureFn: (WeightProgress series, _) => double.parse(series.weight),
-        colorFn: (WeightProgress series, _) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (final WeightProgress series, final _) => DateTime.parse(series.date),
+        measureFn: (final WeightProgress series, final _) => double.parse(series.weight),
+        colorFn: (final WeightProgress series, final _) => charts.MaterialPalette.blue.shadeDefault,
       )
     ];
   }
@@ -116,7 +116,7 @@ class _ChartScreenState extends State<ChartScreen> {
             onPressed: () async {
               final String weight = weightController.text;
               if (weight.isNotEmpty) {
-                cubit.addWeight(weight);
+                await cubit.addWeight(weight);
               }
             },
             circle: false,
@@ -144,7 +144,7 @@ class _ChartScreenState extends State<ChartScreen> {
     );
   }
 
-  Widget summaryHeadLine(String name) {
+  Widget summaryHeadLine(final String name) {
     return Padding(
       padding: const EdgeInsets.only(left: 18),
       child: Text(name, style: subTitleAddScreenStyle),
@@ -166,14 +166,14 @@ class _ChartScreenState extends State<ChartScreen> {
       charts.Series<WeightProgress, DateTime>(
         id: 'Weight progress',
         data: weightProgress,
-        domainFn: (WeightProgress series, _) => DateTime.parse(series.date),
-        measureFn: (WeightProgress series, _) => getBMI(series.weight),
-        colorFn: (WeightProgress series, _) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (final WeightProgress series, final _) => DateTime.parse(series.date),
+        measureFn: (final WeightProgress series, final _) => getBMI(series.weight),
+        colorFn: (final WeightProgress series, final _) => charts.MaterialPalette.blue.shadeDefault,
       )
     ];
   }
 
-  double getBMI(String weight) {
+  double getBMI(final String weight) {
     final double weightDouble = double.parse(weight);
     final double bmi = weightDouble / pow(double.parse(personalData.height) / 100, 2);
 

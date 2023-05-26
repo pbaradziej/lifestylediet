@@ -6,14 +6,14 @@ class WeightState extends Equatable {
   final Key key;
 
   WeightState({
-    PersonalData? personalData,
+    final PersonalData? personalData,
     this.weightProgress = const <WeightProgress>[],
   })  : personalData = personalData ?? PersonalData(),
         key = UniqueKey();
 
   WeightState copyWith({
-    List<WeightProgress>? weightProgress,
-    PersonalData? personalData,
+    final List<WeightProgress>? weightProgress,
+    final PersonalData? personalData,
   }) {
     return WeightState(
       weightProgress: weightProgress ?? this.weightProgress,

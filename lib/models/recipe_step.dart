@@ -7,7 +7,7 @@ class RecipeStep {
     required this.step,
   });
 
-  factory RecipeStep.fromJson(Map<String, dynamic> json) {
+  factory RecipeStep.fromJson(final Map<String, dynamic> json) {
     return RecipeStep(
       number: json['number'] as int,
       step: json['step'] as String,

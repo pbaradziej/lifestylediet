@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:lifestylediet/styles/app_text_styles.dart';
 
 class SnackBarBuilder {
-  static void showSnackBar(BuildContext buildContext, String message) {
+  static void showSnackBar(final BuildContext buildContext, final String message) {
     ScaffoldMessenger.of(buildContext).showSnackBar(
       _buildSnackBar(buildContext, message),
     );
   }
 
-  static SnackBar _buildSnackBar(BuildContext buildContext, String message) {
+  static SnackBar _buildSnackBar(final BuildContext buildContext, final String message) {
     final ColorScheme colorScheme = Theme.of(buildContext).colorScheme;
     return SnackBar(
       content: _snackBarText(
@@ -27,8 +27,8 @@ class SnackBarBuilder {
   }
 
   static Widget _snackBarText({
-    required BuildContext context,
-    required String message,
+    required final BuildContext context,
+    required final String message,
   }) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Text(

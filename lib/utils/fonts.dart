@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 TextStyle get hintStyle => const TextStyle(fontSize: 15, color: Colors.white60);
 
@@ -27,13 +26,9 @@ TextStyle get subTitleAddScreenStyle => const TextStyle(fontSize: 20, color: Col
 
 TextStyle get titleHomeStyle => const TextStyle(fontSize: 40, color: Colors.white);
 
-TextStyle get titleStyle => GoogleFonts.aleo(
-      fontWeight: FontWeight.bold,
-      fontSize: 35,
-      color: Colors.grey[100],
-    );
+TextStyle get titleStyle => TextStyle(fontWeight: FontWeight.bold, fontSize: 35, color: Colors.grey[100]);
 
-TextStyle get titleDateStyle => GoogleFonts.aleo(fontSize: 25, color: Colors.grey[700]);
+TextStyle get titleDateStyle => TextStyle(fontSize: 25, color: Colors.grey[700]);
 
 TextStyle get orangeProfileTextStyle => const TextStyle(fontSize: 16, color: Colors.orangeAccent);
 

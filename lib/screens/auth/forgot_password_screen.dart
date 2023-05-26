@@ -27,7 +27,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
       body: Container(
@@ -35,7 +35,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         width: double.infinity,
         decoration: appTheme(),
         child: NotificationListener<OverscrollIndicatorNotification>(
-          onNotification: (OverscrollIndicatorNotification overscroll) {
+          onNotification: (final OverscrollIndicatorNotification overscroll) {
             overscroll.disallowIndicator();
             return false;
           },
@@ -77,7 +77,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       minCharacters: 3,
       minCharactersMessage: 'Enter an email 3+ chars long',
       textInputAction: TextInputAction.done,
-      onFieldSubmitted: (_) => onFieldSubmitted(),
+      onFieldSubmitted: (final _) => onFieldSubmitted(),
       prefixIcon: Icon(
         Icons.mail,
         color: iconTrailingColors,

@@ -43,7 +43,7 @@ class Nutriments {
     this.potassiumPerServing = 0,
   });
 
-  factory Nutriments.fromJson(Map<String, Object?> json) {
+  factory Nutriments.fromJson(final Map<String, Object?> json) {
     return Nutriments(
       caloriesPer100g: json['caloriesPer100g'] as double,
       caloriesPerServing: json['caloriesPerServing'] as double,

@@ -28,82 +28,82 @@ class ProductCubit extends Cubit<ProductState> {
     _emitProductState();
   }
 
-  void initializeProducts() async {
+  Future<void> initializeProducts() async {
     _emitLoadingState();
     _productRegister.clearProducts();
     final List<DatabaseProduct> products = await _databaseRepository.getProducts();
     _productRegister.addProducts(products);
-    _emitProductState();
+    await _emitProductState();
   }
 
-  Future<void> addProduct(DatabaseProduct product) async {
+  Future<void> addProduct(final DatabaseProduct product) async {
     _emitLoadingState();
     _productRegister.addProduct(product);
     await _databaseRepository.addProduct(product);
-    _emitProductState();
+    await _emitProductState();
   }
 
-  Future<void> addMultipleProducts(List<DatabaseProduct> products) async {
+  Future<void> addMultipleProducts(final List<DatabaseProduct> products) async {
     _emitLoadingState();
     _productRegister.addProducts(products);
     await _databaseRepository.addMultipleProducts(products);
-    _emitProductState();
+    await _emitProductState();
   }
 
-  void listProducts() async {
+  Future<void> listProducts() async {
     final List<DatabaseProduct> products = await _databaseLocalRepository.getDatabaseData();
-    _emitProductState(
+    await _emitProductState(
       status: ProductStatus.listProducts,
       products: products,
     );
   }
 
-  void searchProducts(String search) async {
+  Future<void> searchProducts(final String search) async {
     _emitLoadingState();
     final List<DatabaseProduct> searchedProducts = await _productRepository.getSearchProducts(search);
     if (searchedProducts.isNotEmpty) {
-      _emitProductState(
+      await _emitProductState(
         status: ProductStatus.filtered,
         products: searchedProducts,
       );
     } else {
-      _emitProductState(
+      await _emitProductState(
         status: ProductStatus.loaded,
         message: 'Product not found!',
       );
     }
   }
 
-  void scanProduct(String barcode) async {
+  Future<void> scanProduct(final String barcode) async {
     _emitLoadingState();
     final DatabaseProduct? databaseProduct = await _productRepository.getProductFromBarcode(barcode);
     if (databaseProduct != null) {
-      _emitProductState(
+      await _emitProductState(
         status: ProductStatus.filtered,
         products: <DatabaseProduct>[
           databaseProduct,
         ],
       );
     } else {
-      _emitProductState(
+      await _emitProductState(
         status: ProductStatus.loaded,
         message: barcode != '-1' ? 'Product not found!' : '',
       );
     }
   }
 
-  void deleteProduct(DatabaseProduct product) async {
+  Future<void> deleteProduct(final DatabaseProduct product) async {
     _emitLoadingState();
     _productRegister.deleteProduct(product);
     await _databaseRepository.deleteProduct(product);
-    _emitProductState();
+    await _emitProductState();
   }
 
-  void updateProduct(DatabaseProduct product) async {
+  Future<void> updateProduct(final DatabaseProduct product) async {
     _emitLoadingState();
     _productRegister.updateProduct(product);
     await _databaseRepository.updateProduct(product);
-    _emitProductState();
+    await _emitProductState();
   }
 
   void _emitLoadingState() {
@@ -113,10 +113,10 @@ class ProductCubit extends Cubit<ProductState> {
     emit(loadingState);
   }
 
-  void _emitProductState({
-    ProductStatus? status,
-    List<DatabaseProduct>? products,
-    String message = '',
+  Future<void> _emitProductState({
+    final ProductStatus? status,
+    final List<DatabaseProduct>? products,
+    final String message = '',
   }) async {
     final ProductStatus productStatus = status ?? ProductStatus.loaded;
     final List<DatabaseProduct> databaseProducts = products ?? _productRegister.getProducts();

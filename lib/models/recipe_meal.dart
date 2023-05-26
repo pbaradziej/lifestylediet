@@ -9,7 +9,7 @@ class RecipeMeal {
     required this.image,
   });
 
-  factory RecipeMeal.fromJson(Map<String, Object?> json) {
+  factory RecipeMeal.fromJson(final Map<String, Object?> json) {
     return RecipeMeal(
       id: json['id'] as int,
       title: json['title'] as String,

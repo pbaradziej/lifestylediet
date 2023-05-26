@@ -14,10 +14,10 @@ import 'package:lifestylediet/utils/fonts.dart';
 import 'package:lifestylediet/utils/palette.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({final Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final RoutingState state = context.select<RoutingCubit, RoutingState>(getRoutingState);
     final RoutingStatus status = state.status;
     if (status == RoutingStatus.loaded) {
@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
     return loadingScreenMainScreen();
   }
 
-  RoutingState getRoutingState(RoutingCubit cubit) {
+  RoutingState getRoutingState(final RoutingCubit cubit) {
     return cubit.state;
   }
 
@@ -71,26 +71,26 @@ class HomeScreen extends StatelessWidget {
 
   Widget recipeScreen() {
     return BlocProvider<RecipeCubit>(
-      create: (BuildContext content) => RecipeCubit(),
+      create: (final BuildContext content) => RecipeCubit(),
       child: RecipeScreen(),
     );
   }
 
   Widget chartScreen() {
     return BlocProvider<WeightCubit>(
-      create: (BuildContext content) => WeightCubit(),
+      create: (final BuildContext content) => WeightCubit(),
       child: ChartScreen(),
     );
   }
 
   Widget profileScreen() {
     return BlocProvider<ProfileCubit>(
-      create: (BuildContext content) => ProfileCubit(),
+      create: (final BuildContext content) => ProfileCubit(),
       child: ProfileScreen(),
     );
   }
 
-  Widget addProductScreen(RoutingState state) {
+  Widget addProductScreen(final RoutingState state) {
     final String meal = state.meal;
     final String currentDate = state.currentDate;
     return AddProductScreen(

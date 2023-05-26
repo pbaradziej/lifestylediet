@@ -6,7 +6,7 @@ class MealBuilder {
   final List<DatabaseProduct> _dinnerProducts;
   final List<DatabaseProduct> _supperProducts;
 
-  MealBuilder(List<DatabaseProduct> products)
+  MealBuilder(final List<DatabaseProduct> products)
       : _breakfastProducts = <DatabaseProduct>[],
         _dinnerProducts = <DatabaseProduct>[],
         _supperProducts = <DatabaseProduct>[] {
@@ -37,7 +37,7 @@ class MealBuilder {
     ];
   }
 
-  void _prepareProducts(List<DatabaseProduct> products) {
+  void _prepareProducts(final List<DatabaseProduct> products) {
     for (final DatabaseProduct product in products) {
       switch (product.meal) {
         case 'Breakfast':

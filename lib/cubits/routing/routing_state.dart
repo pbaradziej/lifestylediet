@@ -19,9 +19,9 @@ class RoutingState extends Equatable {
   }) : key = UniqueKey();
 
   RoutingState copyWith({
-    RoutingStatus? status,
-    String? currentDate,
-    String? meal,
+    final RoutingStatus? status,
+    final String? currentDate,
+    final String? meal,
   }) {
     return RoutingState(
       status: status ?? this.status,

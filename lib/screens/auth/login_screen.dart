@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final LoginState state = context.select<LoginCubit, LoginState>(getLoginState);
     final LoginStatus status = state.status;
     showSnackBar(state);
@@ -46,14 +46,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return loadingScreen();
   }
 
-  LoginState getLoginState(LoginCubit cubit) {
+  LoginState getLoginState(final LoginCubit cubit) {
     return cubit.state;
   }
 
-  void showSnackBar(LoginState state) {
+  void showSnackBar(final LoginState state) {
     final String message = state.message;
     if (message.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((final _) {
         SnackBarBuilder.showSnackBar(context, message);
       });
     }

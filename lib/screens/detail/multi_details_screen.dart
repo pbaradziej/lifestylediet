@@ -34,11 +34,11 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
       body: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (OverscrollIndicatorNotification overscroll) {
+        onNotification: (final OverscrollIndicatorNotification overscroll) {
           overscroll.disallowIndicator();
           return false;
         },
@@ -52,7 +52,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  AppBar appBar(BuildContext context) {
+  AppBar appBar(final BuildContext context) {
     return AppBar(
       elevation: 0,
       backgroundColor: backgroundColor,
@@ -83,7 +83,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  void onPressed() async {
+  Future<void> onPressed() async {
     final List<DatabaseProduct> products = getDatabaseProducts();
     await productCubit.addMultipleProducts(products);
     routingCubit.showHomeScreen();
@@ -98,17 +98,17 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
 
   ExpansionPanelList productPanelList() {
     return ExpansionPanelList(
-      expansionCallback: (int index, bool isExpanded) {
+      expansionCallback: (final int index, final bool isExpanded) {
         setState(() {
           productPanels[index] = productPanels[index].copyWith(isExpanded: !isExpanded);
         });
       },
-      children: productPanels.map((ProductPanel panel) {
+      children: productPanels.map((final ProductPanel panel) {
         final DatabaseProduct databaseProduct = panel.databaseProduct;
         final Nutriments nutriments = databaseProduct.nutriments;
         return ExpansionPanel(
           canTapOnHeader: true,
-          headerBuilder: (BuildContext context, bool isExpanded) {
+          headerBuilder: (final BuildContext context, final bool isExpanded) {
             return ListTile(
               title: Text(
                 databaseProduct.name.toUpperCase(),
@@ -128,7 +128,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget caloriesCard(DatabaseProduct product) {
+  Widget caloriesCard(final DatabaseProduct product) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -150,7 +150,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget kcalButtons(DatabaseProduct product) {
+  Widget kcalButtons(final DatabaseProduct product) {
     final Nutriments nutriments = product.nutriments;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -210,7 +210,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget valueDropdownButton(DatabaseProduct product) {
+  Widget valueDropdownButton(final DatabaseProduct product) {
     return Column(
       children: <Widget>[
         Padding(
@@ -240,7 +240,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
         style: defaultTextStyle,
         underline: const DropdownButtonHideUnderline(child: SizedBox(height: 0)),
         value: product.value,
-        onChanged: (String? newValue) {
+        onChanged: (final String? newValue) {
           setState(() {
             product = product.copyWith(
               value: newValue ?? '',
@@ -248,7 +248,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
           });
         },
         items: <String>['serving', '100g'].map<DropdownMenuItem<String>>(
-          (String value) {
+          (final String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(value),
@@ -259,7 +259,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget calories(String text, double energy) {
+  Widget calories(final String text, final double energy) {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
@@ -277,7 +277,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget nutritionCard(Nutriments nutriments, DatabaseProduct product) {
+  Widget nutritionCard(final Nutriments nutriments, final DatabaseProduct product) {
     return Card(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -296,7 +296,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget nutritionInfo(Nutriments nutriments, DatabaseProduct product) {
+  Widget nutritionInfo(final Nutriments nutriments, final DatabaseProduct product) {
     return Column(
       children: <Widget>[
         kcalInfo(nutriments, product),
@@ -313,7 +313,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget kcalInfo(Nutriments nutriments, DatabaseProduct product) {
+  Widget kcalInfo(final Nutriments nutriments, final DatabaseProduct product) {
     return hideNull(
       'kcal ',
       nutrimentsAmount(
@@ -324,7 +324,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget proteinInfo(Nutriments nutriments, DatabaseProduct product) {
+  Widget proteinInfo(final Nutriments nutriments, final DatabaseProduct product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -340,7 +340,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget carbsInfo(Nutriments nutriments, DatabaseProduct product) {
+  Widget carbsInfo(final Nutriments nutriments, final DatabaseProduct product) {
     return Column(
       children: <Widget>[
         hideNull(
@@ -373,7 +373,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget fatsInfo(Nutriments nutriments, DatabaseProduct product) {
+  Widget fatsInfo(final Nutriments nutriments, final DatabaseProduct product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -398,7 +398,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  Widget additionalInfo(Nutriments nutriments, DatabaseProduct product) {
+  Widget additionalInfo(final Nutriments nutriments, final DatabaseProduct product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -430,7 +430,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     );
   }
 
-  String nutrimentsAmount(double perGrams, double perServing, DatabaseProduct product) {
+  String nutrimentsAmount(double perGrams, double perServing, final DatabaseProduct product) {
     if (perGrams == -1 || perServing == -1) {
       return 'null';
     }
@@ -442,7 +442,7 @@ class _MultiDetailsScreenState extends State<MultiDetailsScreen> {
     return double.parse(perGrams.toStringAsFixed(2)).toString();
   }
 
-  Widget hideNull(String name, String value, {TextStyle? style}) {
+  Widget hideNull(final String name, final String value, {final TextStyle? style}) {
     if (value == 'null') return const SizedBox(height: 0);
     final TextStyle defaultStyle = style ?? subTitleAddScreenStyle;
     return Row(

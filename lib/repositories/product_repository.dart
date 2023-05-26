@@ -10,7 +10,7 @@ class ProductRepository {
 
   ProductRepository() : _productProvider = ProductProvider();
 
-  Future<DatabaseProduct?> getProductFromBarcode(String code) async {
+  Future<DatabaseProduct?> getProductFromBarcode(final String code) async {
     try {
       return await getProductFromCode(code);
     } catch (_) {
@@ -18,9 +18,9 @@ class ProductRepository {
     }
   }
 
-  Future<DatabaseProduct> getProductFromCode(String code) async {
+  Future<DatabaseProduct> getProductFromCode(final String code) async {
     final String body = await _productProvider.getProductFromBarcode(code);
-    final Map<String, Object?> singleProduct = jsonDecode(body);
+    final Map<String, Object?> singleProduct = jsonDecode(body) as Map<String, Object?>;
     final List<Object> productFoods = singleProduct['foods'] as List<Object>? ?? <Object>[];
     const int singleFood = 0;
     final Map<String, Object> product = productFoods[singleFood] as Map<String, Object>? ?? <String, Object>{};
@@ -28,22 +28,22 @@ class ProductRepository {
     return _getDatabaseProduct(product);
   }
 
-  Future<List<DatabaseProduct>> getSearchProducts(String search) async {
+  Future<List<DatabaseProduct>> getSearchProducts(final String search) async {
     final String body = await _productProvider.getProductData(search);
-    final Map<String, Object?> singleProduct = jsonDecode(body);
+    final Map<String, Object?> singleProduct = jsonDecode(body) as Map<String, Object?>;
     final List<Object?> productFoods = singleProduct['foods'] as List<Object?>? ?? <Object>[];
     final List<Map<String, Object?>> foods = List<Map<String, Object?>>.from(productFoods);
 
     return _getDatabaseProducts(foods);
   }
 
-  List<DatabaseProduct> _getDatabaseProducts(List<Map<String, Object?>> products) {
+  List<DatabaseProduct> _getDatabaseProducts(final List<Map<String, Object?>> products) {
     return <DatabaseProduct>[
       for (Map<String, Object?> product in products) _getDatabaseProduct(product),
     ];
   }
 
-  DatabaseProduct _getDatabaseProduct(Map<String, Object?> product) {
+  DatabaseProduct _getDatabaseProduct(final Map<String, Object?> product) {
     final Nutriments nutrimentsDatabase = _getNutriments(product);
     final Map<String, Object?>? photos = product['photo'] as Map<String, Object?>?;
 
@@ -57,7 +57,7 @@ class ProductRepository {
     );
   }
 
-  String _servingUnit(Map<String, Object?> product) {
+  String _servingUnit(final Map<String, Object?> product) {
     if (product['serving_weight_grams'] != null) {
       return 'g';
     }
@@ -65,7 +65,7 @@ class ProductRepository {
     return product['serving_unit'] as String? ?? '';
   }
 
-  Nutriments _getNutriments(Map<String, Object?> product) {
+  Nutriments _getNutriments(final Map<String, Object?> product) {
     final double servingWeight = _getServing(product);
     return Nutriments(
       caloriesPer100g: _calculatePer100g(product, 'nf_calories', servingWeight),
@@ -91,7 +91,7 @@ class ProductRepository {
     );
   }
 
-  double _getServing(Map<String, Object?> product) {
+  double _getServing(final Map<String, Object?> product) {
     if (product['serving_weight_grams'] != null) {
       return _parseDouble(product, 'serving_weight_grams');
     }
@@ -99,7 +99,7 @@ class ProductRepository {
     return _parseDouble(product, 'serving_qty');
   }
 
-  double _calculatePer100g(Map<String, Object?> product, String key, double servingWeight) {
+  double _calculatePer100g(final Map<String, Object?> product, final String key, final double servingWeight) {
     final double value = _parseDouble(product, key);
     final double servingWeightPer100 = servingWeight / 100;
     final double valueIn100g = value / servingWeightPer100;
@@ -108,14 +108,14 @@ class ProductRepository {
     return double.parse(valueWithDecimals);
   }
 
-  double parseValueToTwoDigitDouble(Map<String, Object?> product, String key) {
+  double parseValueToTwoDigitDouble(final Map<String, Object?> product, final String key) {
     final double value = _parseDouble(product, key);
     final String valueWithDecimals = value.toStringAsFixed(2);
 
     return double.parse(valueWithDecimals);
   }
 
-  double _parseDouble(Map<String, Object?> product, String key) {
+  double _parseDouble(final Map<String, Object?> product, final String key) {
     final Object? value = product[key];
     if (value != null) {
       return _getDoubleValue(value);
@@ -124,7 +124,7 @@ class ProductRepository {
     return -1;
   }
 
-  double _getDoubleValue(Object value) {
+  double _getDoubleValue(final Object value) {
     if (value is double) {
       return value;
     }

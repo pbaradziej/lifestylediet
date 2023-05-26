@@ -34,7 +34,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final FocusScopeNode node = FocusScope.of(context);
     return Container(
       height: double.infinity,
@@ -42,7 +42,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       decoration: appTheme(),
       child: Center(
         child: NotificationListener<OverscrollIndicatorNotification>(
-          onNotification: (OverscrollIndicatorNotification overscroll) {
+          onNotification: (final OverscrollIndicatorNotification overscroll) {
             overscroll.disallowIndicator();
             return false;
           },
@@ -56,7 +56,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     );
   }
 
-  Form personalDataForm(FocusScopeNode node) {
+  Form personalDataForm(final FocusScopeNode node) {
     return Form(
       key: formKey,
       child: Column(
@@ -75,11 +75,11 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     );
   }
 
-  Widget firstNameField(FocusScopeNode node) {
+  Widget firstNameField(final FocusScopeNode node) {
     return TextFormFieldComponent(
       controller: firstNameController,
       label: 'Firstname',
-      onEditingComplete: () => node.nextFocus(),
+      onEditingComplete: node.nextFocus,
       hintText: 'Enter Firstname...',
     );
   }

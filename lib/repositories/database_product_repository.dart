@@ -11,19 +11,19 @@ class DatabaseRepository {
 
   DatabaseRepository() : _userCredentialsProvider = UserCredentialsProvider();
 
-  Future<void> addMultipleProducts(List<DatabaseProduct> products) async {
+  Future<void> addMultipleProducts(final List<DatabaseProduct> products) async {
     for (final DatabaseProduct product in products) {
       await addProduct(product);
     }
   }
 
-  Future<void> addProduct(DatabaseProduct databaseProduct) async {
+  Future<void> addProduct(final DatabaseProduct databaseProduct) async {
     final DatabaseProduct updatedProduct = _getUpdatedProduct(databaseProduct);
     await _addDatabaseProduct(updatedProduct);
     await _setDatabaseProduct(updatedProduct);
   }
 
-  Future<void> updateProduct(DatabaseProduct databaseProduct) async {
+  Future<void> updateProduct(final DatabaseProduct databaseProduct) async {
     final CollectionReference<Map<String, Object?>> productsCollection = await _getProductsCollection();
     await productsCollection.doc(databaseProduct.id).update(<String, Object?>{
       'amount': databaseProduct.amount,
@@ -31,7 +31,7 @@ class DatabaseRepository {
     });
   }
 
-  Future<void> deleteProduct(DatabaseProduct databaseProduct) async {
+  Future<void> deleteProduct(final DatabaseProduct databaseProduct) async {
     final CollectionReference<Map<String, Object?>> productsCollection = await _getProductsCollection();
     await productsCollection.doc(databaseProduct.id).delete();
   }
@@ -41,24 +41,24 @@ class DatabaseRepository {
     return productsCollection.get().then(_getProductDocuments);
   }
 
-  DatabaseProduct _getUpdatedProduct(DatabaseProduct databaseProduct) {
+  DatabaseProduct _getUpdatedProduct(final DatabaseProduct databaseProduct) {
     final String uuid = UuidUtils.getUuid();
     return databaseProduct.copyWith(id: uuid);
   }
 
-  Future<void> _addDatabaseProduct(DatabaseProduct databaseProduct) async {
+  Future<void> _addDatabaseProduct(final DatabaseProduct databaseProduct) async {
     final DatabaseLocalRepository databaseLocalRepository = DatabaseLocalRepository();
     await databaseLocalRepository.addDatabaseProduct(product: databaseProduct);
   }
 
-  Future<void> _setDatabaseProduct(DatabaseProduct databaseProduct) async {
+  Future<void> _setDatabaseProduct(final DatabaseProduct databaseProduct) async {
     final CollectionReference<Map<String, Object?>> productsCollection = await _getProductsCollection();
     final String id = databaseProduct.id;
     final Map<String, Object?> product = databaseProduct.toMap();
     await productsCollection.doc(id).set(product);
   }
 
-  FutureOr<List<DatabaseProduct>> _getProductDocuments(QuerySnapshot<Map<String, dynamic>> productsCollection) async {
+  FutureOr<List<DatabaseProduct>> _getProductDocuments(final QuerySnapshot<Map<String, dynamic>> productsCollection) async {
     final List<DatabaseProduct> databaseProducts = <DatabaseProduct>[];
     final List<QueryDocumentSnapshot<Map<String, Object?>>> productDocuments = productsCollection.docs;
     for (final QueryDocumentSnapshot<Map<String, Object?>> productData in productDocuments) {
@@ -74,12 +74,12 @@ class DatabaseRepository {
     return databaseProducts;
   }
 
-  DatabaseProduct _getDateBaseProductFromDocument(QueryDocumentSnapshot<Map<String, Object?>> productData) {
+  DatabaseProduct _getDateBaseProductFromDocument(final QueryDocumentSnapshot<Map<String, Object?>> productData) {
     final Map<String, Object?> data = productData.data();
     return DatabaseProduct.fromJson(data);
   }
 
-  bool _isAfter7Days(DatabaseProduct databaseProduct) {
+  bool _isAfter7Days(final DatabaseProduct databaseProduct) {
     const Duration duration = Duration(days: 7);
     final DateTime dateTime = DateTime.now();
     final DateTime days7fromNow = dateTime.subtract(duration);

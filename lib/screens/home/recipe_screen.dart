@@ -30,19 +30,19 @@ class _RecipeScreenState extends State<RecipeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     recipes = context.select<RecipeCubit, List<RecipeMeal>>(getMealRecipes);
     return BlocBuilder<RecipeCubit, RecipeState>(
       builder: builder,
     );
   }
 
-  List<RecipeMeal> getMealRecipes(RecipeCubit cubit) {
+  List<RecipeMeal> getMealRecipes(final RecipeCubit cubit) {
     final RecipeState state = cubit.state;
     return state.recipes;
   }
 
-  Widget builder(BuildContext context, RecipeState state) {
+  Widget builder(final BuildContext context, final RecipeState state) {
     final RecipeStatus status = state.status;
     if (status == RecipeStatus.loaded) {
       return recipesScreen();
@@ -68,7 +68,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
       controller: searchController,
       hintText: 'Search recipes...',
       onEditingComplete: getRecipes,
-      onFieldSubmitted: (_) => getRecipes(),
+      onFieldSubmitted: (final _) => getRecipes(),
       suffixIcon: IconButton(
         icon: Icon(
           Icons.search,
@@ -95,14 +95,14 @@ class _RecipeScreenState extends State<RecipeScreen> {
         padding: const EdgeInsets.all(0),
         shrinkWrap: true,
         itemCount: recipes.length,
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: (final BuildContext context, final int index) {
           return showRecipes(index);
         },
       ),
     );
   }
 
-  void getRecipes() async {
+  Future<void> getRecipes() async {
     setState(() {
       final String recipeName = searchController.text;
       recipeCubit.searchRecipes(recipeName);
@@ -110,7 +110,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
     });
   }
 
-  Widget showRecipes(int index) {
+  Widget showRecipes(final int index) {
     final RecipeMeal recipe = recipes[index];
     return Container(
       child: Card(
@@ -127,20 +127,20 @@ class _RecipeScreenState extends State<RecipeScreen> {
     );
   }
 
-  void onTap(int index) {
+  void onTap(final int index) {
     recipeCubit.showRecipeDetails(index);
   }
 
-  void detailsNavigator(Recipe recipe) async {
+  Future<void> detailsNavigator(final Recipe recipe) async {
     await Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (_) => detailsBuilder(recipe),
+        builder: (final _) => detailsBuilder(recipe),
       ),
     );
   }
 
-  Widget detailsBuilder(Recipe recipe) {
+  Widget detailsBuilder(final Recipe recipe) {
     return BlocProvider<ProductCubit>.value(
       value: context.read(),
       child: RecipeDetailsScreen(
@@ -149,7 +149,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
     );
   }
 
-  Widget recipeTitle(RecipeMeal recipe) {
+  Widget recipeTitle(final RecipeMeal recipe) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(

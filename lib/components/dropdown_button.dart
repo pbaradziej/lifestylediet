@@ -45,7 +45,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
   bool get alertDialog => widget.alertDialog;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Container(
       width: halfScreen ? 140 : 260,
       height: alertDialog ? 83 : 80,
@@ -73,7 +73,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
     );
   }
 
-  Widget builder(FormFieldState<String> state) {
+  Widget builder(final FormFieldState<String> state) {
     return InputDecorator(
       decoration: inputDecoration(),
       isEmpty: controller.text == '',
@@ -98,7 +98,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
     );
   }
 
-  Widget dropdownButton(FormFieldState<String> state) {
+  Widget dropdownButton(final FormFieldState<String> state) {
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
         icon: icon(),
@@ -106,7 +106,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
         value: controller.text,
         style: textStyle,
         isDense: true,
-        onChanged: (String? newValue) => onChanged(newValue, state),
+        onChanged: (final String? newValue) => onChanged(newValue, state),
         items: getItems(),
       ),
     );
@@ -119,7 +119,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
     );
   }
 
-  void onChanged(String? newValue, FormFieldState<String> state) {
+  void onChanged(final String? newValue, final FormFieldState<String> state) {
     setState(() {
       controller.text = newValue ?? '';
       state.didChange(newValue);
@@ -132,7 +132,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
     ];
   }
 
-  DropdownMenuItem<String> getDropdownMenuItem(String value) {
+  DropdownMenuItem<String> getDropdownMenuItem(final String value) {
     return DropdownMenuItem<String>(
       value: value,
       child: Text(

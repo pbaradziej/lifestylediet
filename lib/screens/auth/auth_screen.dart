@@ -38,7 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -56,7 +56,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget buildAuthScreen(BuildContext context, AsyncSnapshot<User?> userData) {
+  Widget buildAuthScreen(final BuildContext context, final AsyncSnapshot<User?> userData) {
     final User? user = userData.data;
     final bool hasVerifiedEmail = user?.emailVerified ?? false;
     if(connectionState == ConnectionState.waiting) {
@@ -79,7 +79,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget builder(BuildContext _, AuthState state) {
+  Widget builder(final BuildContext _, final AuthState state) {
     final AuthStatus status = state.status;
     if (status == AuthStatus.initial) {
       return loadingScreen();
@@ -100,17 +100,17 @@ class _AuthScreenState extends State<AuthScreen> {
   List<BlocProvider<BlocBase<Object>>> providers() {
     return <BlocProvider<BlocBase<Object>>>[
       BlocProvider<RoutingCubit>(
-        create: (BuildContext content) => RoutingCubit(),
+        create: (final BuildContext content) => RoutingCubit(),
       ),
       BlocProvider<ProductCubit>(
-        create: (BuildContext content) => ProductCubit(),
+        create: (final BuildContext content) => ProductCubit(),
       ),
     ];
   }
 
   Widget loginScreen() {
     return BlocProvider<LoginCubit>(
-      create: (BuildContext content) => LoginCubit(),
+      create: (final BuildContext content) => LoginCubit(),
       child: LoginScreen(),
     );
   }

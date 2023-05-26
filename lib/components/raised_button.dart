@@ -4,7 +4,7 @@ import 'package:lifestylediet/utils/palette.dart';
 class RaisedButtonComponent extends StatefulWidget {
   final String label;
   final bool halfScreen;
-  final Function() onPressed;
+  final void Function() onPressed;
   final bool circle;
   final bool alertDialog;
 
@@ -32,7 +32,7 @@ class _RaisedButtonComponentState extends State<RaisedButtonComponent> {
   bool get circle => widget.circle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 15),
       margin: EdgeInsets.symmetric(horizontal: halfScreen ? 80 : 20),
